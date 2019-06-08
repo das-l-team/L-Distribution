@@ -1,0 +1,126 @@
+
+
+    // C-Control Variablen Index highlighter erstellt fuer |_ Distribution
+
+
+    Language: --> Speicherbelegung, Map Datei
+
+    Description: Compiler generated Map Files
+
+    
+
+    CaseSensitive: 0
+
+    LineComment: ;
+    BlockCommentBeg:
+    BlockCommentEnd:
+
+    IdentifierBegChars: a..z A..Z _%@
+    IdentifierChars: a..z A..Z _ 0..9 ?
+
+    NumConstBegChars: # //als Label mißbraucht
+
+
+    NumConstChars: a..z A..Z _ 0..9
+
+    EscapeChar:
+
+    KeyWords1:
+
+    // Hier bitte weitere Kategorien von Schlüsselwörtern eintragen, z.B.
+    // eigene feste Funktionen. Detaileinstellungen können in ConTEXT
+    // geändert werden.
+
+
+
+
+
+	// Reservierte Variablennamen des Open-Micro Betriebssystems
+    KeyWords2:
+
+
+	// Schleifen- und Tabellen-Befehle
+    KeyWords3:
+    0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
+
+
+
+
+
+
+    KeyWords4:
+
+   //Elementare Funktionen (|_)
+
+
+   //Symbolische Konstanten (|_)
+     b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 b13 b14 b15 b16 b17 b18 b19 b20 b21 b22 b23 b24
+     b1_b2 b3_b4 b5_b6 b7_b8 b9_b10 b11_b12 b13_b14 b15_b16 b17_b18 b19_b20 b21_b22 b23_b24
+       w1    w2    w3    w4    w5      w6      w7      w8      w9      w10     w11     w12
+
+
+
+
+
+
+	// neue OC-Befehle
+    KeyWords5:
+    
+
+
+
+    StringBegChar: "
+    StringEndChar: "
+    MultilineStrings: 0
+
+    UsePreprocessor: 0
+
+
+    CurrLineHighlighted: 1
+
+    SpaceCol: clWindowText clWindow
+    Keyword1Col: $00C00000 clWindow
+    Keyword2Col: clPurple clWindow
+    Keyword3Col: clBlue clWindow
+    Keyword4Col: clBlue clWindow
+    Keyword5Col: clBlue clWindow
+    IdentifierCol: clWindowText clWindow
+    CommentCol: clGreen clWindow
+    NumberCol: $000000C0 clWindow
+    StringCol: clMaroon clWindow
+    SymbolCol: clPurple clWindow
+    PreprocessorCol: clBlue clWindow
+    SelectionCol: clWhite clNavy
+    CurrentLineCol: clBlack clYellow
+
+    OverrideTxtFgColor: 0
+    BlockAutoindent: 0
+    BlockBegStr:
+    BlockEndStr:
+    MatchedBracesCol: clWindowText clWindow
+
+
+
+
+CurrLineHighlighted:    1
+OverrideTxtFgColor:     0
+BlockAutoindent:        0
+BlockBegStr:
+BlockEndStr:
+SpaceCol:               clWindowText clWindow
+Keyword1Col:            clNavy clWindow B
+Keyword2Col:            $00C000C0 clWindow
+Keyword3Col:            $00FF4040 clWindow B
+Keyword4Col:            $00C000C0 clWindow B
+Keyword5Col:            clOlive clWindow B
+IdentifierCol:          clWindowText clWindow
+CommentCol:             $0000C000 clWhite
+NumberCol:              clRed clWindow
+StringCol:              clMaroon clWindow
+SymbolCol:              $000000C0 clWindow
+PreprocessorCol:        clBlue clWindow
+SelectionCol:           $00FF4040 $00202020
+CurrentLineCol:         clBlack $0080FFFF
+MatchedBracesCol:       clWindowText clWindow
+Filter:                 --> Map Dateien (*.ram, *.map, *.lst) | *.ram; *.map; *.lst
+HelpFile:               L:\X2G\3rdparty\OCBASIC\DOCS\index.htm

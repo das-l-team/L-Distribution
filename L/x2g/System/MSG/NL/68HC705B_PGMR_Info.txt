@@ -1,0 +1,21 @@
+
+   This tool allows for burning machine code into certain types
+   of 68xxx OTP microcontrollers. Programming a OTP microcontroller
+   is much like 'burning' a CD-ROM, i.e. you can render the OTP useless
+   if you applied wrong settings or interrupt programming.
+
+    ______________________________ WARNING: ____________________________
+
+    Using this tool may permanently damage or completely disable already
+    programmed OTP microcontrollers. Therefore it is highly discouraged
+    to use this tool on an already programmed C-Control/BASIC chip!
+    ____________________________________________________________________
+    
+    >>>  Note: With this tool, it is NOT possible to transfer a <<<
+    >>>  BASIC or CCPLUS program into any microcontroller !     <<<
+
+    You may close this program using <ALT+x> then type "exit"<ENTER>
+      
+  More information on the "M68HC705B Programmerboard" can be found in:
+
+  L:\x2g\3rdparty\ToolsMot\68HC705B

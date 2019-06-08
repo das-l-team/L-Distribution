@@ -1,0 +1,76 @@
+
+' --------------------------------------------------------------------------
+' Demoprogramm zum In-System-Debugger für OM-Mikrocontroller
+' von Dietmar Harlos in OCBASIC v1.11a ab 25. Mai bis 31. Mai 2017
+' --------------------------------------------------------------------------
+
+'INCLUDE "om.def"          'Definitionen fuer die Open-Micro & Open-Mini
+INCLUDE "omid.def"        'Definitionen fuer die Open-Midi
+'INCLUDE "omac.def"        'Definitionen fuer Open-Macro
+'INCLUDE "omax.def"        'Definitionen fuer Open-Maxi
+
+DIM a,b,c BYTE            ' ein paar Variablen für das Hauptprogramm
+DIM w WORD
+DIM bitarray BYTE
+DIM lsb BIT[1] OF bitarray
+DIM msb BIT[8] OF bitarray
+
+DEFINE beeper PORT[6]     ' Beeper
+
+' ---------------------------------------------------------------------------
+' Den In-System-Debugger einbinden
+' ---------------------------------------------------------------------------
+
+INCLUDE "DEBUG.IIA"       ' muß am Programmbeginn stehen
+
+' ---------------------------------------------------------------------------
+' Das Hauptprogramm
+' ---------------------------------------------------------------------------
+
+#main
+
+SYS debug                 ' Debugger starten, kann auch später geschehen
+
+a=123                     ' Einige Wertzuweisungen
+b=124
+c=1+2*3
+
+lsb=ON                    ' Daten-Breakpoint auf BIT-Variable wird nicht
+msb=ON                    ' unterstützt. B.B. bitarray verwenden
+
+' PRINT "Bitte Zahl eingeben: ";
+' INPUT c                   ' wenn INPUT ausgeführt, dann ESC drücken
+' PRINT c                   ' und dann T für Sendeterminal
+
+FOR a=0 TO 255            ' FOR..NEXT-Schleife
+  PRINT a
+NEXT a
+
+PRINT funktion            ' BASIC-Funktion aufrufen
+
+asm                       ' Assembler-Subroutine aufrufen
+PRINT c
+
+beeper=OFF
+FOR a=0 TO 99
+  DBNZCTR=255
+  #loop
+    TOG beeper            ' BITPORT toggeln, ein Ton erklingt
+  DBNZ loop
+NEXT a
+
+End2Host=ON               ' nach END wieder starten
+END
+
+FUNCTION funktion
+  PRINT "Funktion in BASIC"
+  RETURN 99
+END FUNCTION
+
+PROC asm INLASM           ' Der Assemblercode kann nicht debuggt werden.
+! mov #234,c              ' Aber die INLASM- und RETURN-Tokenbefehle am Beginn
+! rts                     ' der Subroutine werden vom Debugger erkannt und
+END PROC                  ' können z.B. im Single Step ausgeführt werden.
+
+
+

@@ -1,0 +1,66 @@
+char Str1[20] = "Hello World!\r\n";
+char Str2[20] = "0123456789012345\r\n";
+
+void Hello1(void)
+// gibt Str1 aus
+{
+  int i;
+
+  i=0;
+  while (1)
+  {
+    if (Str1[i]==0)
+    {
+      break;
+    }
+    SendByte(Str1[i]);
+    i++;
+  }
+}
+
+void Hello2(void)
+// gibt Str2 aus
+{
+  int i;
+
+  i=0;
+  while (Str2[i]!=0)
+  {
+    SendByte(Str2[i]);
+    i++;
+  }
+}
+
+void Test(void)
+// schreibt Str1 in die Datei und gibt den Dateiinhalt aus
+{
+  int i;
+
+  OpenWrite();
+  i=0;
+  while (Str1[i]!=0)
+  {
+    Write(Str1[i]);
+    i++;
+  }
+  Close();
+  OpenRead();
+  while (i>0)
+  {
+    SendByte(Read());
+    i--;
+  }
+}
+
+void main(void)
+{
+  int i;
+
+  Hello1();
+  for (i=0; i<20; i++) // Str1 nach Str2 kopieren
+  {
+    Str2[i]=Str1[i];
+  }
+  Hello2();
+  Test();
+}

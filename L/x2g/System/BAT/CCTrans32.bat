@@ -1,0 +1,1 @@
+L:\x2g\3rdparty\CCTrans32\CCTrans32.exe %1 1

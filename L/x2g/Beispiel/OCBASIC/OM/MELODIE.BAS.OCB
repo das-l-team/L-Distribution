@@ -1,0 +1,87 @@
+
+' Das Lied 'Zum Geburtstag viel Glueck', bzw. 'Happy Birthday To You' ueber
+' einen Piezo-Schallwandler abspielen.
+
+' Erstellt in OCBASIC 0.8 fuer die Open-Micro und Open-Mini 1.0
+
+' Speicherplatzbedarf: 104 Byte im Programmspeicher und 1 Byte im RAM
+
+
+DEFINE beeper PORT[6]       'an diesem Port liegt ein Piezo-Schallwandler
+
+DEFINE i BYTE               'Index
+
+
+DEFINE C4 61  '262 Hz        Noten der vierten Oktave
+DEFINE D4 57  '294 Hz
+DEFINE E4 54  '330 Hz
+DEFINE F4 52  '349 Hz
+DEFINE G4 49  '392 Hz
+DEFINE A4 46  '440 Hz
+DEFINE B4 43  '494 Hz
+
+DEFINE C5 42  '523 Hz        Noten der fuenften Oktave
+DEFINE D5 39  '587 Hz
+DEFINE E5 37  '659 Hz
+DEFINE F5 36  '698 Hz
+DEFINE G5 34  '784 Hz
+DEFINE A5 32  '880 Hz
+DEFINE B5 30  '988 Hz
+
+DEFINE L1 60  'Ganze Note    Zeitdauer der Noten
+DEFINE L2 30  'Halbe Note
+DEFINE L4 15  'Viertelnote
+DEFINE L8  8  'Achtelnote
+DEFINE L12 6
+DEFINE L16 4  'Sechzehntel Note
+DEFINE PAU 4  'Pause
+
+
+WHILE TRUE
+
+  FOR i=0 TO 50 STEP 2
+  
+    BEEP LOOKTAB(lied,i), LOOKTAB(lied,i+1), beeper
+    PAUSE PAU
+    
+  NEXT i
+
+  PAUSE 100
+
+WEND
+
+
+TABLE lied BYTE
+
+  G4, L12              'Zum Geburtstag viel Glueck'
+  G4, L16
+  A4, L4
+  G4, L4
+  C5, L4
+  B4, L2
+
+  G4, L12              'Zum Geburtstag viel Glueck'
+  G4, L16
+  A4, L4
+  G4, L4
+  D5, L4
+  C5, L2
+
+  G4, L12              'Zum Geburtstag alles Gute'
+  G4, L16
+  G5, L4
+  E5, L4
+  C5, L12
+  C5, L16
+  B4, L4
+  A4, L4
+
+  F5, L12              'Zum Geburtstag viel Glueck'
+  F5, L16
+  E5, L4
+  C5, L4
+  D5, L4
+  C5, L1
+  
+END TABLE
+

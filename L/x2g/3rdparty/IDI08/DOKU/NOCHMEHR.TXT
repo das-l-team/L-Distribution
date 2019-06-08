@@ -1,0 +1,7 @@
+
+Unbedingt auch das Original-Manual zum Kontroller und Application-Notes
+herunterladen! Selbst wenn man nicht in Assembler programmieren will, sind
+die Technischen Daten des Kontrollers aus dem Manual interessant.
+
+http://www.freescale.com/webapp/sps/site/prod_summary.jsp?code=68HC908QT4&nodeId=016246844976630029
+

@@ -1,0 +1,3 @@
+Disassembler für MC6808 - Version 1.1
+(c) Dietmar Harlos von 09. März 2005 bis 10. Mai 2005
+basiert auf DI05.EXE von Dietmar Harlos vom 16. September 1999

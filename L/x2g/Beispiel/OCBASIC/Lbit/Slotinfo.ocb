@@ -1,0 +1,19 @@
+option ccbas
+
+INCLUDE "L:\X2G\INCLUDE\OCBASIC\DEFS\L-DEFS.DEF"
+
+PRINT 
+PRINT "w12              =";w12
+PRINT "w11 (Slotnummer) =";w11
+PRINT "w10              =";w10
+PRINT "w9               =";w9
+PRINT "w8               =";w8
+PRINT "w7               =";w7
+PRINT "w6               =";w6
+PRINT "w5               =";w5
+PRINT "w4               =";w4
+PRINT "w3               =";w3
+PRINT "w2               =";w2
+PRINT "w1               =";w1
+
+

@@ -1,0 +1,67 @@
+    ---------------------------------------------------------------------------
+    DAT2TAB V1.02 - (c) Dietmar Harlos 31. Juli bis 23. August 2016
+    ---------------------------------------------------------------------------
+
+
+--> Keine Codebereiche gefunden (bzw. es wurden keine Codebereiche im Quelltext markiert)
+
+
+
+SYNTAX:
+
+    Vor jeden Code, der in Tabellenform umgewandelt werden soll, muss der Anwender ein...
+
+    INLINE "DAT2TAB Codename START"
+
+    ...setzen und nach dem Code muss ein...
+
+    INLINE "DAT2TAB Codename END"
+
+    ...stehen. Es wird dann eine Tabelle namens Codename erstellt.
+
+    (Die Tabellen erscheinen anstelle *dieses* Infotext in *dieser* .TAB-Datei)
+
+
+
+INFO:
+
+    Das Tool DAT2TAB kopiert zuvor im OCBASIC-Quelltext markierte Codebereiche aus
+    einer vom OCBASIC-Kompiler generierten (kompilierten) .DAT-Datei.
+
+    Man erhaelt damit diese zuvor im OCBASIC-Quelltext markierten Bereiche in Form
+    einer numerischen Tabelle, genauer: Im Standardformat einer CCBASIC-Datentabelle!
+
+
+
+Und wozu taugt das Ganze....?
+
+    Nun, massgeschneiderter OCBASIC-Code den man in CCBASIC-Tabellen ueberfuehrt hat
+    lassen sich z.B. in CCPLUS viele erweiterte Funktionen der OM-Mikrokontrollerfamilie
+    verwenden, was mit CCPLUS normalerweise gar nicht moeglich nicht. Hierfuer bedient
+    man sich des sogenannten "Tabellentrick".
+
+
+
+Weiterfuehrende INFO:
+
+    - Tabelleninhalte als BASIC-Token ausfuehren, der "geheimnisvolle" Tabellentrick:
+      http://ccintern.dharlos.de/online.htm#tipsutri
+
+    - Downloaduebersicht zur OM Mikrokontrollerfamilie
+      http://om.dharlos.de/downloads.htm
+     (dort nach "DAT2TAB" und "OM-Schablone fuer C-Control/PLUS" suchen)
+
+    - Beispiele zur Anwendung des Tabellentricks-
+
+    - fuer C-Control I (Version 1.1):
+      http://ccintern.dharlos.de/forum/lesen.php?eintrag=16322
+      http://ccintern.dharlos.de/forum/lesen.php?eintrag=16320
+
+    - und fuer Open-Control, Macro und Maxi:
+      http://ccintern.dharlos.de/forum/lesen.php?eintrag=16431
+
+---------------------------------------------------------------------------
+
+
+
+   (Die Ausgabekonsole des Editors kann mit Umschalt+Strg+O ein- bzw. ausgeblendet werden)

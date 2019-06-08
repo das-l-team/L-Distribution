@@ -1,0 +1,12 @@
+
+The above BASIC++ source code can now be processed using
+the Workbench++ IDE.
+
+Warning:
+
+This sourcecode is still opened in the ConTEXT IDE!
+
+Please close the corresponding editor tab in ConTEXT IDE before
+start editing inside Workbench++ IDE vornimmst, and vice versa,
+to avoid potential data loss when saving concurrent versions
+of the same source code file.

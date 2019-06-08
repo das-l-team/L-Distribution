@@ -1,0 +1,64 @@
+
+============================================================================
+Erweiterung für komfortable 32-Bit-Arithmetik auf der Open-Maxi - V1.0
+In OCBASIC 1.11a von Dietmar Harlos ab 20. Juni 2018 bis 24. Juni 2018
+Änderung am 27. Juni 2018: PrintHex und PrintSpc hinzugefügt
+Änderung am 29. Juni 2018: SQR in 32 Bit hinzugefügt
+Änderung am 30. Juni 2018: Testsuite nach FreeBASIC portiert
+Änderung am 04. Juli 2018: Fehler im Kommentar, bei MAX, >= und < behoben
+  Außerdem neue Testsuite, die mittels 32-Bit-Zahlen testet
+Änderung am 05. Juli 2018: Fehler beim Vergleichen behoben
+Änderung am 15. Juli 2018: Neuer experimenteller OCBASIC-Compiler, der
+  32-Bit unterstützt, außerdem diverse Änderungen an OMAX32.IIA
+Änderung am 26. Juli 2018: Finale Version
+============================================================================
+
+Bisher gab es eine Erweiterung für Grundrechenarten in 32 Bit für alle
+OM-Controller. Diese ließ sich aber nur recht umständlich verwenden.
+
+In diesem ZIP-Archiv ist eine Erweiterung für komfortable 32-Bit-Arithmetik
+auf der Open-Maxi enthalten. Alle OCBASIC-Befehle wurden auf LONG erweitert.
+Es stehen nun 1024 Byte User-RAM mittels LONG-Variablen zur Verfügung. Die
+Open-Maxi kann jetzt Zahlen von -2147483648 bis +2147483647 verarbeiten.
+Auch ein schnelles 32-Bit-SQR ("Wurzelziehen") ist enthalten.
+
+Die 32-Bit-Funktionalität läßt sich nur mit dem beiliegenden OCBASIC-Compiler
+Version 1.12 nutzen. Es handelt sich um eine experimentelle Version. Mittels
+"OPTION 32BIT" muß die 32-Bit-Funktionalität im Hauptprogramm aktiviert werden.
+
+Enthalten sind auch zwei Testsuites inklusive Sourcecode, mit denen die
+Erweiterung mit Hilfe von Zufallszahlen überprüft werden kann.
+
+Einschränkungen:
+
+* nur vier Einträge auf dem Rechenstack verfügbar (bei Pointer weniger)
+* belegt rund 1900 Byte Programmspeicher
+* solange aktiv, wird die Befehlsausführung erheblich gebremst
+* Benutzt den Speicher FREERAM1 und FREERAM2
+* einige Funktionen (INPUT, TIMER, usw.) arbeiten nur in 16 Bit
+* Carry wird nicht zurückgeliefert
+* RealPop=ON wird nicht unterstützt
+
+----------------------------------------------------------------------------
+
+Die Dateien in diesem ZIP-Archiv:
+
+DEMO.BAS ........... Demoprogramm für komfortable 32-Bit-Arithmetik
+OMAX32.IIA ......... INCLUDE-Datei für komfortable 32-Bit-Arithmetik
+OMAX.DEF ........... INCLUDE-Datei für Definitionen für die Open-Maxi
+Testsuite .......... Verzeichnis mit einem automatisierten Programmtest
+Neues OCBASIC ...... Experimenteller OCBASIC-Compiler, auf 32 Bit erweitert
+
+----------------------------------------------------------------------------
+
+Falls bei der Nutzung Probleme auftreten, bin ich per E-Mail zu erreichen.
+
+Allgemeine Fragen werden im Forum zur C-Control-1 beantwortet:
+
+http://ccintern.dharlos.de/forum
+
+Viel Spaß und Erfolg mit den OM-Controllern!
+
+Dipl.-Ing. Dietmar Harlos
+http://om.dharlos.de
+

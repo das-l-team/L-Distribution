@@ -1,0 +1,38 @@
+
+S2BIN - Konvertierung von S19 nach binaer - Version 1.01
+
+Mit Hilfe dieses einfachen Programms lassen sich S19-Dateien in das Binaer-
+format konvertieren.
+
+Um das Programm zu benutzen, muss unter Windows zunaechst die MS-DOS-
+Eingabeaufforderung gestartet werden. Anschliessend wird mit Hilfe des
+"CD"-Befehls in das Verzeichnis gewechselt, in dem die S2BIN.EXE-Datei
+steht.
+
+Der eigentliche Aufruf geschieht anschliessend per "S2BIN TEST.S19".
+Nach dem Aufruf wird eine neue Datei namens TEST.BIN erzeugt, die zum
+Beispiel mit Hilfe eines Hexeditors untersucht oder in den Disassembler
+IDI05 eingebunden werden kann.
+
+Die Warnung "Above line ignored. Not a data record." kann in den meisten
+Faellen ignoriert werden. Sie tritt bei manchen S19-Dateien auf.
+
+
+
+Aufruf:   S2BIN Quelldateiname.S19 [Zieldateiname] [/fill Byte] [/R]
+
+Hinweis:  Alle im obigen Aufruf in eckigen Klammern stehende Parameter
+          sind optional und muessen nur bei Bedarf angegeben werden.
+
+          Wenn kein Zieldateiname angegeben wird, verwendet das Programm
+          als Namen defaultmaessig "Quelldateiname.BIN".
+
+          Mittels "/fill Byte" kann ein Wert (0 bis 255) angegeben werden,
+          der in undefinierte Bereiche geschrieben wird (z.B. "/fill 0").
+
+          /Rxxxx = Groesse der Zieldatei in Byte (maximal 65536)
+
+
+
+Der Autor des Programms S2BIN.EXE ist unbekannt.
+Uebersetzung von Dietmar Harlos am 06. September 2002.

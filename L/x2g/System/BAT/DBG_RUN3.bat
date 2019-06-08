@@ -1,0 +1,1 @@
+start L:\x2g\3rdparty\OM_DEBUGGER\L3_DEBUG.EXE com3 %1

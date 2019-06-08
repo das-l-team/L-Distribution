@@ -1,0 +1,18 @@
+' [ Fehlermeldung ]
+'
+' Es konnte kein Programm aus der vorliegenden .DAT Datei extrahiert
+' und/oder in die C-Control/Bytekode-Mnemonic umgewandelt werden.
+'
+' Haeufige Ursachen:
+'
+'- Die ausgewählte .DAT Datei befindet sich nicht auf Laufwerk L: .
+'  ( z.Zt. lassen sich nur im Laufwerk L: befindliche .DAT Dateien umwandeln )
+'
+'- Die .DAT Datei besitzt ein falsches Format: Auch andere Anwendungen
+'  erzeugen Dateien mit der Dateiendung .DAT - diese ist nicht exklusiv
+'  für C-Control Anwendungen reserviert.
+'
+'
+'- Die .DAT Datei enthält zwar C-Control Bytekode, jedoch wurde diese verändert,
+'  z.B. durch Einfügen von Tastendrücken in die zum Bearbeiten geöffnete Datei,
+'  oder wenn der Bytekode als Anhang einer E-Mail empfangen wurde.

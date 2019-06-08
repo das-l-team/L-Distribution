@@ -1,0 +1,2 @@
+[ Starte S19_TO_TAB_32 V1.0 - (c) Dietmar Harlos 23. September 2015 (Erzeuge Datentabelle "*.s19.TAB" aus s19 Datei.) ]
+

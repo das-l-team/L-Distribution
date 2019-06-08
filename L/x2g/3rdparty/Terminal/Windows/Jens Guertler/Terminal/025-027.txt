@@ -1,0 +1,4 @@
+Änderung von L-Distribution 0.25 auf L-Distribution 0.26:
+
+Redundante 'Terminal.exe' und 'INFO.TXT' in diesem Verzeichnis gelöscht.
+Beide Dateien sind im Originalarchiv 'terminal_win_1.2.zip' enthalten. 

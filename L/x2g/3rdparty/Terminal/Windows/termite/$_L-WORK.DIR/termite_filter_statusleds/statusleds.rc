@@ -1,0 +1,38 @@
+/*  Termite filter: show status of control lines (RTS/CTS, DTR/DSR, RI)
+ *
+ *  Copyright (c) CompuPhase, 2009-2011
+ *
+ *  This software is provided "as-is", without any express or implied warranty.
+ *  In no event will the authors be held liable for any damages arising from
+ *  the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any purpose,
+ *  including commercial applications, and to alter it and redistribute it
+ *  freely, subject to the following restrictions:
+ *
+ *  1.  The origin of this software must not be misrepresented; you must not
+ *      claim that you wrote the original software. If you use this software in
+ *      a product, an acknowledgment in the product documentation would be
+ *      appreciated but is not required.
+ *  2.  Altered source versions must be plainly marked as such, and must not be
+ *      misrepresented as being the original software.
+ *  3.  This notice may not be removed or altered from any source distribution.
+ */
+
+#include <windows.h>
+#include "statusleds.h"
+
+LED_LTGREEN BITMAP  "res/ltgreen.bmp"
+LED_DKGREEN BITMAP  "res/dkgreen.bmp"
+HELP_BUTTON BITMAP  "res/help.bmp"
+
+FilterInfo DIALOGEX 50, 50, 258, 190
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_CAPTION | WS_POPUP | WS_VISIBLE
+EXSTYLE WS_EX_CLIENTEDGE | WS_EX_DLGMODALFRAME
+CAPTION "Information"
+FONT 8, "Tahoma"
+BEGIN
+    CONTROL "",                                      INFOTEXT, "RichEdit", ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_BORDER | WS_CHILD | WS_VISIBLE | WS_VSCROLL, 4, 4, 250, 160
+    CONTROL "&Close",                                IDCANCEL, "BUTTON", BS_PUSHBUTTON | BS_CENTER | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 109, 170, 40, 14
+END
+

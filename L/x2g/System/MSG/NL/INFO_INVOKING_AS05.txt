@@ -1,0 +1,1 @@
+[ Starting AS05 Assembler for M6805. Copyright 1994-2015, Frank A. Kingswood. please see http://www.kingswood-consulting.co.uk/assemblers/ for details ]

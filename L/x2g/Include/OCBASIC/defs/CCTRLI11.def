@@ -1,0 +1,180 @@
+
+
+'DEFINE push                 AD[1]
+'DEFINE pop                  DA[1]
+
+
+define   b208     byte[208]
+define   b207     byte[207]
+define    b67      byte[67]
+define    b66      byte[66]
+DEFINE    b60      byte[60]
+DEFINE    b59      byte[59]
+
+DEFINE    w30      word[30]
+'--------------------------
+'DEFINE    w12      word[12]
+'DEFINE    w11      word[11]
+'DEFINE    w10      word[10]
+'DEFINE     w9       word[9]
+'DEFINE     w8       word[8]
+'DEFINE     w7       word[7]
+'DEFINE     w6       word[6]
+'DEFINE     w5       word[5]
+'DEFINE     w4       word[4]
+'DEFINE     w3       word[3]
+'DEFINE     w2       word[2]
+'DEFINE     w1       word[1]
+'--------------------------
+'DEFINE  b23_b24     w12
+'DEFINE  b21_b22     w11
+'DEFINE  b19_b20     w10
+'DEFINE  b17_b18      w9
+'DEFINE  b15_b16      w8
+'DEFINE  b13_b14      w7
+'DEFINE  b11_b12      w6
+'DEFINE   b9_b10      w5
+'DEFINE   b7_b8       w4
+'DEFINE   b5_b6       w3
+'DEFINE   b3_b4       w2
+'DEFINE   b1_b2       w1
+'
+'
+'--------------------------
+'DEFINE    b24      byte[24]
+'DEFINE    b23      byte[23]
+'DEFINE    b22      byte[22]
+'DEFINE    b21      byte[21]
+'DEFINE    b20      byte[20]
+'DEFINE    b19      byte[19]
+'DEFINE    b18      byte[18]
+'DEFINE    b17      byte[17]
+'DEFINE    b16      byte[16]
+'DEFINE    b15      byte[15]
+'DEFINE    b14      byte[14]
+'DEFINE    b13      byte[13]
+'--------------------------
+'DEFINE    b12      byte[12]
+'DEFINE    b11      byte[11]
+'DEFINE    b10      byte[10]
+'DEFINE     b9       byte[9]
+'DEFINE     b8       byte[8]
+'DEFINE     b7       byte[7]
+'DEFINE     b6       byte[6]
+'DEFINE     b5       byte[5]
+'DEFINE     b4       byte[4]
+'DEFINE     b3       byte[3]
+'DEFINE     b2       byte[2]
+'DEFINE     b1       byte[1]
+'--------------------------
+'--------------------------
+'DEFINE L_addr          w12
+'--------------------------
+'DEFINE peekaddr      w11
+'DEFINE peekdata      w11
+'DEFINE pokeaddr      w11
+'DEFINE L_slot          w11
+'DEFINE mySlot          w11
+'--------------------------
+'DEFINE pokedata      w10
+'--------------------------
+'DEFINE L_cmd           b24
+'DEFINE opt           b23
+'--------------------------
+'DEFINE select          b22
+'--------------------------
+
+DEFINE CC_PNTR_PRGSIZE         0
+DEFINE CC_PNTR_FILESIZE        2
+
+DEFINE CC_FILELEN_hi    BYTE [40] 'Dateilaenge in Byte
+DEFINE CC_FILELEN_lo    BYTE [41]
+
+DEFINE CC_FILEOFF_hi    BYTE [42] 'Dateioffset, aktuelle Position
+DEFINE CC_FILEOFF_lo    BYTE [43]
+
+DEFINE CC_FILESTART_hi  BYTE [44] 'Dateistart-Adresse
+DEFINE CC_FILESTART_lo  BYTE [45]
+
+DEFINE WP1              WORDPORT[1]
+
+DEFINE BP1              BYTEPORT[1]
+DEFINE BP2              BYTEPORT[2]
+
+
+DEFINE P1               PORT[1]
+DEFINE P2               PORT[2]
+DEFINE P3               PORT[3]
+DEFINE P4               PORT[4]
+DEFINE P5               PORT[5]
+DEFINE P6               PORT[6]
+DEFINE P7               PORT[7]
+DEFINE P8               PORT[8]
+
+DEFINE P9               PORT[9]
+DEFINE P10              PORT[10]
+DEFINE P11              PORT[11]
+DEFINE P12              PORT[12]
+DEFINE P13              PORT[13]
+DEFINE P14              PORT[14]
+DEFINE P15              PORT[15]
+DEFINE P16              PORT[16]
+
+DEFINE AD1              AD[1]
+DEFINE AD2              AD[2]
+DEFINE AD3              AD[3]
+DEFINE AD4              AD[4]
+
+DEFINE AD5              AD[5]
+DEFINE AD6              AD[6]
+DEFINE AD7              AD[7]
+DEFINE AD8              AD[8]
+
+DEFINE DA1              DA[1]
+DEFINE DA2              DA[2]
+
+
+'DEFINE PUSH             DA[1]
+'DEFINE POP              AD[1]
+
+'=================
+' CC-STATION I 1.1
+'=================
+
+
+define K1 port[7]
+define K2 port[8]
+
+define KEY_F1 port[9]
+define KEY_F2 port[10]
+define KEY_F3 port[11]
+define KEY_F4 port[12]
+
+define LED_F1 port[13]
+define LED_F2 port[14]
+define LED_F3 port[15]
+define LED_F4 port[16]
+
+
+
+
+'---[DEFINITION LCD-PORTS]----------------------------------------------------
+define lcd_port byteport[2]
+define lcd_D4    port[9]  'benoetigt für LCD Read
+define lcd_D5    port[10] 'benoetigt für LCD Read
+define lcd_D6    port[11] 'benoetigt für LCD Read
+define lcd_D7    port[12] 'benoetigt für LCD Read
+define lcd_rw    port[13]
+define lcd_rs    port[14]
+define lcd_e     port[15]
+define lcd_Light port[16] 'benoetigt geeigneten LCD Treiber
+define LCD_MAXCoLUMN 16
+define LCD_MAXROW     2
+
+' LCD characters:
+
+define LCD_LZ     32
+DEFINE LCD_ZERO   48
+DEFINE LCD_SPACE  32
+
+' Port 9 bis 12 sind die DATEN-, 13 bis 15 die STEUER-Leitungen, fuer LCD

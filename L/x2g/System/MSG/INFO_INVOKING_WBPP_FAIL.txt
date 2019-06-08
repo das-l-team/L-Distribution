@@ -1,0 +1,8 @@
+
+Ooops. When trying to reopen the current BASIC++ source inside Workbench++ IDE,
+       an error occured. It seems Workbench++ IDE is not yet installed or resides
+       in another directory than the standard directory "C:\Programme\Workbench++\"
+
+What you can try:  - (re)install Workbench++ IDE into the standard directory, or edit
+                     the file "L:\x2g\System\BAT\openwb++.bat" in order to update the
+                     search path used.

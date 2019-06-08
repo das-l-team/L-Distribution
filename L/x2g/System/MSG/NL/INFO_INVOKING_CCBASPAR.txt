@@ -1,0 +1,3 @@
+[ C-Control/BASIC parser - allows for multiline IF..THEN..ELSE, 24-bytes-varmap, avoids a bug in the C-Control/BASIC Compiler 1.7 ]
+[ C-Control/BASIC compiler - extended version, courtesy http://ccintern.dharlos.de ( max. 256 variables, max. 8099 bytecode size) ]
+

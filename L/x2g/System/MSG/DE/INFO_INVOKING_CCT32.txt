@@ -1,0 +1,5 @@
+[ Starte: ]
+
+CCTrans 32 (Version 1.7)
+Copyright 2004-2005 Dierk Schmid
+

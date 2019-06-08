@@ -1,0 +1,149 @@
+
+' ============================================================================
+' Erweiterung für komfortable 32-Bit-Arithmetik auf der Open-Maxi
+' In OCBASIC 1.11a von Dietmar Harlos ab 20. Juni 2018 bis 24. Juni 2018
+' Änderung am 27. Juni 2018: PrintHex und PrintSpc hinzugefügt
+' Änderung am 29. Juni 2018: SQR in 32 Bit hinzugefügt
+' Änderung am 04. Juli 2018: Fehler im Kommentar, bei MAX, >= und < behoben
+' Änderung am 05. Juli 2018: Fehler beim Vergleichen behoben
+' Änderung am 15. Juli 2018: Angepaßt an neuen OCBASIC-Compiler Version 1.12a
+'   Außerdem diverse neue Funktionalität in OMAX32.IIA
+' Änderung am 26. Juli 2018: Finale Version
+' ============================================================================
+
+' Bisher gab es eine Erweiterung für Grundrechenarten in 32 Bit für alle
+' OM-Controller. Diese ließ sich aber nur recht umständlich verwenden.
+
+' In diesem ZIP-Archiv ist eine Erweiterung für komfortable 32-Bit-Arithmetik
+' auf der Open-Maxi enthalten. Alle OCBASIC-Befehle wurden auf LONG erweitert.
+' Es stehen nun 1024 Byte User-RAM mittels LONG-Variablen zur Verfügung. Die
+' Open-Maxi kann jetzt Zahlen von -2147483648 bis +2147483647 verarbeiten.
+' Auch ein schnelles 32-Bit-SQR ("Wurzelziehen") ist enthalten.
+
+' Die 32-Bit-Funktionalität läßt sich nur mit dem beiliegenden OCBASIC-Compiler
+' Version 1.12 nutzen. Es handelt sich um eine experimentelle Version. Mittels
+' "OPTION 32BIT" muß die 32-Bit-Funktionalität im Hauptprogramm aktiviert werden.
+
+' Enthalten sind auch zwei Testsuites inklusive Sourcecode, mit denen die
+' Erweiterung mit Hilfe von Zufallszahlen überprüft werden kann.
+
+' Einschränkungen:
+
+' * nur vier Einträge auf dem Rechenstack verfügbar (bei Pointer weniger)
+' * belegt rund 1900 Byte Programmspeicher
+' * solange aktiv, wird die Befehlsausführung erheblich gebremst
+' * Benutzt den Speicher FREERAM1 und FREERAM2
+' * einige Funktionen (INPUT, TIMER, usw.) arbeiten nur in 16 Bit
+' * Carry wird nicht zurückgeliefert
+' * RealPop=ON wird nicht unterstützt
+
+' --- Definitionen für das System --------------------------------------------
+
+INCLUDE "omax.def"         'Definitionen für die Open-Maxi
+
+OPTION 32BIT               '32-Bit freischalten (ab OCBASIC Version 1.12)
+
+' --- Definitionen des Anwenders ---------------------------------------------
+
+DIM l LONG                 'Eine 32-Bit-LONG-Variable
+DEFINE ll AS WORD[1] OF l  'LSW \ High- und Low-Word der
+DEFINE lh AS WORD[2] OF l  'MSW /   32-Bit-LONG-Variable
+
+DIM lw LONG                'Eine zweite 32-Bit-LONG-Variable
+
+DIM ^pb BYTE               'Zeiger auf BYTE, WORD und LONG
+DIM ^pw WORD
+DIM ^pl LONG
+
+DIM b BYTE                 'einige Variablen
+DIM w WORD
+
+' --- System-Erweiterungen einbinden -----------------------------------------
+
+INCLUDE "omax32.iia"       '32-Bit-Erweiterung einbinden
+
+' --- Das Hauptprogramm ------------------------------------------------------
+
+#main
+
+RunOnErr=ON
+End2Host=ON
+
+IF ERR THEN
+  WHILE TRUE
+    ?"Fehler Nr. ";err
+    PrintHex=ON
+    ?"Adresse: $";erradr-UPROGBASE
+    PrintHex=OFF
+    PAUSE 25
+  WEND
+END IF
+
+' calc32al=123             'ohne 32-Bit-Erweiterung rechnen
+' calc32ah=0
+' calc32bl=234
+' calc32bh=0
+' addieren
+' print32
+' end
+
+URTok=ON                   '32-Bit-Erweiterung aktivieren
+
+TIMER=32500
+
+WHILE TRUE
+
+  ?                        'das Fragezeichen (?) ist die Kurzform von PRINT
+
+  ?1 SHL 0                 'ergibt 1
+  ?1 SHL 1                 'ergibt 2
+  ?1 SHL 31                'ergibt -2147483648
+
+  ?1+2*(3+4)               'ergibt 15
+  ?10000*32767             'ergibt 327670000
+
+  ?123456789               'Einen LONG-Wert auf den Rechenstack pushen
+
+  l=&h1234abcd             'Eine LONG-Variable beschreiben
+  ?l                       '  Ergibt 305441741 = &h1234ABCD
+
+  PrintSpc=ON
+  ?&h80000000              'ergibt " -2147483648"
+  ?&h7fffffff              'ergibt " 2147483647"
+  PrintSpc=OFF
+
+  PrintHex=ON
+  ?"$"&h80000000           'ergibt $80000000
+  ?"$"&h7fffffff           'ergibt $7fffffff
+  ?"$"&habc                'ergibt $00000abc
+  PrintHex=OFF
+
+  ?sqr(&hffffffff)         'ergibt 65535  (Operand wird unsigned verarbeitet)
+  ?sqr(&h80000000)         'ergibt 46340
+
+  pl=^lw                   'Pointer mit LONG-Zahlen und Variablen
+  @pl=123456789
+  ?lw
+  ?@pl
+  ?123+@pl
+
+  ?32768
+  ?&h8000                  'ergibt -32768
+  ?&h08000                 'ergibt +32768
+
+  ?TIMER
+  FOR w=0 TO 10000 : NEXT w
+  ?TIMER  '22 zu 13 Ticks
+
+WEND
+
+End2Host=ON                'Nach Programmende in den Host-Modus
+END                        'Programmende, Neustart mit der Enter-Taste
+
+TABLE tabelle
+ 367,-786,967,-399
+END TABLE
+
+TABLE tabbyte BYTE
+ 67,86,69,99
+END TABLE

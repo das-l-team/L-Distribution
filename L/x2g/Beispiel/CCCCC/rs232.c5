@@ -1,0 +1,22 @@
+//#include "L:/x2g/include/ccccc/cc-i-1.1/ccrp5.h"
+
+
+void main()
+{
+	char[0] charid;
+
+
+	for(charid = 0; charid <= 254; charid++)
+
+        {
+		rs_sendint(charid);     // Zahl als ASCII formatiert senden
+                rs_sendstr(":\n");      //
+	//	rs_sendstr(":\t");      // Ein Doppelpunkt und ein Tabulator
+	//	rs_send(charid);        // Zeichen mit dem jeweiligen ASCII-Code senden
+       	}
+	rs_sendstr("\n\n Hallo Welt \" <- Anfuehrungszeichen ! ");       // Und in die nächste Zeile gehen
+
+
+}
+
+

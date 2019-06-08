@@ -1,0 +1,14 @@
+The following token are not in use by CC1.1
+
+
+
+&h00        0      $15B7  ignoriert, 1 Byte lang  frei
+&h12       18      $15B7  ignoriert, 1 Byte lang 'OS 0.6
+&h13       19      $15B7  ignoriert, 1 Byte lang 'OS 0.6
+&h26       38      $15B7  ignoriert, 1 Byte lang 'OS 0.6
+&h27       39      $15B7  ignoriert, 1 Byte lang 'OS 0.6
+&h43       67      $15B7  ignoriert, 1 Byte lang 'OS 0.6 ;REMOVETOS  (neu ab V0.4)
+&h44       68      $15B7  ignoriert, 1 Byte lang 'OS 0.6 ;ADD BYTE[N],STACK (Neu ab V0.5)
+&h45       69      $15B7  ignoriert, 1 Byte lang  frei
+&h4E       78      $15B7  ignoriert, 1 Byte lang 'OS 0.6 ;DBNZ (Neu ab V0.4)
+&h4F       79      $15B7  ignoriert, 1 Byte lang  frei

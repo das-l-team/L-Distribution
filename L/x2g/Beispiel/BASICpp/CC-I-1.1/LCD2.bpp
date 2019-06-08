@@ -1,0 +1,153 @@
+'IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+'IIIIII  BASIC++  DEMO ZUM BASIC-COMPUTER UNIT M 1.1         IIIIIIII
+'IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+'--------------------------------------------------------------------
+' Beispiel zum BASIC-COMPUTER  ANSTEUERUNG EINES LCD DISPLAYS MIT
+' by Sven Peitz
+' Aufruf der Funktionen:
+' LCD_INIT()           'Initialisieren des LCD fuer 4 Bit Modus
+' LCD_CLS()            'Anzeige loeschen
+' LCD_GOTOLINE(1)      'Zur Line springen, Zahl steht fuer die Line
+' LCD_WRITECMD(30h)    'Command aufs Displays schreiben
+' LCD_WRITECHAR(31h)   'Zeichen aufs Display schreiben in hex oder
+'                      'mit const gesetzte zeichen siehe ASCII_TABLE
+' convert_zahlen(variable, 3) ' Zahlen darstellen oder Leerzeichen
+'                             ' unter Angabe der Stellen also 100
+'                             ' sind 3, 1000 sind 4, 10 sind 2
+'
+'--------------------------------------------------------------------
+' LIBRARY:   LCD TREIBER FUER STANDARD DISPLAYS AN DER CC M1.1
+'--------------------------------------------------------------------
+'------------------------- LCD PORT DEFINITIONEN --------------------
+'--------------------------------------------------------------------
+'---------------------- IN DIESEM FALL PORT 9-15 --------------------
+
+define lcd_port     byteport[2]
+define lcd_rw       port[13]
+define lcd_rs       port[14]
+define lcd_e        port[15]
+define n byte
+
+
+LCD_INIT()           'Initialisieren des LCD fuer 4 Bit Modus
+LCD_CLS()            'Anzeige loeschen
+ LCD_GOTOLINE(1)      'Zur Line springen, Zahl steht fuer die Line
+' LCD_WRITECMD(30h)    'Command aufs Displays schreiben
+' LCD_WRITECHAR(31h)   'Zeichen aufs Display schreiben in hex oder
+'                      'mit const gesetzte zeichen siehe ASCII_TABLE
+
+for n=0 to 100
+'pause 20
+ 'LCD_CLS() 
+ LCD_GOTOLINE(2)
+ convert_zahlen(n, 1) ' Zahlen darstellen oder Leerzeichen
+next                             ' unter Angabe der Stellen also 100
+'                             ' sind 3, 1000 sind 4, 10 sind 2
+
+
+'---------------------------------------------------------------------
+'--------------------------VARIABLEN DEFINITION ----------------------
+'---------------------------------------------------------------------
+
+define tempbyte   as byte
+define tempword   as word
+
+'---------------------------------------------------------------------
+'----------------------------LCD TREIBER -----------------------------
+'---------------------------------------------------------------------
+
+' Initialisierung des LCD fuer 4 Bit Modus
+
+FUNCTION LCD_INIT()
+' alle ports 0
+  lcd_port = 00000000b
+
+' 8-Bit-Modus aktivieren
+  LCD_WRITECMD(38h)
+
+' mit 8-Bit-Command in 4-Bit-Modus umschalten
+  lcd_port=00000010b
+  tog lcd_e
+  tog lcd_e
+
+' ab jetzt 4-Bit-Modus
+  LCD_WRITECMD(28h)
+  LCD_WRITECMD(0Ch)
+  LCD_CLS()
+END FUNCTION
+
+' Display loeschen
+FUNCTION LCD_CLS()
+  LCD_WRITECMD(02h)
+  LCD_WRITECMD(01h)
+END FUNCTION
+
+' Zeilenwechsel
+FUNCTION LCD_GOTOLINE(line ref tempbyte)
+  if line = 1 then LCD_WRITECMD(80h)
+  if line = 2 then LCD_WRITECMD(C0h)
+END FUNCTION
+
+' LCD-Kommando
+FUNCTION LCD_WRITECMD(lcd_param ref tempbyte)
+' Kommando oder Zeichen an Display senden
+  lcd_port = 00000000b or (lcd_param shr 4) ' Hi-Nibble
+  tog lcd_e
+  tog lcd_e
+  lcd_port = 00000000b or (lcd_param and 0Fh)  ' Lo-Nibble
+  tog lcd_e
+  tog lcd_e
+END FUNCTION
+
+' Zeichenausgabe
+FUNCTION LCD_WRITECHAR(lcd_param ref tempbyte)
+ ' Kommando oder Zeichen an Display senden
+  lcd_port = 00100000b or (lcd_param shr 4) ' Hi-Nibble
+  tog lcd_e
+  tog lcd_e
+  lcd_port = 00100000b or (lcd_param and 0Fh)  ' Lo-Nibble
+  tog lcd_e
+  tog lcd_e
+END FUNCTION
+
+'------------------------------------------------------------------------------
+'----------------------ZAHLEN KONVERTIERUNG FUER ANZEIGE ----------------------
+'------------------------------------------------------------------------------
+'- KONVERTIERUNG DER TAUSENDER, HUNDERTER, ZEHNER UND EINER FUER DIE ANZEIGE --
+'------------------------------------------------------------------------------
+
+FUNCTION convert_zahlen(value as word, stellen ref tempbyte)
+tempword = abs(value)
+
+select case stellen
+       case 1
+       goto convert_zahlen_einer
+       case 2
+       goto convert_zahlen_zehner
+       case 3
+       goto convert_zahlen_hundert
+       case 4
+       goto convert_zahlen_tausend
+       case else
+       EXIT FUNCTION
+END SELECT
+
+#convert_zahlen_tausend
+ 'Tausender-Dezimalstelle oder Leerzeichen
+ value = abs(value)
+ if value >= 1000 then LCD_WRITECHAR(30h + (tempword/1000)) else LCD_WRITECHAR(20h)
+ tempword = tempword mod 1000
+
+#convert_zahlen_hundert
+ 'Hunderter-Dezimalstelle oder Leerzeichen
+ if value >= 100 then LCD_WRITECHAR(30h + (tempword/100)) else LCD_WRITECHAR(20h)
+ tempword = tempword mod 100
+
+#convert_zahlen_zehner
+   'Zehner-Dezimalstelle oder Leerzeichen
+ if value >= 10 then LCD_WRITECHAR(30h + (tempword/10)) else LCD_WRITECHAR(20h)
+
+#convert_zahlen_einer
+  'einer Dezimalstelle
+ LCD_WRITECHAR(30h + (tempword mod 10))
+END FUNCTION

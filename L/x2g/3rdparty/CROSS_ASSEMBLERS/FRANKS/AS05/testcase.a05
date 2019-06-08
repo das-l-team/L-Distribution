@@ -1,0 +1,527 @@
+; #------------------------------------------------------------------------# <:t17,25,53,57:>
+; |                                                                        |
+; |   TESTCASE.A05                                                         |
+; |                                                                        |
+; |   Test case for 6805 assembler.                                        |
+; |                                                                        |
+; |   Copyright 1994-2005, Frank A. Kingswood                              |
+; |   http://www.kingswood-consulting.co.uk/assemblers/                    |
+; |                                                                        |
+; #------------------------------------------------------------------------#
+;
+; File created 18-may-94
+
+                org     $f000
+
+; +------------------------------------------------------------------------+
+; |                                                                        |
+; |   Options.                                                             |
+; |                                                                        |
+; +------------------------------------------------------------------------+
+
+;   -dERRORS   check error handling
+;   -n         disable optimizations
+
+
+; +------------------------------------------------------------------------+
+; |                                                                        |
+; |   Assembler pseudo instructions.                                       |
+; |                                                                        |
+; +------------------------------------------------------------------------+
+
+; ----- expressions --------------------------------------------------------
+
+                data
+                org     4
+                bss
+                org     1634
+
+TEST            equ     2+*/2
+                if ERRORS
+TEST            equ     TEST+1
+                endif
+
+Constant8       equ     -43
+Constant16      equ     16383
+Constant32      equ     96285725
+AddrHigh        equ     $0203
+
+
+ANOTHER         set     3|24&8
+ANOTHER         set     (3|24)&8
+ANOTHER         set     4*(3>5)
+ANOTHER         set     4*!3<5
+ANOTHER         set     15<<4
+ANOTHER         set     ANOTHER+1
+ANOTHER         =       ANOTHER+1                   ; shorthand for SET
+
+CHAR            equ     "a"
+DOUBLECHAR      equ     "xy"
+QUADCHAR        equ     "quad"
+
+                if ERRORS
+TRIPLE          equ     "abc"
+TOOMUCH         equ     "abcde"
+                endif
+
+                data
+AddressFour     dw      TEST
+                dw      **5
+
+                org     $60
+
+                ds      14
+DirectByte      db      123
+AddrLow         db      "X"
+                align   32
+DirectWord      dw      12345
+                align   48
+DirectLong      dd      123456789
+                align   79
+DirectCode      rts
+
+                dw      1234%12
+                dw      %1010100101
+                dw      (1+2)%8
+                dw      1010101%%1010101
+                db      hi 0x12ff+2
+                db      lo 0x12ff+2
+                db      (hi 0x12ff)+2
+
+                bss
+Unin_1          db      0
+Unin_2          dw      4256
+Unin_3          dd      34568957
+
+                code
+                org     $200
+
+                page
+
+                if ERRORS
+1
+                equ     123
+                psscht
+                !
+                endif
+
+; ----- range checking on immediate values ---------------------------------
+
+                lda     #10
+                lda     #100
+                if ERRORS
+                lda     #1000
+                lda     #10000
+                lda     #100000
+                lda     #1000000
+                lda     #10000000
+                lda     #100000000
+                lda     #1000000000
+                endif
+
+                lda     10
+                lda     100
+                lda     1000
+                lda     10000
+                if ERRORS
+                lda     100000
+                lda     1000000
+                lda     10000000
+                lda     100000000
+                lda     1000000000
+                endif
+
+
+                page    10                          ; keep 10 lines together
+
+; ----- align --------------------------------------------------------------
+
+                align   16
+                align   32
+
+
+; ----- code, data, org ----------------------------------------------------
+
+                code
+                org     $300
+                data
+                org     $180
+
+                code
+                ldx     #1
+
+                data
+Table           db      1,2,3
+
+                code
+                lda     Table,x
+
+
+; ----- db, fcb, fcc -------------------------------------------------------
+
+Message1        db      7,"Error",13,10,0
+
+Message2        fcb     7
+                fcc     "Error"
+                fcb     13,10,0
+
+
+; ----- ds, rmb ------------------------------------------------------------
+
+                ds      10
+                rmb     10
+
+
+; ----- dw, fcw, fdb -------------------------------------------------------
+
+                dw      23457
+                fcw     13462
+                fdb     6235
+
+
+; ----- number bases -------------------------------------------------------
+
+                dd      1
+                dd      10
+                dd      100
+                dd      1000
+
+                dd      $1
+                dd      $10
+                dd      $100
+                dd      $1000
+
+                dd      %1
+                dd      %10
+                dd      %100
+                dd      %1000
+
+                dd      @1
+                dd      @10
+                dd      @100
+                dd      @1000
+
+
+; +------------------------------------------------------------------------+
+; |                                                                        |
+; |   Include file with more test stuff.                                   |
+; |                                                                        |
+; +------------------------------------------------------------------------+
+
+                include "testcase.i"
+
+
+; #------------------------------------------------------------------------#
+; |                                                                        |
+; |   Instructions.                                                        |
+; |                                                                        |
+; #------------------------------------------------------------------------#
+
+; +------------------------------------------------------------------------+
+; |                                                                        |
+; |   Implied-operand instructions.                                        |
+; |                                                                        |
+; +------------------------------------------------------------------------+
+
+Start           clc
+                cli
+                mul
+                nop
+                rsp
+                rti
+                rts
+                sec
+                sei
+                stop
+                swi
+                tax
+                txa
+                wait
+
+
+; +------------------------------------------------------------------------+
+; |                                                                        |
+; |   One-operand instructions.                                            |
+; |                                                                        |
+; +------------------------------------------------------------------------+
+
+                asl     AddrLow                     ; lsl is alternate mnemonic
+                asl     10,x
+                asl     ,x
+                asla
+                aslx
+
+                asr     AddrLow
+                asr     10,x
+                asr     ,x
+                asra
+                asrx
+
+                clr     AddrLow
+                clr     10,x
+                clr     ,x
+                clra
+                clrx
+
+                com     AddrLow
+                com     10,x
+                com     ,x
+                coma
+                comx
+
+                dec     AddrLow
+                dec     10,x
+                dec     ,x
+                deca
+                decx
+
+                inc     AddrLow
+                inc     10,x
+                inc     ,x
+                inca
+                incx
+
+                lsr     AddrLow
+                lsr     10,x
+                lsr     ,x
+                lsra
+                lsrx
+
+                neg     AddrLow
+                neg     10,x
+                neg     ,x
+                nega
+                negx
+
+                rol     AddrLow
+                rol     10,x
+                rol     ,x
+                rola
+                rolx
+
+                ror     AddrLow
+                ror     10,x
+                ror     ,x
+                rora
+                rorx
+
+                tst     AddrLow
+                tst     10,x
+                tst     ,x
+                tsta
+                tstx
+
+
+; +------------------------------------------------------------------------+
+; |                                                                        |
+; |   Two-operand instructions.                                            |
+; |                                                                        |
+; +------------------------------------------------------------------------+
+
+                adc     #123
+                adc     AddrLow
+                adc     AddrHigh
+                adc     -10,x
+                adc     10,x
+                adc     ,x
+
+                add     #123
+                add     AddrLow
+                add     AddrHigh
+                add     -10,x
+                add     10,x
+                add     ,x
+
+                and     #123
+                and     AddrLow
+                and     AddrHigh
+                and     -10,x
+                and     10,x
+                and     ,x
+
+                bit     #123
+                bit     AddrLow
+                bit     AddrHigh
+                bit     -10,x
+                bit     10,x
+                bit     ,x
+
+                cmp     #123
+                cmp     AddrLow
+                cmp     AddrHigh
+                cmp     -10,x
+                cmp     10,x
+                cmp     ,x
+
+                cmpx    #123                        ; cpx is alternate spelling for cmpx
+                cmpx    AddrLow
+                cmpx    AddrHigh
+                cmpx    -10,x
+                cmpx    10,x
+                cmpx    ,x
+
+                eor     #123
+                eor     AddrLow
+                eor     AddrHigh
+                eor     -10,x
+                eor     10,x
+                eor     ,x
+
+                lda     #123
+                lda     AddrLow
+                lda     AddrHigh
+                lda     -10,x
+                lda     10,x
+                lda     ,x
+
+                ldx     #123
+                ldx     AddrLow
+                ldx     AddrHigh
+                ldx     -10,x
+                ldx     10,x
+                ldx     ,x
+
+                ora     #123
+                ora     AddrLow
+                ora     AddrHigh
+                ora     -10,x
+                ora     10,x
+                ora     ,x
+
+                sbc     #123
+                sbc     AddrLow
+                sbc     AddrHigh
+                sbc     -10,x
+                sbc     10,x
+                sbc     ,x
+
+*               sta     #123
+                sta     AddrLow
+                sta     AddrHigh
+                sta     -10,x
+                sta     10,x
+                sta     ,x
+
+*               stx     #123
+                stx     AddrLow
+                stx     AddrHigh
+                stx     -10,x
+                stx     10,x
+                stx     ,x
+
+                sub     #123
+                sub     AddrLow
+                sub     AddrHigh
+                sub     -10,x
+                sub     10,x
+                sub     ,x
+
+
+; +------------------------------------------------------------------------+
+; |                                                                        |
+; |   Branch and jump instructions.                                        |
+; |                                                                        |
+; +------------------------------------------------------------------------+
+
+NearBranch      bcc     NearBranch
+                bcs     NearBranch
+                beq     NearBranch
+                bhcc    NearBranch
+                bhcs    NearBranch
+                bhi     NearBranch
+                bhs     NearBranch
+                bih     NearBranch
+                bil     NearBranch
+                blo     NearBranch
+                bls     NearBranch
+                bmc     NearBranch
+                bmi     NearBranch
+                bms     NearBranch
+                bne     NearBranch
+                bpl     NearBranch
+                bra     NearBranch
+                brn     NearBranch
+                bsr     NearBranch
+
+*               jmp     #123
+                jmp     AddrLow
+                jmp     AddrHigh
+                jmp     -10,x
+                jmp     10,x
+                jmp     ,x
+
+*               jsr     #123
+                jsr     AddrLow
+                jsr     AddrHigh
+                jsr     -10,x
+                jsr     10,x
+                jsr     ,x
+
+
+; +------------------------------------------------------------------------+
+; |                                                                        |
+; |   Bit manipulation instructions.                                       |
+; |                                                                        |
+; +------------------------------------------------------------------------+
+
+                bclr    #0,AddrLow
+                bclr    0,AddrLow
+                bclr    #1,AddrLow
+                bclr    1,AddrLow
+                bclr    #2,AddrLow
+                bclr    2,AddrLow
+                bclr    #3,AddrLow
+                bclr    3,AddrLow
+                bclr    #4,AddrLow
+                bclr    4,AddrLow
+                bclr    #5,AddrLow
+                bclr    #6,AddrLow
+                bclr    #7,AddrLow
+
+                bset    #0,AddrLow
+                bset    0,AddrLow
+                bset    #1,AddrLow
+                bset    #2,AddrLow
+                bset    #3,AddrLow
+                bset    #4,AddrLow
+                bset    #5,AddrLow
+                bset    #6,AddrLow
+                bset    #7,AddrLow
+
+NearBrClr       brclr   #0,AddrLow,NearBrClr
+                brclr   #1,AddrLow,NearBrClr
+                brclr   #2,AddrLow,NearBrClr
+                brclr   2,AddrLow,NearBrClr
+                brclr   #3,AddrLow,NearBrClr
+                brclr   #4,AddrLow,NearBrClr
+                brclr   #5,AddrLow,NearBrClr
+                brclr   #6,AddrLow,NearBrClr
+                brclr   #7,AddrLow,NearBrClr
+
+NearBrSet       brset   #0,AddrLow,NearBrSet
+                brset   #1,AddrLow,NearBrSet
+                brset   #2,AddrLow,NearBrSet
+                brset   #3,AddrLow,NearBrSet
+                brset   #4,AddrLow,NearBrSet
+                brset   #5,AddrLow,NearBrSet
+                brset   #6,AddrLow,NearBrSet
+                brset   #7,AddrLow,NearBrSet
+                brset   7,AddrLow,NearBrSet
+
+
+; +------------------------------------------------------------------------+
+; |                                                                        |
+; |   Regressions                                                          |
+; |                                                                        |
+; +------------------------------------------------------------------------+
+
+                lda     forward
+                lda     forward,x
+endless         jsr     endless
+forward         = 1
+
+
+                end     Start
+
+; ----- EOF -----
+

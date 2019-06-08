@@ -1,0 +1,5 @@
+[ Starting ]
+
+OMDLWIN ( byte code transfer to target system )
+Copyright Dietmar Harlos t15.02.2006
+

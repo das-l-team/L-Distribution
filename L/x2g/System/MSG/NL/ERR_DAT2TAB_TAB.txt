@@ -1,0 +1,36 @@
+' [ Fehlermeldung ]
+'
+' Das 'DAT2TAB' Werkzeug konnte in der vorliegenden .DAT Datei keine Codebereiche
+' ermitteln und keine Inhalte daraus in die CCBASIC-Tabellenform überführen.
+'
+' Die nachfolgenden Hinweise stammen aus der Programminfo zum DAT2TAB Werkzeug:
+
+
+  
+  
+DAT2TAB V1.02 - (c) Dietmar Harlos 31. Juli bis 23. August 2016
+
+Mit diesem Tool koennen Codebereiche aus DAT-Dateien vom OCBASIC-Compiler in
+die CCBASIC-Tabellenform umgewandelt werden. Nuetzlich ist das zum Beispiel,
+um diese Codebereiche in CCPLUS-Tabellen einzufuegen. So koennen positions-
+unabhaengige INLASM-Routinen fuer die OM auch in CCPLUS verwendet werden.
+
+Vor jeden Code, der in Tabellenform umgewandelt wird, muss der Anwender ein...
+
+INLINE "DAT2TAB Codename START"
+
+...setzen und nach dem Code muss ein...
+
+INLINE "DAT2TAB Codename END"
+
+...stehen. Es wird dann eine Tabelle namens Codename erstellt.
+
+Aufruf: DAT2TAB DATEI.DAT
+
+Die Ausgabe befindet sich in der Datei DAT2TAB.TAB.
+
+Bei ungerader Byteanzahl des Codes fuegt DAT2TAB.EXE ein Fuellbyte in die
+Tabelle ein, weil in der Tabelle nur WORDs stehen duerfen. Ausserdem ist
+nicht gewaehrleistet, dass die Tabellen hintereinander im Speicher abgelegt
+werden. Aus diesen Gruenden ist es nicht erlaubt, von einer Tabelle in eine
+andere zu springen.

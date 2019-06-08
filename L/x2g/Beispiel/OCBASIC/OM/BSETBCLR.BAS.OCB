@@ -1,0 +1,59 @@
+
+' ===========================================================================
+' Subroutinen und Funktionen zum leichten Zugriff auf einzelne Bits
+' lauffaehig auf der Open-Micro, Open-Mini und Open-Midi
+' ===========================================================================
+
+INCLUDE "om.def"
+
+DEFINE a,b,c BYTE           'Variablen fuer Hauptprogramm
+DEFINE v,w,x,y,z BYTE       'Variablen fuer Unterprogramme
+
+' ---------------------------------------------------------------------------
+
+a=&b11000000     'Variable a auf den Wert &b11000000 setzen (entspricht 192)
+printbin a       'Variable a im Binaerformat auf der RS232 ausgeben
+PRINT
+
+a=bset(a,5)      'Wert a zurueckliefern, in dem Bit Nummer 5 gesetzt ist
+printbin a
+PRINT
+
+a=bclr(a,5)      'Wert a zurueckliefern, in dem Bit Nummer 5 geloescht ist
+printbin a
+PRINT
+
+a=bchg(a,1)      'Wert a zurueckliefern, in dem Bit Nummer 1 getoggelt wurde
+a=bchg(a,0)      'Wert a zurueckliefern, in dem Bit Nummer 0 getoggelt wurde
+printbin a
+PRINT
+
+End2Host=ON
+END
+
+' ---------------------------------------------------------------------------
+' Subroutinen und Funktionen zum leichten Zugriff auf einzelne Bits
+' Verwenden die Variablen w,x,y,z
+' ---------------------------------------------------------------------------
+
+PROC printbin(x)
+  FOR w=7 DOWNTO 0
+    PRINT -btst(x,w);  'ON oder OFF zurueckliefern in Abhaengigkeit des Bits
+  NEXT w
+RETURN
+
+FUNC bset(y,z)
+RETURN (1 SHL z) OR y
+
+FUNC bclr(y,z)
+RETURN NOT (1 SHL z) AND y
+
+FUNC btst(y,z)
+RETURN ((1 SHL z) AND y)<>0
+
+FUNC bchg(y,z)
+RETURN (1 SHL z) XOR y
+
+' ---------------------------------------------------------------------------
+
+

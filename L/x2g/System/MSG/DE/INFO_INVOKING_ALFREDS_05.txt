@@ -1,0 +1,2 @@
+[ Starte Alfred Arnold's Makroassembler (C) Alfred Arnold. Siehe auch http://john.ccac.rwth-aachen.de:8000 ]
+

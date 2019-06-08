@@ -1,0 +1,1 @@
+[ HINT:  MUST COMPILE FROM L: DRIVE (NOT OPTIMAL WITH THE CURRENT VERSION):  C-Control/BASIC source code only can be compiled if this exists in drive L: .. ]

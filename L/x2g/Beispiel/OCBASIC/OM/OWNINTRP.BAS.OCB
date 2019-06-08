@@ -1,0 +1,129 @@
+
+' ===========================================================================
+' BASIC-Befehlsausfuehrung um rund 10% beschleunigen
+' lauffaehig auf der Open-Micro und Open-Mini
+' ===========================================================================
+
+' Die OM fuehrt die meisten BASIC-Befehle etwas langsamer aus als die neuste
+' Conrad-Micro (Version 2.01). Das liegt am groesseren Funktionsumfang der
+' OM-Kontroller. Als Ausgleich dafuer gibt es auf der OM neue Befehle wie
+' DBNZ, ADD, SUB, etc., die sehr schnell ausgefuehrt werden. Auch ist die
+' OM beim Zugriff auf die Ports deutlich schneller als die Original-Micro.
+' Und das Betriebssystem enthaelt mehr Funktionen und ist kleiner, wodurch
+' dem Anwender mehr Programmspeicher zur Verfuegung steht.
+
+' Der Hauptgrund fuer das etwas schlechtere Abschneiden der OM bei vielen
+' BASIC-Befehlen liegt an der langsameren, weil auf minimalen Speicherplatz-
+' bedarf bei maximalem Funktionsumfang getrimmten Interpreterschleife. Da
+' die OM ein offenes System ist, kann aber problemlos eine modifizierte
+' Interpreterschleife benutzt werden, wodurch Tokenbefehle um bis zu 14%
+' schneller ausgefuehrt werden. Der in Kauf zu nehmende Nachteil ist der
+' Wegfall von Features, die allerdings auf der Conrad-Micro auch nicht zur
+' Verfuegung stehen.
+
+' Es gibt dann keine BASIC-Interruptroutine (wuerde aber nur 2 TZ kosten),
+' keine Einbindung einer eigenen Assemblerroutine in den Interpreter (kann
+' man selbstverstaendlich noch hinzufuegen) und kein Aufruf des Interpreters
+' per Firmware-Routine (der Original-Interpreter wird dafuer verwendet,
+' kann man natuerlich auch noch korrigieren).
+
+' Uebrigens laesst sich auf der OM der interne Systemtakt im laufenden
+' Betrieb mittels FREQ2=0 erhoehen. Im Schnitt bringt das 25%. Ausserdem
+' ist es moeglich, einen externen Oszillator an einen Port anzuschliessen,
+' wodurch bis 8 MHz Systemtakt, also 2.5fache Geschwindigkeit, moeglich ist.
+
+
+INCLUDE "om.def"
+
+DEFINE led PORT[4]     'diese LED wird im Hauptprogramm in BASIC getoggelt
+DEFINE taste PORT[6]
+
+DEFINE a,b,c BYTE      'temporaere Variablen
+
+
+' ---------------------------------------------------------------------------
+' Das Hauptprogramm
+' ---------------------------------------------------------------------------
+
+#main
+
+'SYS owninterpreter     'die weiteren BASIC-Befehle werden mit der unten-
+                       'stehenden Interpreterschleife ausgefuehrt.
+
+PrintSpc=ON
+PRINT "Starte..";
+
+'led=ON                        
+SECOND=0
+FOR b=0 TO 255                        
+  FOR a=0 TO 255
+'    TOG led            '104*0.02=2.08 s (102 TZ) vs. 95*0.02=1.9 s (93 TZ)
+                        'Conrad-Micro: 125*0.02=2.5 s (122 TZ)
+'    led=ON             '220*0.02=4.4 s (215 TZ) vs. 201*0.02=4.02 s (197 TZ)
+                        'Conrad-Micro: 241*0.02=4.82 s (235 TZ)
+'    c=c SHL 1          '393*0.02=7.86 s (384 TZ) vs. 356*0.02=7.12 s (348 TZ)
+                        'Conrad-Micro: 358*0.02=7.16 s (350 TZ)
+  NEXT a
+NEXT b
+c=TIMER
+
+PRINT SECOND;c;TIMER   '418*0.02=8.36 vs. 381*0.02=7.62 Sekunden
+                       'Conrad-Micro: 389*0.02=7.78 Sekunden
+                         
+End2Host=ON
+END
+
+
+' ---------------------------------------------------------------------------
+
+' Der folgende Code mit der Interpreterschleife wurde aus dem ROM-Listing
+' entnommen und fuer hoehere Ausfuehrungsgeschwindigkeit angepasst. Die
+' Abkuerzung "TZ" steht fuer "Taktzyklen". Mit dem internen Oszillator
+' kann die OM 3,2 Millionen TZ pro Sekunde ausfuehren (3.2 MHz Takt). Mit
+' einem externen Oszillator sind 8 MHz erreichbar. Die TZ-Angaben zu den
+' BASIC-Befehlen wurden durch Messungen ermittelt.
+
+' Mit dieser Interpreterschleife erreicht die OM im DIE-HARD-Benchmark nun
+' nicht mehr "nur" 11320, sondern 12480 BASIC-Instruktionen pro Sekunde!
+' Damit ist die OM 8.5% schneller als die Conrad-Micro! Durch neue OCBASIC-
+' Befehle lassen sich sogar 14340 I/s herausholen!
+
+' (PROC..INLASM-Routinen sollten nicht am Programmbeginn stehen, denn dort
+'  werden sie als Interruptroutinen (IIARs) angesehen.)
+
+PROC owninterpreter INLASM
+
+! rsp                  'Hardware-Stackpointer resetten
+
+#ownint_1
+! ldhx $e0             '4  Benoetigt 43 TZ (statt 52) fuer ein "NOP"
+! lda ,x               '2    und 63 TZ (statt 72) fuer ein "GOTO"
+! aix #$01             '2
+! sthx $e0             '4  Der schnellste Befehl auf der Conrad-Micro
+! clrh                 '1    duerfte "GOTO" sein und braucht nur 57 TZ.
+! tax                  '1
+! comx                 '1  Ein "b=b+2" besteht aus vier Tokenbefehlen
+! ldx $ed56,x          '4    und braucht auf der Conrad-Micro 354 TZ,
+! cbeqx #$51,ownint_2  '4    aber auf der OM mit dieser Interpreter-
+! rora                 '1    schleife nur 349 TZ! Ausserdem existiert
+! asra                 '1    der neue Befehl "ADD b,2" mit 165 TZ!
+! asra                 '1
+! asra                 '1  Der Aufruf einer Subroutine mit GOSUB und
+! deca                 '1    RETURN braucht auf der Conrad-Micro 176,
+! pusha                '2    auf der OM hiermit aber nur noch 173 TZ!
+! poph                 '2
+! jsr ,x               '4 (plus 4 fuer RTS)
+! bra ownint_1         '3
+
+#ownint_2
+! jmp $eed7            'illegales Token oder END
+
+END PROC
+
+' ---------------------------------------------------------------------------
+
+
+
+
+
+

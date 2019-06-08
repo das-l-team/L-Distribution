@@ -1,0 +1,37 @@
+// Einfaches DEMO-Programm fuer C3C
+// Es wird ein Bitmuster am Byteport [1] ausgegeben
+
+// Konstante definieren
+#define BYTEPORT1 0
+
+// Array im EEPROM anlegen
+eeprom char a[8]={1,2,4,8,16,32,64,128};
+
+// Hauptprogramm
+void main()
+{
+
+// lokale Byte-Variable im RAM anlegen
+// (oder EEPROM, falls der Platz im RAM nicht ausreicht)
+char b=0;
+
+// Wert im Array aendern
+a[3]=0xaa;
+
+// Endlosschleife
+while(1) {
+
+  // FOR-Schleife
+  for(b=0; b<8; b++) {
+
+    // Ausgabe auf dem Byteport [1]
+    OutByte(BYTEPORT1,a[b]);
+
+    // 5*20 ms warten
+    Wait(5);
+
+  } //for
+
+} //while
+
+} //main

@@ -1,0 +1,102 @@
+
+' ===========================================================================
+' Demo mit 8x8 Pixel grosser Schrift. Ausgaben mit TERMINAL.EXE betrachten!
+' lauffaehig auf der Open-Micro und Open-Mini
+' ===========================================================================
+
+INCLUDE "om.def"
+
+DEFINE char BYTE
+DEFINE asctbl BYTE
+DEFINE zeile BYTE
+DEFINE a,b,c BYTE     'temporaere Variablen
+
+
+GOTO over             'die 2 KB grossen Tabellen werden mittels
+INCLUDE "chars.tab"   '  Dateifunktion gelesen, deshalb muessen
+#over                 '  sie am Programmanfang stehen
+
+
+' zunaechst ein wenig Werbung fuer die OM ;-)
+
+WHILE SECOND<10
+
+  PRINT "Die"
+  PRINT
+  
+  FOR zeile=0 TO 7
+    bigtext "O",zeile
+    bigtext "p",zeile
+    bigtext "e",zeile
+    bigtext "n",zeile
+    bigtext "-",zeile
+    bigtext "M",zeile
+    bigtext "i",zeile
+    bigtext "c",zeile
+    bigtext "r",zeile
+    bigtext "o",zeile  
+    PRINT            'b.B. entfernen, da eine DOS-Zeile nur 80 Zeichen hat
+  NEXT zeile
+  PRINT
+  
+  PRINT "wird immer groágeschrieben!"
+  PRINT
+  PRINT
+  PRINT
+  PRINT
+  
+WEND
+
+
+' den gesamten ASCII-Zeichensatz in Grossschrift ausgeben
+
+FOR asctbl=0 to 248 STEP 8
+  FOR zeile=0 TO 7
+    FOR char=asctbl to asctbl+7
+      bigtext char,zeile  
+    NEXT char
+    PRINT
+  NEXT zeile
+  PRINT
+NEXT asctbl
+
+
+End2Host=ON
+END
+
+
+' Subroutine zum Ausgeben einer Zeile eines Buchstabens
+
+PROC bigtext(char,zeile)
+
+  dFILEPOSh=&hf4             'Startadresse der Tabellen mit
+  dFILEPOSl=&h85             'der Bitmap der einzelnen Zeichen
+  a=0
+  b=char
+  FOR c=0 TO 2               'a:b = char*8 + zeile
+    b=b SHL 1
+    a=-Carry OR a SHL 1
+  NEXT c  
+  ADD b,zeile
+  dFILEPOSl=dFILEPOSl+b      'a:b zum Dateizeiger hinzuaddieren
+  dFILEPOSh=-Carry+dFILEPOSh+a  
+  
+  INPUT# a                   'eine Zeile lesen und ausgeben
+  FOR b=0 TO 7
+    a=a SHL 1
+    IF Carry THEN
+      PRINT "Û";  'fuer ein Nicht-DOS-Terminalprogramm sollte hier "*"
+    ELSE          'oder aehnlich benutzt werden
+      PRINT " ";
+    END IF
+  NEXT b
+
+RETURN
+
+
+
+
+
+
+
+

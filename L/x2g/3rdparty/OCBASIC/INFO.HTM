@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html><head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <title>Hilfe zu OCBASR</title></head>
+<body alink="#ff0000" bgcolor="#ffffff" link="#0000ee" text="#000000" vlink="#551a8b">
+
+<center><span style="font-weight: bold;"></span><big><big style="font-weight: bold;"><big><span style="font-style: italic;"><font size="+4"><big><big><big><font color="#009900"><small><small><small>[ </small></small></small></font></big></big></big></font></span><font style="font-family: Courier; font-style: italic;" size="+4"><big><big><big><font color="#009900"><small><small><small><small>Zeitoptimierter&nbsp;Open-Control/BASIC-Quelltext (Schlüsselwort: 'COMPILE') erfolgreich&nbsp;</small></small></small></small></font></big></big></big></font><font style="font-family: Courier; font-style: italic;" size="+4"><big><big><big><font color="#009900"><small><small><small><small>kompiliert! Siehe die&nbsp;nachstehenden Hinweise...</small></small></small></small></font></big></big></big></font><span style="font-style: italic;"><font size="+4"><big><big><big><font color="#009900"><small><small><small> ]</small></small></small></font></big></big></big></font></span></big></big></big><b><font size="+4"><font color="#009900"><small><small><small><br><br></small></small></small>OC</font><font color="#3366ff">BAS</font><font color="#ff0000">R</font>32</font></b>
+<br><b><font size="+2">Echter BASIC-Compiler für die</font></b>
+<br><b><font size="+2">Open-Micro, Open-Mini und Open-Midi</font></b>
+<p><b>Autor: Dietmar Harlos</b>
+<br>Datum: 18. November 2006 bis 22. April 2017</p></center>
+
+<h3>
+Einleitung</h3>
+Die Open-Micro, Open-Mini und Open-Midi führen BASIC- und CCPLUS-Programme mit
+einer recht ansehnlichen Geschwindigkeit aus. Sie sind trotz des relativ
+niedrigen Bustaktes von 3.2 MHz rund 16-mal so schnell wie die Original-C-Control-1.
+Um BASIC-Programme noch weiter zu beschleunigen, kann man den Compiler
+OCBASR einsetzen, mit dem BASIC-Quellcode sehr komfortabel in Maschinensprache,
+bzw. Assembler, umgewandelt werden kann. Der Standard-Compiler OCBASIC
+übersetzt bekanntlich BASIC-Quellcode in Tokencode, der vom Interpreter
+in der OM ausgeführt wird. Gegenüber diesem interpretiertem Tokencode
+wird die vom Compiler OCBASR erzeugte Maschinensprache natürlich erheblich
+schneller ausgeführt.
+<h3>
+Installation</h3>
+Die Installation des neuen Compilers ist denkbar einfach. Man muß
+einfach das Programm OCBASR32.EXE in das Verzeichnis kopieren, in dem schon
+OCBAS32.EXE steht und in ConTEXT bei den Benutzerbefehlen "OCBAS32.EXE" durch
+"OCBASR32.EXE" ersetzen. Nun wird bei einer Compilierung der BASIC-Compiler
+OCBASR statt OCBASIC gestartet.
+<h3>
+Benutzung</h3>
+Noch einfacher ist es, BASIC-Quellcode in Assemblercode, bzw. Maschinensprache
+übersetzen zu lassen. Der zu beschleunigende Code muß in einer
+Funktion oder in einer Subroutine (Prozedur) stehen. Wird hinter die
+Startzeile dieser Subroutine oder Funktion das Schlüsselwort COMPILE
+angefügt, wird der OCBASR-Compiler aktiv und übersetzt den in
+ihr stehenden BASIC-Sourcecode in die Maschinensprache. Dieser Programmteil
+wird nun üblicherweise 3 bis 4 mal schneller ausgeführt. Einige
+BASIC-Befehle sind sogar 10 bis 20 mal schneller. Der Rest des Programms
+wird interpretiert ausgeführt. Siehe folgendes Beispiel.
+<br>&nbsp;
+<table cellpadding="5" cellspacing="0" cols="1" width="100%">
+<tbody><tr>
+<td bgcolor="#ffffcc"><tt>INCLUDE "omid.def"</tt>
+<p><tt>DEFINE a,b,c BYTE</tt>
+</p><p><tt>unterprogramm</tt>
+<br><tt>PRINT funktion(5,8)</tt>
+<br><tt>END</tt>
+</p><p><tt>PROCEDURE unterprogramm <b>COMPILE</b></tt>
+<br><tt>&nbsp; PRINT "Hallo, hier ist ein Unterprogramm in Maschinensprache!"</tt>
+<br><tt>&nbsp; RETURN</tt>
+<br><tt>END PROCEDURE</tt>
+</p><p><tt>FUNCTION funktion(a,b) <b>COMPILE</b></tt>
+<br><tt>&nbsp; FOR c=a TO b</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; PRINT c</tt>
+<br><tt>&nbsp; NEXT c</tt>
+<br><tt>&nbsp; RETURN 123</tt>
+<br><tt>END FUNCTION&nbsp;</tt></p></td>
+</tr>
+
+<tr>
+<td bgcolor="#fcfcfc"><i><font size="-1">Bild 1: Beispielprogramm. Das Schlüsselwort COMPILE
+bewirkt, daß eine Subroutine oder Funktion in Maschinensprache übersetzt
+und schneller ausgeführt wird.</font></i></td>
+</tr>
+</tbody></table>
+
+<p>Bei der Entwicklung des BASIC-Compilers OCBASR stand vor allem die sehr
+einfache Benutzung im Vordergrund. Der Anwender braucht nur das Schlüsselwort
+COMPILE an den Namen eines Unterprogramms anzuhängen, um sein Programm
+zu beschleunigen. Es läßt sich so gut wie jeder BASIC-Befehl
+in Maschinensprache übersetzen und er führt interpretiert wie
+compiliert, abgesehen von der Geschwindigkeit, zum gleichen Ergebnis. Siehe dazu auch die beigefügten Demoprogramme
+DEMO1.BAS, DEMO2.BAS und DEMO3.BAS.
+Die Beispielprogramme für die Open-Micro und Open-Mini befinden sich im Verzeichnis OM.
+Und die drei Programme für Open-Midi in OMID.
+</p><h3>
+Nachteile</h3>
+Leider hat diese hohe Kompatiblität auch ihren Preis: Der compilierte
+Code nutzt viele Betriebssystemroutinen, wodurch sich der relativ geringe
+Geschwindigkeitszuwachs von "nur" Faktor 3 bis 4 erklärt. Außerdem
+nimmt der compilierte Code natürlich erheblich mehr Platz in Anspruch
+als der interpretierte Tokencode. Aber da in einem Programm üblicherweise
+nur ein oder zwei Subroutinen oder Funktionen beschleunigt werden müssen,
+ist das genaugenommen kein großer Nachteil. Ich konnte beispielsweise
+durch die Compilierung einer einzigen Subroutine ein ganzes Programm (den
+Disassembler DISA6808.BAS) um Faktor 2,5 beschleunigen. Das Programm belegte
+dadurch gerade einmal 1,4% mehr Platz im Programmspeicher. Oft ist ein
+Faktor 3 mit 20% Größenzunahme realisierbar, wie beispielweise
+bei in BASIC geschriebenen I²C-LCD-Routinen.
+<p>Ein weiterer Nachteil des neuen Compilers ist, daß bei Fehlermeldungen,
+die während der Übersetzung auftreten, die Zeilennummern möglicherweise
+nicht passen. Das liegt daran, daß der Compiler OCBASR vom Standard-Compiler
+OCBASIC eine temporäre Sourcecode-Datei übersetzen läßt,
+in der die COMPILE-Bereiche ans Ende verschoben wurden. Der Anwender sollte
+deshalb sinnvollerweise vor dem Einfügen der COMPILE-Schlüsselwörter
+sicherstellen, daß sein Programm fehlerfrei übersetzt werden
+kann. Außerdem sucht der neue Compiler derzeit keine COMPILE-Bereiche
+in INCLUDE-Dateien.
+</p><h3>
+Fragen und Antworten</h3>
+Es folgen einige Fragen und Antworten, die mir Betatester des Compilers
+gestellt haben.
+<p><b>Ich erhalte den Fehler "Konstante oder TABEND statt 'URAMBASE' erwartet
+bei TABLE".</b>
+</p><p>Wenn Du COMPILE verwenden möchtest, ist es erforderlich, die Definitionsdatei
+für die Open-Micro und Open-Mini (OM.DEF),
+bzw. für Open-Midi (OMID.DEF),
+ mitzuladen. Am Beginn des
+Programms sollte deshalb immer ein INCLUDE "OM.DEF", bzw. INCLUDE "OMID.DEF", stehen. Diese Definitionsdatei
+wird auch von den meisten anderen Programmen benötigt.
+</p><p><b>Was bedeutet der Fehler "Label 'OCBASRxxx' nicht gefunden"?</b>
+</p><p>Vermutlich hast Du versucht, mit einem im COMPILE-Bereich stehenden
+GOSUB oder GOTO zu einem Label im Tokencode zu springen. Es ist aber nicht
+zulässig, in einer nach Maschinensprache übersetzten Subroutine
+oder Funktion irgendein Sprungziel aufzurufen, das außerhalb von
+COMPILE-Bereichen steht. Und auch umgekehrt klappt das nur mit Subroutinen
+und Funktionen. Der Compiler meldet in solchen Fällen einen Fehler,
+weil er ein Label nicht finden kann. Das einzige, was man in COMPILE-Bereichen
+vom Tokencode aufrufen kann, sind INLASM-Routinen per SYS-Befehl. Wenn
+man SYS falsch anwendet, erkennt das OCBASR allerdings nicht.
+<br><font size="-2">&nbsp;<br></font>
+Hintergrund: Normalerweise wird von der OM Tokencode ausgeführt
+und per Tokenbefehl muß die OM auf die Ausführung von Maschinensprache
+"umgeschaltet" werden. Das bewerkstelligt ein INLASM-Token, das von OCBASIC
+automatisch an den Beginn einer INLASM- und COMPILE-Funktion oder -Prozedur
+gestellt wird. Deshalb ist wildes Springen zu Labels in Assembler- oder
+COMPILE-Code nicht zulässig. Wenn der Compiler Dein Programm klaglos
+übersetzen würde, würde die OM Tokencode als Maschinencode
+oder umgekehrt ausführen.
+</p><p><b>Kannst Du OCBASR nicht einfach in OCBAS implementieren? Dann müßte
+man nur das Schlüsselwort COMPILE hinzufügen.</b>
+</p><p>Mit diesem Gedanken habe ich natürlich auch schon gespielt. Aber
+ganz so einfach ist das leider nicht. Vor allem mußt Du bedenken,
+daß der durch OCBASR erstellte Maschinencode nicht sehr effektiv
+ist, da keine Optimierungen durchgeführt werden. Schon von daher ist
+es fraglich, ob man in dieses Compilerkonzept allzuviel Arbeit stecken sollte.
+Wie es sehr viel besser gemacht werden kann, zeigt CCBAS2MC. Mit einem
+Compiler wie dem CCBAS2MC könnte der Maschinencode so optimiert werden,
+daß er bis zu 12 bis 24 mal so schnell ausgeführt wird und dabei
+nur wenig größer oder gar kleiner ist als der Tokencode. Obwohl
+CCBAS2MC eins meiner sinnvollsten Programme ist und es sogar zu einer Erwähnung
+in der c't gebracht hat, wurde es nur von wenigen Personen bei mir registriert.
+Offenbar hat den meisten Personen die Geschwindigkeit der C-Control-1 Version 1.1
+ausgereicht.
+Deshalb werde ich nicht zuviel Arbeit in den echten Compiler stecken. Aber
+mal sehen, wie das Anwenderecho auf OCBASR ausfällt. OCBASR macht
+sich den normalen Compiler OCBASIC zunutze, indem es ihn zweimal aufruft:
+Das erste Mal wird der Tokencode erzeugt, beim zweiten Mal wird der erzeugte
+Assemblerquelltext übersetzt. Wenn keine COMPILE-Bereiche gefunden
+werden, wird OCBASIC nur einmal aufgerufen. Aus Sicht des Anwenders gibt
+es durch das Zwischenschalten von OCBASR also keinen Nachteil. CCBAS2MC
+war deutlich schwieriger zu bedienen.
+</p><p><b>Wäre es nicht sinnvoller, CCBAS2MC so anzupassen, daß
+es für die OM verwendet werden kann?</b>
+<br>&nbsp;
+<br>Ob es sinnvoller ist, ist die Frage. Aus Sicht des Anwenders gibt es
+eine ganze Menge zu beachten. Die Anwendung wird komplizierter und somit
+auch die Dokumentation. Denn nur in gewissen Fällen ist CCBAS2MC in
+der Lage, optimalen Code zu erzeugen. Wenn der Anwender "ganz normal" programmiert,
+wird üblicherweise auch kein besserer Code erzeugt als bei CCBASR.
+Je nach Anwenderecho könnte ich aber noch einige kleine Optimierungen
+in CCBASR einfügen. Allerdings hätten diese den Nachteil, daß
+der Code etwas anders ausgeführt wird. Solange der Anwender nicht
+"herumhackt" hätte das zwar keinen Nachteil, aber man weiß ja
+nie. Auf jeden Fall würden diese Optimierungen dazu führen, daß
+in der Doku zum Compiler einige Gebote und Verbote auftauchen würden,
+die den Normalanwender sicher verunsichern. Ich finde, das ist es nicht
+wert.<b></b>
+</p><p><b>Auf den ersten Blick ist abschreckend, daß für COMPILE
+mehr Speicherplatz benötigt wird.</b>
+<br>&nbsp;
+<br>Selbst die Open-Micro und Open-Mini bieten gegenüber Conrad-Micro
+386 Byte mehr Speicher. Außerdem nimmt der Tokencode mit OCBASIC
+in der Regel 20% weniger Platz in Anspruch. Macht insgesamt einen Zuwachs
+von rund 872 Byte, gemessen im Conrad-Micro-Code. Wenn nun etwas von diesem
+Speicher für die echte Compilierung verwendet wird, bedeutet das für
+die OM keinerlei Nachteil.<b></b>
+</p><p><b>Ich nehme an, daß OCBASR nur für die Open-Micro, Open-Mini und Open-Midi,
+nicht aber für die Nachfolger wie Open-Macro funktioniert.</b>
+<br>&nbsp;
+<br>Das ist derzeit richtig. Zumindest die Einsprungadressen der Betriebssystemroutinen
+müßten angepaßt werden. Bei
+Open-Macro und höhere wird es schwieriger, weil dort auch 16-Bit-Handling
+zur Verfügung steht. Aber vielleicht sollte man OCBASR auf 8-Bit-Handling
+begrenzen?
+</p><p><b>Darf man nun noch den Takt auf 8 MHz erhöhen?</b>
+</p><p>Selbstverständlich ist das möglich. Dadurch wird die Geschwindigkeit
+noch einmal um Faktor 2,5 erhöht. Insgesamt wäre die OM dadurch an die
+150 mal so schnell wie die Original-C-Control!
+</p><p>Viel Spaß beim Beschleunigen von OCBASIC-Programmen!
+</p><p>Dietmar Harlos
+<br><a href="mailto:dharlos@web.de?subject=R%FCckmeldung+zu+OCBASR">dharlos@web.de</a>
+<br><a href="http://ccintern.dharlos.de">http://ccintern.dharlos.de</a>
+<br><a href="http://om.dharlos.de">http://om.dharlos.de</a>
+<br>&nbsp;
+</p></body></html>

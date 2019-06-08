@@ -1,0 +1,456 @@
+
+
+                                                                                                               
+'=======================================================
+'== Definitionsdatei fuer das |_ System               ==
+'=======================================================
+'Kompatibel mit |_ Basismodul Versionen ab 0.813
+'
+'Funktionsnummern entsprechen 16-Bit Adressen, die direkt
+'als Paramter einer GOSUB, GOTO Anweisung, bzw. eines
+'Unterprogrammaufrufs in den Quelltext geschrieben werden
+'koennen - vorausgesetzt die Syntaxpruefung des Compilers
+'laesst dies zu.
+
+DEFINE    w12      word[12]
+DEFINE    w11      word[11]
+DEFINE    w10      word[10]
+DEFINE     w9       word[9]
+DEFINE     w8       word[8]
+DEFINE     w7       word[7]
+DEFINE     w6       word[6]
+DEFINE     w5       word[5]
+DEFINE     w4       word[4]
+DEFINE     w3       word[3]
+DEFINE     w2       word[2]
+DEFINE     w1       word[1]
+'--------------------------
+DEFINE  b23_b24     w12
+DEFINE  b21_b22     w11
+DEFINE  b19_b20     w10
+DEFINE  b17_b18      w9
+DEFINE  b15_b16      w8
+DEFINE  b13_b14      w7
+DEFINE  b11_b12      w6
+DEFINE   b9_b10      w5
+DEFINE   b7_b8       w4
+DEFINE   b5_b6       w3
+DEFINE   b3_b4       w2
+DEFINE   b1_b2       w1
+
+
+'--------------------------
+DEFINE    b24      byte[24]
+DEFINE    b23      byte[23]
+DEFINE    b22      byte[22]
+DEFINE    b21      byte[21]
+DEFINE    b20      byte[20]
+DEFINE    b19      byte[19]
+DEFINE    b18      byte[18]
+DEFINE    b17      byte[17]
+DEFINE    b16      byte[16]
+DEFINE    b15      byte[15]
+DEFINE    b14      byte[14]
+DEFINE    b13      byte[13]
+'--------------------------
+DEFINE    b12      byte[12]
+DEFINE    b11      byte[11]
+DEFINE    b10      byte[10]
+DEFINE     b9       byte[9]
+DEFINE     b8       byte[8]
+DEFINE     b7       byte[7]
+DEFINE     b6       byte[6]
+DEFINE     b5       byte[5]
+DEFINE     b4       byte[4]
+DEFINE     b3       byte[3]
+DEFINE     b2       byte[2]
+DEFINE     b1       byte[1]
+'--------------------------
+'--------------------------
+'DEFINE lxaddr          w12
+'--------------------------
+define lxpeekaddr      w11
+DEFINE lxpeekdata      w11
+DEFINE lxpokeaddr      w11
+DEFINE lxslot          w11
+DEFINE mySlot          w11
+'--------------------------
+DEFINE lxpokedata      w10
+'--------------------------
+DEFINE lxcmd           b24
+DEFINE lxopt           b23
+'--------------------------
+
+
+'--------------------------------------------------------------
+'-- Baudraten der RS232 (Auch die *Werte* der symbolischen   --
+'-- Konstanten sind fuer alle Hosts & Taktfrequenzen gleich) --
+'--------------------------------------------------------------
+DEFINE RSBAUD_110                          1'Eigentlich 1.1
+DEFINE RSBAUD_300                          3
+DEFINE RSBAUD_600                          6
+DEFINE RSBAUD_1200                        12
+DEFINE RSBAUD_2400                        24
+DEFINE RSBAUD_4800                        48
+DEFINE RSBAUD_7200                        72
+DEFINE RSBAUD_9600                        96
+DEFINE RSBAUD_14400                      144
+DEFINE RSBAUD_28800                      288
+DEFINE RSBAUD_MIDI                       312'Eigentlich 312.5
+DEFINE RSBAUD_38400                      384
+DEFINE RSBAUD_57600                      576
+DEFINE RSBAUD_115200                    1152
+DEFINE RSBAUD_125000                    1250
+DEFINE RSBAUD_128000                    1280
+DEFINE RSBAUD_230400                    2304
+DEFINE RSBAUD_250000                    2500
+DEFINE RSBAUD_375000                    3750
+DEFINE RSBAUD_460800                    4608
+DEFINE RSBAUD_468750                    4687'Eigentlich 4687.5
+DEFINE RSBAUD_500000                    5000
+DEFINE RSBAUD_921600                    9216
+
+
+DEFINE           HT_CCI11_MAIN       1
+DEFINE           HT_CCI11_STAT       2
+DEFINE           HT_CCI11_TYPM       3
+DEFINE           HT_CCI11_OSPRJ      4
+
+DEFINE           HT_OPENMICRO       16
+DEFINE           HT_OPENMINI        17
+DEFINE           HT_OPENMIDI        18
+DEFINE           HT_OPENMACRO       19
+DEFINE           HT_OPENMACRO_STAT  19
+DEFINE           HT_OPENMAXI        20
+
+DEFINE           HT_OM_STAT        14
+DEFINE           HT_OMID_STAT      15
+DEFINE           HT_OMAC_STAT      16
+DEFINE           HT_OM_TYPM        17
+DEFINE           HT_OMID_TYPM      24
+DEFINE           HT_OMAC_TYPM      25
+DEFINE           HT_CCPRO_MEG      30
+DEFINE           HT_i8088_PC       40
+DEFINE           HT_JAVAENVIR      42
+DEFINE           HT_AMIGA_OS       43
+DEFINE           HT_LINUX_OS       44
+DEFINE           HT_PBSTAMP2       45
+DEFINE           HT_PPRPLR         46
+
+'====================================
+'Standard Host-Funktionen
+'====================================
+DEFINE HST_ZEROCMD              000
+DEFINE HST_VERSTRING            001
+DEFINE HST_UPLOADPRG            002
+DEFINE HST_DNLOADPRG            003
+DEFINE HST_xxxxx_004            004
+DEFINE HST_xxxxx_005            005
+DEFINE HST_xxxxx_006            006
+DEFINE HST_UPLOADS19            007
+DEFINE HST_DNLOADS19            008
+DEFINE HST_xxxxx_009            009
+DEFINE HST_xxxxx_010            010
+DEFINE HST_xxxxx_011            011
+DEFINE HST_xxxxx_012            012
+DEFINE HST_DNLOADDTA            013
+DEFINE HST_SETRTCLCK            014
+DEFINE HST_xxxxx_015            015
+'====================================
+'Dateifunktionen:                 ===
+'====================================
+DEFINE SLOT_CREATE              016  'Neue Datei mit Namen anlegen.
+DEFINE SLOT_OPEN                017  '16-Bit Dateinummer holen.
+DEFINE SLOT_CLOSE               018  'Vorhandene Datei schliessen.
+DEFINE SLOT_READ                019
+DEFINE SLOT_WRITE               020
+DEFINE SLOT_ERASE               021
+DEFINE SLOT_FREE                022
+DEFINE SLOT_FINDBYNAME          023
+'====================================
+'Standard xBM-Funktionen
+'====================================
+DEFINE PLZ                        024 'Print (value of w11) with Leading Zeroes
+DEFINE PrintInt                   024
+DEFINE Print_WORD                 024
+DEFINE PLB                        025 'Print (value of w11) with Leading Blanks
+DEFINE P0x                        026 'Print (value of w11) using Hex-format
+DEFINE PCus                       027 'Print (value of w11) using Custom format
+DEFINE Pxxxxx                     028
+DEFINE Pyyyyy                     029
+DEFINE GET_BMSTART              030
+DEFINE REG_CusCMD               031 ' Die Speicheradresse (oder SLOTNUMMER) eines externen xCmd uebergeben.
+'====================================
+'Systeminformationen registrieren ===
+'====================================
+DEFINE PRG_RUNSNGL              032
+DEFINE GET_FREEMEM              033
+DEFINE GET_MEMSIZE              034
+
+
+DEFINE REG_MEMSIZE              035
+DEFINE GET_FILEFRE              036
+DEFINE GET_FILELEN              037
+DEFINE GET_BUSCLCK              038
+DEFINE REG_BUSCLCK              039
+DEFINE GET_UIPSLOT              040
+
+DEFINE REG_UIPSLOT              041
+DEFINE GET_UIPADDR              042
+DEFINE REG_UIPADDR              043
+DEFINE GET_HOSTIDS              044
+DEFINE REG_HOSTIDS              045
+DEFINE SYN_NEXTSEC              046
+DEFINE GET_CALLBSE              047
+DEFINE GET_xBMLEN               048
+DEFINE GET_ASJSLOT              049
+DEFINE LxERR                    050
+
+DEFINE REG_BAUDREG_0            051 'Default Baud
+DEFINE REG_BAUDREG_1            052 'Ersatz R1200
+DEFINE REG_BAUDREG_2            053 'Ersatz R2400
+DEFINE REG_BAUDREG_3            054 'Ersatz R4800
+DEFINE REG_BAUDREG_4            055 'Ersatz R9600
+'DEFINE REG_TMPBAUD              056 'Baudeinstellung
+                                      'Wert / 100 in w11
+
+DEFINE GET_BAUDTX1            057
+DEFINE GET_BAUDRX1            058
+DEFINE REG_BAUDTX1            059
+DEFINE REG_BAUDRX1            060
+
+
+DEFINE GET_DA1                  061
+DEFINE GET_DA2                  062
+DEFINE GET_BAUDREG              063
+
+'DEFINE xGET_BAUDREG              061
+'DEFINE xGET_DA1                  062
+'DEFINE xGET_DA2                  063
+
+DEFINE WAIT_KEY                 064
+DEFINE WAIT_PORT                065
+DEFINE WAIT_TIME                066
+DEFINE WAIT_DATE                067
+DEFINE WAIT_EVENT               068
+DEFINE WAIT_PWRON               069
+
+DEFINE GET_DA1PRCT              070
+DEFINE GET_DA2PRCT              071
+
+
+
+DEFINE GET_SLOT4CMD             194
+DEFINE GET_NEXTADDR             195   '60
+
+'====================================
+'Linker-Funktionen
+'====================================
+DEFINE LNK_RECEIVEDATA           130
+DEFINE LNK_RECEIVEPROG           131
+DEFINE LNK_FIND1STSTRG           132
+DEFINE LNK_DUMP1STSTRG           133
+DEFINE LNK_REALLOCATE            134
+
+
+
+
+
+
+
+
+'                                 161   '94
+'                                 162   '93
+'                                 163   '92
+'                                 164   '91
+'====================================
+'Erweiterte Benutzerschnittstelle: ==
+'====================================
+'DEFINE xUIP_HANDLE               165  '90
+DEFINE UIP_CLEAR                 166  '89
+'DEFINE xUIP_GETHANDLE           167   '88
+DEFINE UIP_CALL                 168   '87
+DEFINE UIP_CFG                  169   '86
+define UIP_SENDMSG              170   '85
+
+
+
+
+'====================================
+'Systeminformationen lesen        ===
+'====================================
+
+
+
+DEFINE GET_IEC                  184   '71
+DEFINE GET_EEC                  185   '70
+DEFINE GET_POC                  186   '69
+DEFINE GET_NOM                  187   '68
+DEFINE GET_BMVERSION            188   '67
+DEFINE GET_E2SIZEPNTR           189   '66
+DEFINE GET_HOSTTYPE             190   '65
+
+DEFINE GET_SLTOFFST             192   '63
+
+
+'====================================
+'Systemereignisse:                ===
+'====================================
+DEFINE INF_NOUIP                  0
+DEFINE L_INF_SYSINFO_2            196
+DEFINE MSG_STARTSLOT            197
+DEFINE INF_HELPSCREEN           198   '57
+DEFINE INF_MAXMOD               199   '56
+DEFINE INF_NONE                 200   '55
+DEFINE INF_MODDISCARD           201   '54
+DEFINE INF_MODREMAINING         202   '53
+DEFINE INF_MODRUNNING           203   '52
+DEFINE INF_ASJUMPER_DONE        204   '51
+DEFINE INF_PRGINFO              205   '50
+DEFINE INF_MODCOUNT             206   '49
+DEFINE INF_EXPIRED              207   '48
+DEFINE INF_PRGNAME              208   '47
+DEFINE INF_ASJUMPERCLOSE        209   '46
+DEFINE INF_BASUPLDOK            210   '45
+DEFINE INF_NEXTOFFSET           211   '44
+DEFINE INF_BYTESFREE            212   '43
+DEFINE INF_BASICLEN             213   '42
+DEFINE INF_FILELEN              214   '41
+DEFINE INF_VERSTRING            215   '40
+DEFINE INF_LIST_TOP             216   '39
+DEFINE INF_LIST_BTM             217   '38
+DEFINE MSG_OUTPROMPT            218   '37
+DEFINE MSG_IDLELOOP             219   '36
+'=====================================
+'Basismodulfunktionen              ===
+'=====================================
+DEFINE CMD_CLRSCR                220  '35
+DEFINE CMD_PLUGVASJ              221  '34
+DEFINE CMD_DUMPFILE              222  '33
+DEFINE CMD_MODDISCARD            223  '32
+DEFINE CMD_MORE                  224  '31
+DEFINE CMD_IDLELOOP              225  '30
+DEFINE CMD_CLEARRAM              226  '29
+DEFINE CMD_RETURN                227  '28
+'                                  228  '27
+'                                  229  '26
+'=====================================
+'Sonstige                          ===
+'=====================================
+DEFINE x_PEEK                     230  '25
+DEFINE x_POKE                     231  '24
+DEFINE MSG_KEEPBAUD              232  '23
+DEFINE TRIGGER_ADR               233  '22
+DEFINE CMD_ECHOINPUT             234  '21
+DEFINE INF_TIMEOUT               235  '20
+DEFINE MSG_SLOTRUN               236  '19
+DEFINE MSG_SLOTFAIL              237  '18
+
+'                                  239  '16
+DEFINE HST_HIBERNATE             240  '15
+DEFINE HST_RESET                 241  '14
+DEFINE HST_COLDRESET             242  '13
+
+DEFINE HST_WARMSTART             243  '12
+'                                  244  '11
+DEFINE PRG_CALLERR               245  '10
+DEFINE PRG_DEBUGMON              246  ' 9
+DEFINE PRG_NEWTHREAD             247  ' 8
+DEFINE PRG_CALL                  248  ' 7
+DEFINE  SLOT_CALL                  248  ' 7
+
+
+DEFINE PRG_RUNKEEPRAM            249  ' 6
+'DEFINE xPRG_RUN                   250  ' 5
+DEFINE PRG_PAUSEMSEC             251  ' 4
+DEFINE PRG_SYN2TICKS             252  ' 3
+DEFINE PRG_SYN2EVENT             253  ' 2
+DEFINE PRG_EXIT                  254  ' 1
+DEFINE PRG_END                   255  ' 0
+
+
+DEFINE MSG_UNKNOWNCMD            255
+DEFINE PRGEND_NOLIST               255
+DEFINE PRGEND_NOPROMPT             254
+
+DEFINE ERR_RETURN                083
+
+
+DEFINE OPT_WARMSTART              1
+DEFINE OPT_COLDSTART              2
+
+' Wichtig: Ab xPRG_ENDSHOWLIST wird das Baudratenregister beim Programmstart initialisiert!
+
+
+
+
+
+'
+
+
+'====================================
+'Fehlercodes:                     ===
+'====================================
+DEFINE ERR_NOREGUIP               0
+'DEFINE TRUE                       1
+DEFINE FNCT_TEST                  2
+
+DEFINE ERR_UPLOAD                 3
+DEFINE ERR_UPLDTOK                4
+DEFINE ERR_UPLDS19                5
+' Debugging Codes:
+DEFINE ERR_RETURN_1               6
+DEFINE ERR_RETURN_2               7
+DEFINE ERR_RETURN_3               8
+DEFINE ERR_RETURN_4               9
+DEFINE ERR_RETURN_5              10
+DEFINE ERR_RETURN_6              11
+DEFINE ERR_RETURN_7              12
+DEFINE ERR_RETURN_8              13
+DEFINE ERR_RETURN_PP             14
+DEFINE ERR_SLOTNOTFOUND          15
+DEFINE ERR_DUMPFILE              16
+DEFINE GET_LASTERROR             17
+DEFINE ERR_EEWRITEFAIL           18
+DEFINE ERR_PRGLEN                20
+DEFINE ERR_NOSPACE               21
+DEFINE ERR_UPLDTOKEN             22
+
+DEFINE ERR_NONE                  0
+
+DEFINE ERR_SLOT_CREATE           23
+DEFINE ERR_SLOT_APPEND           24
+DEFINE ERR_SLOT_SETFREE          25
+DEFINE ERR_SLOT_CLOSE            26
+DEFINE ERR_EXCD_BMHIGHVEC       255
+DEFINE REG_UIPVECT              171   '84
+DEFINE REG_UIPvctr              171
+
+DEFINE GET_UIPVECT              197   '58
+DEFINE GET_UIPvctr              197
+DEFINE UNKNOWN_CMD                 0
+
+
+DEFINE NO_INTERFACE              0
+DEFINE INPUT_EMPTY             255
+DEFINE INPUT_OUTOFRANGE        254
+DEFINE INPUT_SPACEBAR          253
+DEFINE INPUT_TIMEDOUT          252
+
+'TODO: xGET_MAXVAR
+'      xGET_MAXITR
+'
+
+'===================================================================================================
+'===================================================================================================
+'===================================================================================================
+
+ DEFINE ESC 27
+ DEFINE BS 8
+ DEFINE CR 13
+ DEFINE LF &h0a
+ DEFINE Q 34 '(fuer 'Q'uotes)
+
+'auch experimentell:
+ define End2Host ivar [88]  ' bei END in den Hostmodus (unabh. vom PTA2-Pin)
+ define UseEsci  ivar [64]  ' ESCI oder Semi-Dual-Wire-RS232 benutzen

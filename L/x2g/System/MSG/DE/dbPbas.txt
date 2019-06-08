@@ -1,0 +1,21 @@
+[ CCBASPAR = Schritt 1/2]
+
+  Dieses Programm, "C-Control/BASIC-Parser", von Dietmar Harlos, umgeht einen
+  Bug im CCBASIC Kompiler der anderenfalls bei bestimmten Befehlskombinationen
+  im CCBASIC Quelltext fehlerhaft uebersetzten Bytekode zur Folge haben kann.
+  Eine Liste (.VAR) mit den ersten 24 Positionen der Variablen wird erzeugt.
+  Erstmals fuer CCBASIC ermoeglicht das Tool erweiterte IF..THEN..ELSE Kombis!
+  Beispiel: IF true THEN a=1 : b=12 : c=123 : PRINT a,b,c ELSE PRINT "Fehler"
+  Auch IF..THEN..ELSE Kombinationen ueber mehrere Zeilen sind durch den
+  vorgeschalteten Parserlauf mit CCBASIC jetzt moeglich. Tabulatoren im Quell-
+  text muessen allerdings z.Zt. noch manuell durch Leerzeichen ersetzt werden.
+
+[ CCBAS = Schritt 2/2]
+
+  Der C-Control/BASIC-Kompiler in der erweiterten Version von http://ccintern.
+  dharlos.de kompiliert die vom Parser erzeugte Zwischendatei ".TMP"  Unter
+  neueren Windows-Versionen muss dazu ein DOS-PC emuliert werden (Dieses
+ "DOSBox"-Fenster), was erheblich bremst. Bis Windows-XP und mit manchen der
+  Professional, bzw. Ultimate Versionen von Vista und 7 kann man auch die
+  enthaltene Toolchain fuer DOS-kompatibles Windows nutzen (schneller).
+

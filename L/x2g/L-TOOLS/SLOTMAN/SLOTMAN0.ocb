@@ -1,0 +1,171 @@
+
+'
+' *** Beispielprogramm Funktionsaufrufe mit Rueckgabe fuer die 'Lbit' Firmware:  ***
+'------------------------------------------------------------------------------
+
+ 'INFO' >  Programmbeschreibung        |  Tipps und weitere Info zu 'Lbit', siehe
+ 'INIT' >  Initialisierung             |
+ 'MAIN' >  Hauptschleife               |  http://visit.ghn-sensorik.de/L-Team/Lvm
+ 'SUBS' >  Subroutinen                 |
+ 'DATA' >  Tabellen                    |              das |_ Team
+
+
+
+'------------------------------------------------------------------------------
+
+
+'----------------------------------------------------------------------------                                       -
+' Programmbeschreibung Anfang ->>                                  I----------
+'                                                                      N-------
+  'Dieses (unfertige) Beispielprogramm verdeutlicht die Auswirkungen der
+  'Hostmodebefehle 'a' und 'A' auf den virtuellen Autostart-Jumper V-ASJ.
+  'Dazu bitte abwechselnd die Tasten 'a' und 'A' per Terminalprogramm an
+  'das Zielsystem senden, waehrend sich dieses im Hostmodus befindet.
+  
+  'Wenn man nun jeweils nach jedem Tastendruck dieses Programm startet,
+  'kann man die Auswirkungen der Tastendruecke 'a' und 'A' im Hostmodus
+  'gut erkennen.
+  'Nebenbei wird ueber die evt. vorhandene und vom Anwender anpassbare
+  'Bedienoberflaeche (User Interface Program, UIP) informiert.
+
+  'Merke:
+  '======
+  'Die Taste 'A' im Hostmodus wirkt immer nur auf das zuletzt vom PC
+  'zum Zielsystem hochgeladene Programm, welches noch vorhanden ist.
+
+  'Der 'gesteckte' V-ASJ verbleibt solange auf seinem Slot, bis er mit der
+  'Taste 'a' wieder entfernt wird - auch falls zwischenzeitlich ein weiteres
+  'Anwenderprogramm hochgeladen und automatisch ein neuer Slot angelegt wurde.
+
+  'Waehrend des Hostmodus eng verwandt mit der Taste 'A' ist die <LEERTASTE>.
+  'Die <LEERTASTE> bewirkt waehrend des Hostmodus den einmaligen, sofortigen,
+  'Start des zuletzt hochgeladenen Anwenderprogramms.
+  
+  'Die Hostmodus-Funktionen der Tasten 'A', 'a', <LEERTASTE>, wurden in erster
+  'Linie zur Verwendung durch Uploadtools wie z.B. OMDWLIN oder CCTrans32
+  'geschaffen. Aber man kann die natuerlich auch manuell eintippen.
+
+  'Eine kleine Umfrage:
+  '
+  'Was haltet ihr aus Anwendersicht von der Idee, das 'Umstecken' des V-ASJ mit
+  'einer zusaetzlichen Lbit-Exportfunktion auch direkt aus einem der geladenen
+  'Anwederprogramme heraus zu ermöglichen?
+  '
+  'Die jetzige Moeglichkeit mit den Tasten 'A' und 'a', waehrend sich das System
+  'im Hostmodus befindet, wurde ja in erster Linie für die zukünftige Verwendung
+  'durch Uploadtools wie beispielseise OMDLWIN und CCTrans32 geschaffen.
+
+  'Eure Meinungen bitte ueber das Forum der ccintern mitteilen:
+  '
+  'http://ccintern.de/forum/lesen.php?eintrag=16558
+
+
+
+
+
+
+'                                                                      F-------
+' <<- Programmbeschreibung Ende                                    O----------
+'----------------------------------------------------------------------------
+ INCLUDE "L:\X2G\INCLUDE\OCBASIC\L-INIT.PRO"'<<- Anweisungen Anfang
+'----------------------------------------------------------------------------
+' (Anweisungen fuer '#INIT' beginnen schon in L-INIT.PRO)          I----------
+'                                                                      N-------
+ ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+ ' Zur Laufzeit kann der #INIT-Bereich per Direktvektor uebersprungen ''
+ ' werden. Selbst registrierende Erweiterungsmodule (z.B. UIP) koennen '''
+ ' dadurch Zeitverhalten und Bedienungsfreundlichkeit optimieren.      '''
+ ' WICHTIG: Hier bitte keine Datentabellen einfuegen. (s.u.)           ''
+ ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'Erste Print String Anweisung als Label in Slotliste ausgeben: (geplant)
+ PRINT " SLOTMAN0.ocb (v.27.Aug.2017) "
+'                                                                      I-------
+' <<- Initialisierung Ende                                         T----------
+'----------------------------------------------------------------------------
+
+'----------------------------------------------------------------------------
+#MAIN 'Hauptschleife Anfang ->>                                     M---------
+'                                                                      A-------
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Dieser Programmteil wird nach Verlassen von #INIT ausgefuehrt,   ''
+  ' oder durch Direktvektor-Funktionen unmittelbar gestartet.        '''
+  ' WICHTIG: Hier bitte keine Datentabellen einfuegen. (s.u.)        ''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+
+ 'define Lget_DA1 65517' &hffed 'Lbit-Exportfunktion Nr.10
+ 'define Lget_DA2 65516' &hffec 'Lbit-Exportfunktion Nr.11
+
+ PRINT
+ PRINT "  Die Lbit-Version ist ";Lbit_Version;" und ";LGet_NOM;" Slots sind derzeit geladen."
+ PRINT "  Virtueller Autostart-Jumper V-ASJ ";
+
+   IF LGet_ASJSLOT THEN
+
+     PRINT "'steckt' auf Slot # ";LGet_ASJSLOT;"."
+
+   ELSE
+
+     PRINT "ist nicht 'gesteckt'."
+     PRINT "  Bei Reset wird daher im Hostmodus gestartet."
+
+   END IF
+
+ PRINT
+ PRINT "  Speicher im Mikrokontroller  wurde mind. ";LGet_IEC;"x per Hostmodus programmiert."
+ PRINT "  Der externe I2C-Speicherchip wurde mind. ";LGet_EEC;"x per Hostmodus programmiert."
+ PRINT
+ PRINT "  Derzeit verbleiben noch ";LGet_filefree;" Words zur Datenaufzeichung."
+ PRINT
+
+
+ PRINT "  Die vom Anwender erweiterbare Bedienoberflaeche 'UIP' (User Interface Program)"
+ PRINT "  ist derzeit ";
+
+   IF LGet_UIPSlot THEN
+
+       PRINT "in Slot # ";LGet_UIPSlot ;
+    ELSE
+       PRINT "...nicht";
+
+
+   END IF
+
+PRINT " aktiviert."
+
+
+END                                              '                     I-------
+' <<- Hauptschleife  Ende                                          N----------
+'----------------------------------------------------------------------------
+
+'----------------------------------------------------------------------------
+#SUBS'Subroutinen Anfang ->>                                       S----------
+'                                                                      U-------
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Dieser Programmteil enthaelt die Unterroutinen des Programms,    ''
+  ' (Funktionen oder Prozeduren).                                    '''
+  ' WICHTIG: Hier bitte keine Datentabellen einfuegen. (s.u.)        ''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'                                                                      B-------
+' <<- Subroutinen Ende                                             S----------
+'----------------------------------------------------------------------------
+ INCLUDE "L:\X2G\INCLUDE\OCBASIC\L-EXIT.PRO"'<<- Anweisungen Ende
+'----------------------------------------------------------------------------
+#DATA 'Datenbereich Anfang ->>                                     D----------
+ TABLE Dieses_Programm_wurde_entworfen_fuer_L_Modul 854  TABEND'      A--------
+
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Dieser Bereich ist fuer Datentabellen reserviert.  BASIC-Pro-    ''
+  ' grammanweisungen muessen immer oberhalb aller Datentabellen      '''
+  ' stehen, da es ansonsten zu Fehlfunktionen kommen kann.           ''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'                                                                     T--------
+' <<- Datenbereich Ende                                            A----------
+'----------------------------------------------------------------------------
+#LEND'<<- Ende dieses Quelltextes (BASIC-Programm und Datentabellen).
+
+'Maschinenspracheprogramme fuer das interne EEPROM werden wie gewohnt
+'hinter das Ende des Quelltextes platziert (Auch wenn Datentabellen im BASIC-
+'Programm enthalten sind). Beispiel:
+
+'syscode "fastbas.s19"

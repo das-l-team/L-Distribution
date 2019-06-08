@@ -1,0 +1,125 @@
+
+
+    // CCbasic(++) highlighter adapted by Henrik Reimers
+    // umgestellt und erweitert auf Open-Control/BASIC by Gerhard Fischer
+    // weitere Anpassungen von Dietmar Harlos am 3. September 2005
+    // erweitert von  das |_ Team
+
+
+    Language:    --> C-Control/plus Projektdatei
+
+    Description: Projektdatei der C-Control/plus Entwicklungsumgebung
+
+
+
+
+    CaseSensitive: 0
+
+    LineComment: '
+    BlockCommentBeg:
+    BlockCommentEnd:
+
+    IdentifierBegChars: a..z A..Z _%@
+    IdentifierChars: a..z A..Z _ 0..9 ?
+
+    NumConstBegChars: # //als Label mißbraucht
+
+
+    NumConstChars: a..z A..Z _ 0..9
+
+    EscapeChar:
+
+    KeyWords1:
+
+
+
+
+
+
+	// Reservierte Variablennamen zur Konf. des Betriebssystems
+    KeyWords2:
+        OPTION CCbas OpenMicro OpenMini OpenMidi OpenMacro
+        OM_END2HOST_ON OM_END2HOST_OFF OM_UseEsci_ON OM_UseEsci_OFF PrintHex PrintSpc URIllTok FileByte
+	ClockDis RealPop RunOnErr Carry IrqReq IrqSet IrqAct FileChg IiarFnd
+	EsciErr UIRIrq UIRSwi UIRTim0 UIRTim1 UIRTovl UIRKyb UIRAdc URTok
+	config1 config2 dERR dERRADRh dERRADRl dFILEPOSh dFILEPOSl
+	dDBNZCTR dCSTKPTR dGSTKPTR dPCADRh dPCADRl dFREERAM1
+	INTERRUPT PULLUPA PULLUPB VERSION ConOnErr INCLUDE UIRTofl
+	UIRSpiR UIRSpiT UIRTim2 UIRTim3 UIRTim3 UIRTim3 UIREsciE
+	OSTEMP OSTEMP1 OSTEMP2 RTCTIMER URAMBASE UPROGBASE
+	ESCIBUF ESCIPTR
+	iIRQ iSWI iTIM0 iTIM1 iTOFL iKYB iADC iTOK iSPIr iSPIt
+	iTIM2 iTIM3 iESCIr iESCIt iESCIe
+
+
+
+
+    KeyWords3:
+
+
+
+
+
+
+    KeyWords4:
+
+
+
+
+    KeyWords5:
+
+    StringBegChar: "
+    StringEndChar: "
+    MultilineStrings: 0
+
+    UsePreprocessor: 0
+
+
+    CurrLineHighlighted: 1
+
+    SpaceCol: clWindowText clWindow
+    Keyword1Col: $00C00000 clWindow
+    Keyword2Col: clPurple clWindow
+    Keyword3Col: clBlue clWindow
+    Keyword4Col: clBlue clWindow
+    Keyword5Col: clBlue clWindow
+    IdentifierCol: clWindowText clWindow
+    CommentCol: clGreen clWindow
+    NumberCol: $000000C0 clWindow
+    StringCol: clMaroon clWindow
+    SymbolCol: clPurple clWindow
+    PreprocessorCol: clBlue clWindow
+    SelectionCol: clWhite clNavy
+    CurrentLineCol: clBlack clYellow
+
+    OverrideTxtFgColor: 0
+    BlockAutoindent: 0
+    BlockBegStr:
+    BlockEndStr:
+    MatchedBracesCol: clWindowText clWindow
+
+
+
+
+CurrLineHighlighted:    1
+OverrideTxtFgColor:     0
+BlockAutoindent:        0
+BlockBegStr:
+BlockEndStr:
+SpaceCol:               clWindowText clWindow
+Keyword1Col:            clNavy clWindow B
+Keyword2Col:            $00C000C0 clWindow
+Keyword3Col:            $00FF4040 clWindow B
+Keyword4Col:            $00C000C0 clWindow B
+Keyword5Col:            clOlive clWindow B
+IdentifierCol:          clWindowText clWindow
+CommentCol:             $0000C000 $0080FFFF
+NumberCol:              clRed clWindow
+StringCol:              clMaroon clWindow
+SymbolCol:              $000000C0 clWindow
+PreprocessorCol:        clBlue clWindow
+SelectionCol:           $00FF4040 $00202020
+CurrentLineCol:         clBlack clWindow
+MatchedBracesCol:       clWindowText clWindow
+Filter:                 --> C-Control/plus - Projekt Dateien (*.cpf) | *.cpf;
+HelpFile:               C:\Programme\Conrad Electronic\CCPlus\CCPLUS.HLP

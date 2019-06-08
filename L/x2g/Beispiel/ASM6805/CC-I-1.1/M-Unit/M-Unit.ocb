@@ -1,0 +1,37 @@
+'Ports der M-Unit auf definiertes Potenzial setzen
+'Vgl. Tipps und Tricks auf der Website http://ccintern.dharlos.de
+
+
+define wp1 wordport[1]
+
+wp1=0
+sys &h91 &h819d, &hb701, &ha47f, &hb601, &hb704, &haade, &hb604
+print "Ausgangsports u. RXD als Ausgang gesetzt."
+end
+
+
+
+'AS05 Assembler for M6805 [1.44].  Copyright 1994-2015, Frank A. Kingswood                                                Page    1
+'--------------------------------------- L:\x2g\Beispiel\ASM6805\CC-I-1.1\M-Unit\M-UNIT.A05 ---------------------------------------
+'
+'13 lines read, no errors in pass 1.
+'
+'
+'0091 =                   org $91
+'
+'0091 :                  definiert:
+'0091 : b604                       lda $04
+'0093 : aade                       ora #%11011110
+'0095 : b704                       sta $04
+'
+'0097 : b601                       lda $01
+'0099 : a47f                       and #%01111111
+'009b : b701                       sta $01
+'
+' 81                                 rts
+' 9d                                 nop
+'-------------------------------------------- Memory Usage Map ('x'=used, '-'=unused) ---------------------------------------------
+'
+'0080 : ---------------- -xxxxxxxxxxxx--- ---------------- ----------------
+'
+'No errors in pass 2.

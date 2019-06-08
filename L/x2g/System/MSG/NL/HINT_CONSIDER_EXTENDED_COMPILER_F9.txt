@@ -1,0 +1,2 @@
+[ TIP: If compiling is not successful, the extended compiler can possibly create a remedy for the C-Control/BASIC via the F9 key. ]
+

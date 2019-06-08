@@ -1,0 +1,20 @@
+
+[ PROBLEM ]
+
+--> Bitte die mit dem Zielsystem assoziierte Schnittstelle (COM1, COM2, COM3 oder COM4) angeben und Zielsystem in den Hostmodus schalten.
+
+    Die Angabe der Schnittstelle geschieht ueber die Tasten F9, F10, F11, oder F12 wie folgt:
+
+Zuerst die Datei L:\x2g\Hilfe.L im Editor oeffnen, dann die betreffende Taste druecken und den Hinweisen im Editorfenster folgen.
+
+
+--> Falls ein "Error 68 at pgm-ctr: 1591" in der Textkonsole erscheint, so konnte die Serielle Schnittstelle (auch: COM-Port)
+    nicht geöffnet werden. Dies z.B. weil ein anderes Programm noch darauf zugreift, oder der gewählte COM-Port nicht vorhanden ist.
+
+--> Evt. muss auf dem Zielsystem zuerst ein Dienstprogramm gestartet werden, um das Auslesen des Inhalts zu ermoeglichen.
+
+
+
+
+
+

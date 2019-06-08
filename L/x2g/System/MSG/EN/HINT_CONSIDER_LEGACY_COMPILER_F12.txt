@@ -1,0 +1,1 @@
+[ Tip:  If compiling is not successful, the compiler can possibly create a remedy for the C-Control/BASIC via the F12 key. ]

@@ -1,0 +1,8 @@
+
+' Die nachfolgende Tabelle wurde aus "FASTBAS.s19" generiert
+
+TABLE fastbas
+  &h1206
+  &h9ccd &h0e04 &ha154 &h2306 &hcd09 &h17cc &h0969 &h4897
+  &hd61d &hf6b7 &hbed6 &h1df7 &hb7bf &hbdbd &h20e3
+TABEND

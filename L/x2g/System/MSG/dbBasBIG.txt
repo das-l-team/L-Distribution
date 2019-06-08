@@ -1,0 +1,17 @@
+ CCBASBIG
+
+  We employ this tool, CCBASBIG.EXE, courtesy http://ccintern.dharlos.de
+  as a reference compiler for legacy C-Control/BASIC source code files.
+
+  It bears the same limitations as the original C-Control I 1.1 BASIC
+  compiler presented in the late 1990's. With one exception: CCBASBIG.EXE
+  allows for program files of up to 32000 bytes in size, 4 times the limit
+  set by 1996's OEM hardware configuration (OEM EEPROM size is 8 KiB)
+
+  It may be feasable to keep this compiler handy for testing purposes
+  and compatibility checks as well as making use of the many programming
+  examples and code-snippets written in CCBASIC you can still find on the
+  internet.
+  
+  More info on how CCBASBIG.EXE works can be found opening the 2 local
+  files  L:\x2g\Info.L  and  L:\x2g\Hilfe.L  after toolchain exits.

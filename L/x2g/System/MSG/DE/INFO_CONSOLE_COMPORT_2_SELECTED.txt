@@ -1,0 +1,1 @@
+[ Zur Verbindung mit dem Zielsystem bitte COM-Port Nummer 2 verwenden. ]

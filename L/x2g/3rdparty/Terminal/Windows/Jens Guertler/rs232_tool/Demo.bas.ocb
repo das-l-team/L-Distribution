@@ -1,0 +1,89 @@
+'****************************************************************************
+'*                Demo-Programm zum Open-Micro Temperatur-Tool              *
+'****************************************************************************
+
+
+'--- Definitionen fuer die Open-Micro und Open-Mini laden -------------------
+INCLUDE "om.def"                ' OM.DEF Datei laden
+'----------------------------------------------------------------------------
+
+
+define a       byte
+
+
+'--- Steuerkommandos --------------------------------------------------------
+print                           ' Leerzeile (hat auf das Tool keine Auswirkung)
+'print "PRG-Sperre"
+'print "PRG-Reset"
+'print "PRG-MIN"
+print "PRG-MAX"
+'print "PRG-Ende"
+'print "PRG-Wichtig"
+
+pause 250
+'----------------------------------------------------------------------------
+
+
+'--- Text für Wicktig.txt ---------------------------------------------------
+print                           ' Leerzeile (hat auf das Tool keine Auswirkung)
+
+Print "PRG-Wichtig"
+Print "Dieser Text wird nun in der Wichtig.txt Datei gespeichert"
+Pause 50
+Print "PRG-Wichtig"
+Print "Dieser Text wird der Datei Wichtig.txt hinzugefügt und außerdem"
+Print "wird auch noch ---Kabelbruch CPU Sensor --- mit abgespeichert"
+Pause 50
+pause 250
+'----------------------------------------------------------------------------
+
+
+#start
+'--- RS232 Ausgabe - (positive Zahlen) --------------------------------------
+for a = 30 to 0 step -1         ' Die Temperatur für Anzeige Nr1 und Nr2 auf 30° einstellen
+  print                         ' Leerzeile (hat auf das Tool keine Auswirkung)
+  print "CPU:      ";           ' Suchschlüssel Anzeige Nr1 senden
+  if a<10 then print "0";       ' sicherstellen das die Zahl immer zwiestellig ist
+  print a; "02"                 ' die vierstellige Zahl von Anzeige Nr1 senden
+'-----------
+  print "Netzteil: ";           ' Suchschlüssel Anzeige Nr2 senden
+  if a<10 then print "0";       ' sicherstellen das die Zahl immer zwiestellig ist
+  print a; "57"                 ' die vierstellige Zahl von Anzeige Nr2 senden
+'-----------
+  print "PWM:      069"         ' Daten für Anzeice Nr3 senden
+  print "Drehzahl: 1218"        ' Daten für Anzeige Nr4 senden
+  pause 250                     ' 5 Sekunden (kleine Pause)
+next
+'----------------------------------------------------------------------------
+
+
+'--- RS232 Ausgabe - (negative Zahlen) --------------------------------------
+for a = 1 to 10                 ' Die Temperatur für Anzeige Nr1 und Nr2 auf 1° einstellen
+  print                         ' Leerzeile (hat auf das Tool keine Auswirkung)
+  print "CPU:      -";          ' Suchschlüssel Anzeige Nr1 senden
+  if a<10 then print "0";       ' sicherstellen das die Zahl immer zweistellig ist
+  print a; "13"                 ' die vierstellige Zahl von Anzeige Nr1 senden
+'-----------
+  print "Netzteil: -";          ' Suchschlüssel Anzeige Nr2 senden
+  if a<10 then print "0";       ' sicherstellen das die Zahl immer zweistellig ist
+  print a; "33"                 ' die vierstellige Zahl von Anzeige Nr2 senden
+'-----------
+  print "PWM:      -100"        ' Daten für Anzeige Nr3 senden
+  print "Drehzahl: -3218"       ' Daten für Anzeige Nr4 senden
+  print "Kurzschluss CPU Sensor" ' Daten für Anzeige Nr5 senden
+  pause 250                     ' 5 Sekunden (kleine Pause)
+next
+'----------------------------------------------------------------------------
+goto start
+
+
+
+
+
+
+
+
+
+
+
+

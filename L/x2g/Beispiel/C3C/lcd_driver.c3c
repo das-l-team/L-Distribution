@@ -1,0 +1,125 @@
+/*   lcd_driver.c           (Dieses Programm stammt von www.blafusel.de/misc/ccontrol2.html
+ *                           siehe auch  www.blafusel.de/misc/ccontrol.html [das |_ Team] )
+ *   Hilfsfunktionen fuer LCDs
+ *
+ *   Das LCD ist beim LCD-Modul in der typischen Conrad-Bauweise an Port 9-16 angeschlossen
+ *
+ *   Die Funktionen sind auf ein 2-zeiliges Display mit 24 Zeichen zugeschnitten, sind aber fuer
+ *   die meisten anderen mehrzeiligen Displays ebenfalls benutzbar
+ *
+ *   02/2005 Florian Schäffer, http://www.blafusel.de
+ */
+
+// Definition LCD-Ports 
+#define BYTEPORT 1     // 2. Byte-Port: Pin 12-15 = PB0-PB3 (Port 9-12)
+#define LCD_RS 13      // 6. Bit am 2. Byte-Port: Register Select (Port 14) 
+#define LCD_E 14       // 7. Bit am 2. Byte-Port: Enable/Strobe (Port 15)
+
+void lcd_write (char lcd_param, char lcd_buf)   // Kommando oder Zeichen an Display senden: lcd_buf=0 => Kommando, 0x20=>Zeichen
+{
+  OutByte (BYTEPORT, lcd_buf | (lcd_param >> 4)); // Hi-Nibble
+  Pulse (LCD_E);
+  OutByte (BYTEPORT, lcd_buf | (lcd_param & 0x0F));  // Lo-Nibble
+  Pulse (LCD_E);
+}
+
+void lcd_cls ()   // Display loeschen
+{
+  lcd_write(0x02,0);   // B 0000 0010 => Display loeschen
+  lcd_write(0x01,0);   // B 0000 0001 => Cursor Home
+}
+
+void lcd_gotoline (char zeile)    // Zeilenwechsel
+{
+  if (zeile == 1) lcd_write(0x80,0);   // B 1000 0000 => DD-RAM Adress Set 1. Zeile/1.Spalte 
+  if (zeile == 2) lcd_write(0xC0,0);   // B 1100 0000 => DD-RAM Adress Set 2. Zeile/1.Spalte (B x100 0000 = H 40)
+}
+
+void lcd_gotopos (char zeile, char spalte)    // Cursorpositionieren (Zeile, Spalte)
+{
+  if (zeile == 1) lcd_write(0x80+spalte-1,0);   // DD-RAM Adress 1. Zeile + Spalte
+  if (zeile == 2) lcd_write(0xC0+spalte-1,0);   // DD-RAM Adress 2. Zeile + Spalte 
+}
+
+
+void lcd_init()     // Initialisierung - einmal im Hauptprogramm aufrufen
+{
+  OutByte (BYTEPORT, 0);   // alle ports 0
+  lcd_write(0x38,0);       // B 0010 1000 => 8-Bit-Modus aktivieren
+  OutByte (BYTEPORT, 0x2); // B 0000 0010 => mit 8-Bit-Command in 4-Bit-Modus umschalten 
+  Pulse (LCD_E);           // ab jetzt 4-Bit-Modus
+  lcd_write(0x28,0);       // B 0010 1000 => Function Set: 4Bit (kein 8-Bit Bus), zweizeiliges Display, 5x7 Dots/Zeichen (kein 5x10)
+  lcd_write(0x0C,0);       // B 0000 1100 => Display On/Off: Display ein, Cursor aus, Blinken aus
+  lcd_write(0x06,0);       // B 0000 0110 => Entry Mode Set: DD-RAM autom. inkr., Cursor bewegen
+  lcd_cls();
+}
+
+void lcd_writechar (char zeichen)   // Zeichenausgabe
+{
+  lcd_write(zeichen, 0x20);   // B 0010 0000 => Register Select (RS) auf High zum Schreiben
+}
+
+void lcd_writetext (char *text)    // gibt eine Zeichenkette auf dem LCD aus
+// muss char sein
+{
+  static char i = 0;
+  while (text[i]!=0) 
+  {
+    lcd_writechar(text[i]);
+    i++;
+  }
+}
+
+// gibt eine int-Zahl auf dem Display aus. Zweiter Parameter = Anzahl der Stellen (führende Leerzeichen), 
+// space=0 => führende Nullen, 1 => führende Leerzeichen
+void lcd_writezahl (int zahl, char pos, bit spacer)       
+{
+  static int output;
+  static char sign = '0';
+  
+  output = abs(zahl);
+  pos--;       // Korrektur des Parameters für Benutzerfreundlichkeit
+  
+  if (spacer) sign=' ';
+
+  // negatives Vorzeichen oder Leerzeichen
+  if (zahl < 0) lcd_writechar ('-');              
+  
+  // Zehntausender-Dezimalstelle oder Leerzeichen (Ausblenden fuehrender Nullen)
+  if (abs(zahl) >= 10000) lcd_writechar (0x30 + output/10000) else if (pos >= 4) lcd_writechar (sign);
+  output = output % 10000;
+
+  // Tausender-Dezimalstelle oder Leerzeichen
+  if (abs(zahl) >= 1000) lcd_writechar (0x30 + output/1000) else if (pos >= 3) lcd_writechar (sign);
+  output = output % 1000;
+
+  // Hunderter-Dezimalstelle oder Leerzeichen
+  if (abs(zahl) >= 100) lcd_writechar (0x30 + output/100) else if (pos >= 2) lcd_writechar (sign);
+  output = output % 100;
+
+  // Zehner-Dezimalstelle oder Leerzeichen
+  if (abs(zahl) >= 10) lcd_writechar (0x30 + output/10) else if (pos >= 1) lcd_writechar (sign);
+
+  // einer Dezimalstelle oder Leerzeichen
+  lcd_writechar (0x30 + output % 10);
+}
+
+// Gibt Integer-Zahl als Real-Wert mit Komma aus. digits = Anzahl der Nachkommastellen
+// zahl=3205, digits=1 => 320,5; digits=2 => 32,05 usw.
+void lcd_writereal (int zahl, char digits)
+{
+     static int i, faktor, vork, nachk;
+     
+     faktor=1;
+     for (i=1; i<=digits; i++)     // Faktorisierung (10^digits-Potenz) fuer Nachkommaanteilberechnung
+          faktor*=10;
+     
+     if (zahl < 0) lcd_writechar ('-');      // negative Zahlen => Minuszeichen
+     zahl  = abs(zahl);                     
+     vork  = zahl/faktor;                    // Vorkommaanteil
+     nachk = zahl%faktor;                    // Nachkommaanteil
+     lcd_writezahl (vork, 1, 1);             // ein- (oder mehr-) stellig ohne fuehrendes Null
+     lcd_writechar (',');     
+     lcd_writezahl (nachk, digits, 0);       // Nachkommaanteil mit entspr. Anzahl der Stellen und fuehrenden Nullen
+                                             // (3205 ist 32,05 und nicht 32,5)
+}  

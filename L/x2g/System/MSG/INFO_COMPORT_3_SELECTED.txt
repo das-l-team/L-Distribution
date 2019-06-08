@@ -1,0 +1,33 @@
+3 [ Here you can select which serial port your target system is connected to ]
+
+    
+  Currently, serial port # |3| is selected.
+                              ______________________
+                           __|_ _ __                |         _____    _____
+     _____       _____    *  _____  *    _____      |       -o     \__/     o-
+    ||F9 ||     ||F10||   | ||F11|| |   ||F12||     |       -|  uC target   |-
+    ||___||     ||___||   * ||___|| *   ||___||     +-----> -o  system with o-
+    |/___\|     |/___\|   | |/___\| |   |/___\|             -|  com-setting |-
+                          *         *                       -o  9600 baud   o-
+     select      select   |  COM3:  |    select             -|  8,n,1       |-
+     COM1:       COM2:    * is now  *    COM4:              -o              o-
+                          | selected|                       -|______________|-
+                          * ~~~~~~~ *
+
+
+
+
+
+  Settings displayed above will be active until next selection.
+
+  
+  Known limitations:
+
+- Currently, only COM ports 1,2,3,4 are selectable, even should this computer
+  be equipped with additional serial port adapters. Some USB-serial adapters may
+  cause inconvenience if they are set to higher port numbers by default
+  e.g. COM ports 5..255. Refer to their respective user manual to find
+  instructions on how to manually select a port number in the range of 1..4
+
+
+  (* ASCII artwork inspired by Andreas Weber, www.tech-chat.de, and others)

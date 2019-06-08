@@ -1,0 +1,1 @@
+[ Toolchain is now connected to COM port # 1 (one) ]

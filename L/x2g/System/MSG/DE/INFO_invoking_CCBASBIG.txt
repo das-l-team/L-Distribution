@@ -1,0 +1,1 @@
+[ CCBasBIG.EXE - von http://ccintern.dharlos.de, als Referenzkompiler für C-Control/BASIC Programme mit 24 Variablen und 8 KiB (Programmlaenge abweichend bis 32000 Bytes moeglich)  ]

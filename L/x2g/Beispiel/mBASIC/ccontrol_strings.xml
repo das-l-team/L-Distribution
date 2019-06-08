@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><project><system>ccontrol-1.1</system><assembler><source></source><breakpoint></breakpoint></assembler><basic><source>l' String Variablen
+
+Const Jahr = 1980
+Const Vorname$ = "Michael"
+Dim Geburtsjahr$ As String = Str$(Jahr)
+Dim Haustier$, Name$ As String = Vorname$
+'Haustier$ und Name$ wurden gemeinsam mit Vorname$ initialisert
+'Deshalb wird ausgegeben: Michael's Haustier heißt Michael (!)
+Print Name$; "'s Haustier heißt ";Haustier$
+
+'Um nur Name$ zu initialisieren hätten wir schreiben müssen
+'DIM Haustier$ As String, Name$ As String = Vorname$
+
+'Wir verbessern den Fehler und löschen den String jetzt ;-)
+Haustier$ = ""
+
+If Haustier = 0 Then   ' Länge von String = 0?
+                  Print Name$, "hat kein Haustier mehr!"
+                End If
+
+'Natürlich kann man jetzt auch SUBs und FUNCTIONS schreiben,
+'die Strings als Parameter enthalten
+
+Call Print_Ausgabe("Hallo ich bin "+Vorname$)
+
+Name$ = "Auf dem Display!"
+
+Call Display_Ausgabe(Name$)
+
+Print "Beispiel für einen Funktionsaufruf mit String als Parameter:"
+Print Length("Zähle meine Zeichen")
+ End
+End : Do: Loop  'End' vorangestellt zwecks 'Lbit' Hostmodus (L-Team)
+
+' -- gewöhnliche Ausgabe mit Print
+Sub Print_Ausgabe(Name$)
+ Print Name$
+End Sub
+' --
+
+' -- hier den Code für eine Display Ausgabe einfügen
+Sub Display_Ausgabe(Name$)
+ Dim n As Byte
+ 
+ For n=1 To Name
+   Print Chr$ ( Name$[n] );
+ Next n
+
+ Print
+End Sub
+' --
+
+' -- die aus QBASIC und VisualBasic bekannte Funktion
+' sie gibt die Länge eines Strings zurück.
+' Ist in mBasic aber durch den String selbst (ohne $) implementiert
+Function Length(Name$)
+  Length = Name
+End Function
+</source><breakpoint></breakpoint></basic><simulator></simulator></project>

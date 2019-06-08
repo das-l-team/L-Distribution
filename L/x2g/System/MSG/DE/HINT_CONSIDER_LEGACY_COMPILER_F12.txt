@@ -1,0 +1,1 @@
+[ Tipp: Falls Kompilierung niemals erfolgreich, kann möglicherweise der C-Control/BASIC Referenzmodus via Taste F12 Abhilfe schaffen. ]

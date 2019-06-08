@@ -1,0 +1,2 @@
+[ Starting  AS assembler - (C) Alfred Arnold,  please see http://john.ccac.rwth-aachen.de:8000 - for details ]
+

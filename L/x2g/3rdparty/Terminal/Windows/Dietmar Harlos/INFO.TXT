@@ -1,0 +1,23 @@
+
+Terminal32 Version 1.5 for OM-Controller - (c) Dietmar Harlos
+
+Usage: TERMINAL32 [a[,b[,c[,d,[,e]]]] OUTFILE]
+
+Where a is the number of serial port used (1..9), default: 1
+      b is the baud rate (110..256000), default: 9600
+      c is the parity mode (n,e,o,m or s), default: n (no parity)
+      d is the number of data bits used (4..8), default: 8
+      e is the number of stop bits (1 or 2), default: 1
+
+      OUTFILE is the Name of a file where the input and output
+      is written to. The default is TERMINAL.OUT, if you write
+      an exclamation mark (!) instead of a filename, no data
+      is written.
+
+All parameters in square brackets ([]) are optional. If you want
+to use COM1 with 9600 baud and EVEN parity you may shorten it to
+      TERMINAL32 ,,e
+You may abbreviate 600 baud by l. If you give no other input than
+l (no OUTFILE as well), the program assumes the default values with
+600 baud instead of 9600 baud. Example:
+      TERMINAL32 l

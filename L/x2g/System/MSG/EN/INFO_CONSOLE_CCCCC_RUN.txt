@@ -1,0 +1,9 @@
+
+C-Control/C-Cross-Compiler, Version 0.2.1.0 (Beta)
+Copyright (C) 2005, 2006, Oliver Haag
+C-Control/C-Cross-Compiler comes with absolutely NO WARRANTY.
+The C-Control/C-Cross-Compiler ist free software which you can redistribute if certain conditions are met.
+See details in the following local ressources:
+L:\x2g\Info.L
+L:\x2g\Hilfe.L
+L:\x2g\3rdparty\CCCCC\COPYING

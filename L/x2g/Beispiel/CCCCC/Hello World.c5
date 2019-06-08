@@ -1,0 +1,9 @@
+
+
+
+void main() // soll heissen void main()
+{
+ rs_sendstr("\"Hello World!\"\n");
+}
+
+ 

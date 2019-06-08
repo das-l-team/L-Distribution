@@ -1,0 +1,411 @@
+
+option OPENMICRO
+
+' ---------------------------------------------------------------------------
+' --- Definitionen fuer die Open-Micro und Open-Mini in OCBASIC -------------
+' --- von Dietmar Harlos am 2. August 2005 ----------------------------------
+' --- letztes Update am 14. April 2010 --------------------------------------
+' ---------------------------------------------------------------------------
+
+'   Die Pinbelegung der
+'    Open-Micro (QT4)
+'     _____    _____
+'    |     \__/     |
+'   [  VDD      GND  ]       VDD = 4.6 bis 5.5 Volt
+'    |              |
+'   [  PTA5    PTA0  ]
+'    |              |
+'   [  PTA4    PTA1  ]
+'    |              |
+'   [  PTA3    PTA2  ]  <--- an diesem Pin liegen auch IRQ und FREQ
+'    |______________|
+'    
+
+define pta0 port [1]       ' serielle Eindraht-Schnittstelle
+define pta1 port [2]
+define pta2 port [3]       ' durch Hardware als Eingabe-Pin festgelegt
+define pta3 port [4]
+define pta4 port [5]       ' gelbe LED
+define pta5 port [6]       ' Piezo-Beeper
+
+define porta byteport [1]  ' byteweiser Zugriff auf PORTA
+define pullupa ivar [140]  ' interne Pull-Up-Widerstaende an PORTA (Adr. $0b)
+
+define ad0 ad [1]          ' Analog-Digital-Wandler,
+define ad1 ad [2]          ' wobei ad[3] gleich ad[5]
+define ad2 ad [3]          ' und ad[4] gleich ad[6] ist
+define ad3 ad [4]
+define ad4 ad [5]
+define ad5 ad [6]
+
+' ---------------------------------------------------------------------------
+
+'   Die Pinbelegung der
+'    Open-Mini (QY4)
+'     _____    _____
+'    |     \__/     |
+'   [  VDD      GND  ]       VDD = 4.6 bis 5.5 Volt
+'    |              |
+'   [  PTB7    PTB0  ]
+'    |              |
+'   [  PTB6    PTB1  ]
+'    |              |
+'   [  PTA5    PTA0  ]
+'    |              |
+'   [  PTA4    PTA1  ]
+'    |              |
+'   [  PTB5    PTB2  ]
+'    |              |
+'   [  PTB4    PTB3  ]
+'    |              |
+'   [  PTA3    PTA2  ]  <--- an diesem Pin liegen auch IRQ und FREQ
+'    |______________|
+'    
+
+define ptb0 port [9]       ' Die Open-Mini besitzt wie die Open-Micro
+define ptb1 port [10]      ' den PORTA und zusaetzlich den PORTB.
+define ptb2 port [11]
+define ptb3 port [12]
+define ptb4 port [13]
+define ptb5 port [14]
+define ptb6 port [15]
+define ptb7 port [16]
+
+define portb byteport [2]  ' byteweiser Zugriff auf PORTB
+define pullupb ivar [141]  ' interne Pull-Up-Widerstaende an PORTB (Adr. $0c)
+
+' ---------------------------------------------------------------------------
+
+' Von Adresse $80 bis $ff liegen 128 Byte RAM. Die ersten 64 Byte sind das
+' User-RAM und nehmen ueblicherweise die User-Variablen auf.
+
+define byte0  byte [1]     ' erstes Byte im Variablenspeicher (User-RAM)
+define byte63 byte [64]    ' letztes Byte im Variablenspeicher (64 Byte)
+
+define version byte [24]   ' Versionsnummer des OM-Betriebssystems
+
+' ---------------------------------------------------------------------------
+
+' Mit Hilfe der folgenden internen Variablen laesst sich das Betriebssystem
+' konfigurieren...
+
+' (CCBASIC unterstuetzt nicht den Typ 'IVAR'. Die neuen internen Variablen
+'  lassen sich dort daher nur ueber Tricks ansprechen.)
+
+define PrintHex ivar [81]  ' PRINT hexadezimal statt dezimal
+define PrintSpc ivar [82]  ' SPACE vor einem dezimalen PRINT ausgeben
+define RealPop  ivar [83]  ' echtes Stackhandling & kein Stacksichern bei IRQ
+define ClockDis ivar [84]  ' Weiterzaehlen der Uhr deaktivieren
+define URIllTok ivar [85]  ' User-Tokenroutine bei illegalem Token starten
+define ConOnErr ivar [86]  ' bei Fehler Programm fortsetzen (Fehler in ERR)
+define RunOnErr ivar [87]  ' bei Fehler Programm neustarten (Fehler in ERR)
+define End2Host ivar [88]  ' bei END in den Hostmodus (unabh. vom PTA2-Pin)
+
+' Die Flags fuer den Status vom Betriebssystem sollte der Anwender nur
+' auslesen und unveraendert lassen...
+
+define Carry    ivar [73]  ' Carry nach Berechnungen
+define IrqReq   ivar [74]  ' IRQ detektiert, BASIC-IRQ-Routine soll starten
+define IrqSet   ivar [75]  ' BASIC-IRQ-Routine per "INTERRUPT label" definiert
+define IrqAct   ivar [76]  ' BASIC-IRQ-Routine wird augenblicklich ausgefuehrt
+define FileChg  ivar [77]  ' Datei veraendert, CLOSE# muss fileend aktualisieren
+define IiarFnd  ivar [78]  ' Inline-Interrupt-Assemblerroutine wird verwendet
+
+' Mit diesen Bits lassen sich User-Assemblerroutinen in jeden Interrupt des
+' Kontrollers und in den Tokeninterpreter einbinden...
+
+define UIRIrq   ivar [65]  ' User-Assemblerroutine fuer IRQ aktivieren
+define UIRSwi   ivar [66]  ' User-Assemblerroutine fuer SWI aktivieren
+define UIRTim0  ivar [67]  ' User-Assemblerroutine fuer TIM0 aktivieren
+define UIRTim1  ivar [68]  ' User-Assemblerroutine fuer TIM1 aktivieren
+define UIRTofl  ivar [69]  ' User-Assemblerroutine fuer TIMOFL aktivieren
+define UIRKyb   ivar [70]  ' User-Assemblerroutine fuer KEYB aktivieren
+define UIRAdc   ivar [71]  ' User-Assemblerroutine fuer ADC aktivieren
+define URTok    ivar [72]  ' User-Assemblerroutine fuer Tokeninterpreter
+
+' Die Konfigurationsregister vom Mikrokontroller. Sie lassen sich nach jedem
+' Reset nur einmal beschreiben ("write once")...
+
+'define CONFIG1  ivar [160] ' wurde bereits vom Betriebssystem beschrieben
+'define CONFIG2  ivar [159] ' Aktivierung IRQ- & RST-Pin, Taktquelle wechseln
+
+' Zugriff auf den TIMER der Real Time Clock (RTC) in BASIC und Assembler
+
+define RTCTIMER TIMER      ' entspricht auf Open-Micro/Mini/Midi dem TIMER
+
+' ---------------------------------------------------------------------------
+
+' Es existiert jetzt ein an die Open-Micro angepasster OCBASIC-Compiler,
+' mit dem die Systemvariablen als interne Variablen (also genauso wie HOUR,
+' TIMER, usw.) ansprechbar sind. Da sich die Lage dieser Variablen in
+' zukuenftigen Betriebssystemversionen aendern kann, sollten diese Variablen
+' nicht ueber ihre Adresse angesprochen werden!
+
+' Da die Open-Micro aber kein 16-Bit-Stackhandling unterstuetzt, lassen sich
+' die folgenden Word-Systemvariablen leider nicht als interne Variablen,
+' sondern nur wie hier gezeigt ueber ihr High- und Lowbyte ansprechen...
+
+define dFILEPOSh byte [67] ' Die Adresse, von der aus der Datei gelesen oder
+define dFILEPOSl byte [68] '  in die geschrieben wird (fuer PEEK verwendbar)
+
+define dPCADRh   byte [97] ' Der Programmzaehler (Programmcounter, PC) im
+define dPCADRl   byte [98] '  tokensierten BASIC- oder CCPLUS-Programm
+
+define dERRADRh  byte [65] ' Die Adresse aus dem Programmzaehler nach
+define dERRADRl  byte [66] '  Auftreten eines Fehlers
+
+' Mit den folgenden Definitionen kann in CCBASIC auf einige nuetzliche neue
+' Systemvariablen zugegriffen werden. Fuer OCBASIC sind sie unnoetig...
+
+define dERR      byte [77] ' Fehlergrund, falls RunOnErr aktiviert
+
+define dDBNZCTR  byte [77] ' Zaehlvariable fuer DBNZ-Schleifen
+
+define dCSTKPTR  byte [85] ' Pointer des Rechenstacks
+define dGSTKPTR  byte [96] ' Pointer des GOSUB-Stacks
+
+define dFREERAM1 byte[103] ' fuer Assembler freigehaltenes RAM (erstes Byte)
+
+' ---------------------------------------------------------------------------
+
+' Ab Version 0.91 besitzt OCBASIC einen integrierten 6808-Assembler, wodurch
+' Assembler- und BASIC-Quellcode im gleichen Programm benutzt werden kann.
+
+' Programme, die diese Definitionen benoetigen, sind i.d.R. nur auf einem
+' OM-Kontrollersystem lauffaehig und muessen fuer ein anderes System neu
+' uebersetzt (neu kompiliert) werden.
+
+define URAMBASE &h80       ' An dieser Adresse beginnt das User-RAM. Diese
+                           ' Definition ermoeglicht den Zugriff auf vom
+                           ' Anwender definierte Variablen in Assembler.
+                           ' Es ist zum Beispiel moeglich, den Inhalt der
+                           ' Variable "uservariable" mit dem Assembler-
+                           ' befehl "!lda uservariable" in den Akku zu laden.
+
+define UPROGBASE &hf47e    ' An dieser Adresse beginnt der virtuelle Adress-
+                           ' raum des Tokencodes. Diese Definition wird nur
+                           ' fuer Assemblerbefehle mit absoluter Adressierung
+                           ' benoetigt (JSR, JMP, LDA label,x ...), aber
+                           ' nicht fuer die optimaleren relativen Sprung-
+                           ' befehle (BRA, BEQ, BRCLR ...). Ausserdem ermoeg-
+                           ' licht diese Definition, dass Labels per SYS
+                           ' statt GOSUB aufgerufen werden koennen, was beim
+                           ' Aufruf von Assemblerroutinen etwas Zeit spart.
+
+define OSTEMP   byte [102] ' temp. Byte zur Nutzung ausserhalb Interrupts
+
+' ---------------------------------------------------------------------------
+
+' Konstanten zur Verwendung in Assembler-Interruptroutinen zur Unterscheidung
+' der diversen Interruptquellen. Ueblicherweise per "CBEQA #iIRQ,isIrq".
+
+define iIRQ     &b00000001      ' External Interrupt (IRQ)
+define iSWI     &b00000010      ' Software Interrupt (SWI)
+define iTIM0    &b00000100      ' Timer Interface Module - Channel 0 (TIM0)
+define iTIM1    &b00001000      ' Timer Interface Module - Channel 1 (TIM1)
+define iTOFL    &b00010000      ' Timer Interface Module - Overflow (TOFL)
+define iKYB     &b00100000      ' Keyboard Interrupt Module (KBI)
+define iADC     &b01000000      ' Analog-to-Digital Converter (ADC)
+define iTOK     &b10000000      ' User-Assemblerroutine im Interpreter (TOK)
+
+' ---------------------------------------------------------------------------
+
+' Im Bereich von Adresse $00 bis $3f liegt beim QT4- und QY4-Kontroller
+' der Registerbereich. Durch Beschreiben dieser Register laesst sich der
+' Kontroller konfigurieren. Allerdings ist hier Vorsicht angeraten! Es
+' sollte immer zuerst im Manual zum Kontroller (MC68HC908QY4.pdf) nach-
+' gelesen werden, welche Bedeutung die diversen Register und Bits haben!
+
+' Durch die folgenden Definitionen kann sowohl in OCBASIC als auch im
+' integrierten 6808-Assembler per Bezeichner auf die Register zugegriffen
+' werden. Ein "!lda osctrim" wird nach "!lda $38" uebersetzt.
+
+define PTA      ivar [129+&h00] ' Port A Data Register
+define bAWUL    6               ' Auto Wakeup Latch Data Bit
+define bPTA5    5
+define bPTA4    4               ' Port A Data Bits
+define bPTA3    3
+define bPTA2    2
+define bPTA1    1
+define bPTA0    0
+define PTB      ivar [129+&h01] ' Port B Data Register
+define bPTB7    7
+define bPTB6    6               ' Port B Data Bits
+define bPTB5    5
+define bPTB4    4               ' Avoid glitches on port pins by writing
+define bPTB3    3               ' to the port data register before changing
+define bPTB2    2               ' data direction register bits from 0 to 1!
+define bPTB1    1
+define bPTB0    0
+define DDRA     ivar [129+&h04] ' Data Direction Register A
+define bDDRA5   5
+define bDDRA4   4               ' Data Direction Register A Bits
+define bDDRA3   3
+define bDDRA2   2
+define bDDRA1   1
+define bDDRA0   0
+define DDRB     ivar [129+&h05] ' Data Direction Register B
+define bDDRB7   7
+define bDDRB6   6               ' Data Direction Register B Bits
+define bDDRB5   5
+define bDDRB4   4
+define bDDRB3   3
+define bDDRB2   2
+define bDDRB1   1
+define bDDRB0   0
+define PTAPUE   ivar [129+&h0b] ' Port A Input Pullup Enable Register
+define bOSC2EN  7               ' Enable OSC2 on PTA4 Pin
+define bPTAPUE5 5
+define bPTAPUE4 4               ' Port A Input Pullup Enable Bits
+define bPTAPUE3 3
+define bPTAPUE2 2
+define bPTAPUE1 1
+define bPTAPUE0 0
+define PTBPUE   ivar [129+&h0c] ' Port B Input Pullup Enable Register
+define bPTBPUE7 7
+define bPTBPUE6 6               ' Port B Input Pullup Enable Bits
+define bPTBPUE5 5
+define bPTBPUE4 4
+define bPTBPUE3 3
+define bPTBPUE2 2
+define bPTBPUE1 1
+define bPTBPUE0 0
+
+define KBSCR    ivar [129+&h1a] ' Keyboard Status and Control Register
+define bKEYF    3               ' Keyboard Flag Bit
+define bACKK    2               ' Keyboard Acknowledge Bit
+define bIMASKK  1               ' Keyboard Interrupt Mask Bit
+define bMODEK   0               ' Keyboard Triggering Sensitivity Bit
+define KBIER    ivar [129+&h1b] ' Keyboard Interrupt Enable Register
+define bAWUIE   6               ' Auto Wakeup Interrupt Enable Bit
+define bKBIE5   5
+define bKBIE4   4               ' Keyboard Interrupt Enable Bits
+define bKBIE3   3               '   Each bit enables the corresponding
+define bKBIE2   2               '   keyboard interrupt pin to latch KBI
+define bKBIE1   1               '   interrupt requests.
+define bKBIE0   0
+
+define INTSCR   ivar [129+&h1d] ' IRQ Status and Control Register
+define bIRQF    3               ' IRQ Flag Bit (IRQ interrupt is pending)
+define bACK     2               ' IRQ Interrupt Request Acknowledge Bit
+define bIMASK   1               ' IRQ Interrupt Mask Bit
+define bMODE    0               ' IRQ Edge/Level Select Bit
+
+define CONFIG2  ivar [129+&h1e] ' Configuration Register 2
+define bIRQPUD  7               ' IRQ Pin Pullup Control Bit (disconnect)
+define bIRQEN   6               ' IRQ Pin Function Selection Bit
+define bOSCOPT1 4               ' Selection Bits
+define bOSCOPT0 3               '   for Oscillator Option
+define bRSTEN   0               ' RST Pin Function Selection
+define CONFIG1  ivar [129+&h1f] ' Configuration Register 1
+define bCOPRS   7               ' Auto Wakeup Period Selection Bit
+define bLVISTOP 6               ' LVI Enable in Stop Mode Bit
+define bLVIRSTD 5               ' LVI Reset Disable Bit
+define bLVIPWRD 4               ' LVI Power Disable Bit
+define bLVI5OR3 3               ' LVI 5-V or 3-V Operating Mode Bit
+define bSSREC   2               ' Short Stop Recovery Bit
+define bSTOP    1               ' STOP Instruction Enable Bit
+define bCOPD    0               ' COP Disable Bit
+
+define TSC      ivar [129+&h20] ' TIM Status and Control Register
+define bTOF     7               ' TIM Overflow Flag Bit
+define bTOIE    6               ' TIM Overflow Interrupt Enable Bit
+define bTSTOP   5               ' TIM Stop Bit
+define bTRST    4               ' TIM Reset Bit
+define bPS2     2               ' Prescaler Select Bits
+define bPS1     1               '   TIM Clock Source = 3.2E6 / 2^N
+define bPS0     0               '   N = 4*PS2 + 2*PS1 + PS0; N<>7
+define TCNTH    ivar [129+&h21] ' TIM Counter Register High
+define TCNTL    ivar [129+&h22] ' TIM Counter Register Low
+define TMODH    ivar [129+&h23] ' TIM Counter Modulo Register High
+define TMODL    ivar [129+&h24] ' TIM Counter Modulo Register Low
+define TSC0     ivar [129+&h25] ' TIM Channel 0 Status and Control Register
+define bCH0F    7               ' Channel 0 Flag Bit
+define bCH0IE   6               ' Channel 0 Interrupt Enable Bit
+define bMS0B    5               ' Mode Select Bit B \  
+define bMS0A    4               ' Mode Select Bit A  \ See Table 14-3
+define bELS0B   3               ' Edge/Level         /   in Manual
+define bELS0A   2               '   Select Bits     /
+define bTOV0    1               ' Toggle-On-Overflow Bit
+define bCH0MAX  0               ' Channel 0 Maximum Duty Cycle Bit
+define TCH0H    ivar [129+&h26] ' TIM Channel 0 Register High
+define TCH0L    ivar [129+&h27] ' TIM Channel 0 Register Low
+define TSC1     ivar [129+&h28] ' TIM Channel 1 Status and Control Register
+define bCH1F    7               ' Channel 1 Flag Bit
+define bCH1IE   6               ' Channel 1 Interrupt Enable Bit
+define bMS1A    4               ' Mode Select Bit A \
+define bELS1B   3               ' Edge/Level         > See Table 14-3
+define bELS1A   2               '   Select Bits     /
+define bTOV1    1               ' Toggle-On-Overflow Bit
+define bCH1MAX  0               ' Channel 1 Maximum Duty Cycle Bit
+define TCH1H    ivar [129+&h29] ' TIM Channel 1 Register High
+define TCH1L    ivar [129+&h2a] ' TIM Channel 1 Register Low
+
+define OSCSTAT  ivar [129+&h36] ' Oscillator Status Register
+define bECGON   1               ' External Clock Generator On Bit
+define bECGST   0               ' External Clock Status Bit
+define OSCTRIM  ivar [129+&h38] ' Oscillator Trim Register
+
+define ADSCR    ivar [129+&h3c] ' ADC Status and Control Register
+define bCOCO    7               ' Conversion Complete Bit
+define bAIEN    6               ' ADC Interrupt Enable Bit
+define bADCO    5               ' ADC Continuous Conversion Bit
+define ADCH4    4
+define ADCH3    3               ' ADC Channel Select Bits
+define ADCH2    2
+define ADCH1    1               ' See Table 3-1 in Manual
+define ADCH0    0
+define ADR      ivar [129+&h3e] ' ADC Data Register
+define ADICLK   ivar [129+&h3f] ' ADC Input Clock Register
+define bADIV2   7               ' ADC Clock Prescaler Bits
+define bADIV1   6               '   ADC Clock Rate = 3.2E6 / 2^N
+define bADIV0   5               '   N = 4*ADIV2 + 2*ADIV1 + ADIV0; N<=4
+
+' Im oberen Speicherbereich liegen Register, die besonders fuer Assembler-
+' programmierer interessant sind.
+
+define BSR      &hfe00          ' Break Status Register
+define bSBSW    1               ' SIM Break Stop/Wait
+define SRSR     &hfe01          ' SIM Reset Status Register
+define bPOR     7               ' Power-On Reset Bit
+define bPIN     6               ' External Reset Bit
+define bCOP     5               ' Computer Operating Properly Reset Bit
+define bILOP    4               ' Illegal Opcode Reset Bit
+define bILAD    3               ' Illegal Address Reset Bit
+define bMODRST  2               ' Monitor Mode Entry Module Reset Bit
+define bLVI     1               ' Low Voltage Inhibit Reset Bit
+define BRKAR    &hfe02          ' Break Auxiliary Register
+define bBDCOP   0               ' Break Disable COP Bit
+define BFCR     &hfe03          ' Break Flag Control Register
+define bBCFE    7               ' Break Clear Flag Enable Bit
+
+define INT1     &hfe04          ' Interrupt Status Register 1
+define bIF5     6               ' Timer overflow interrupt request present
+define bIF4     5               ' Timer channel 1 interrupt request present
+define bIF3     4               ' Timer channel 0 interrupt request present
+define bIF1     2               ' IRQ interrupt request present
+define INT2     &hfe05          ' Interrupt Status Register 2
+define bIF14    7               ' Keyboard interrupt request present
+define INT3     &hfe06          ' Interrupt Status Register 3
+define bIF15    0               ' ADC COCO interrupt request present
+
+define FLCR     &hfe08          ' FLASH Control Register
+define bHVEN    3               ' High Voltage Enable Bit
+define bMASS    2               ' Mass Erase Control Bit
+define bERASE   1               ' Erase Control Bit
+define bPGM     0               ' Program Control Bit
+
+define BRKH     &hfe09          ' Break Address High Register
+define BRKL     &hfe0a          ' Break Address Low Register
+define BRKSCR   &hfe0b          ' Break Status and Control Register
+define bBRKE    7               ' Break Enable Bit
+define bBRKA    6               ' Break Active Bit
+
+define LVISR    &hfe0c          ' LVI Status Register
+define bLVIOUT  7               ' LVI Output Bit (VDD<VTRIPF or VDD>VTRIPR)
+
+define FLBPR    &hffbe          ' FLASH Block Protect Register
+define IOSCTV   &hffc0          ' Internal Oscillator Trim Value
+define COPCTL   &hffff          ' COP Control Register
+
+' ---------------------------------------------------------------------------

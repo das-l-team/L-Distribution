@@ -1,0 +1,1 @@
+[ DOS compatible programs will now be carried out in a separate window by the freeware Emulator DOSBox  - To pause, click on DOSBox window title ]

@@ -1,0 +1,15 @@
+
+Der im obigen Fenster geöffnete BASIC++ Quelltext konnte nicht
+mit der Workbench++ IDE geoeffnet werden, denn Workbench++ ist
+nicht im Standardpfad  "C:\Programme\Workbench++\"  vorhanden.
+
+Bitte pruefen: 
+
+- Ist die Workbench++ IDE auf diesem Computer installiert?
+
+- Arbeitet das Betriebssystem dieses Computers evt. mit einer
+  anderen Sprachversion?
+
+- Wenn die Workbench++ vorhanden, aber nicht im Standardpfad
+  installiert ist, kannst du auch den Suchpfad in der Datei
+ "L:\x2g\System\BAT\openwb++.bat" entsprechend anpassen.

@@ -1,0 +1,5 @@
+[ Assembly Error ]
+
+--> Please consult the messages in the output console.
+    
+    The output console window can be displayed or hidden by pressing the <Control+Alt+0> keys at once.

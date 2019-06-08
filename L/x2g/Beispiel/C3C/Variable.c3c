@@ -1,0 +1,27 @@
+register int Temperatur, 
+             Luftdruck; 
+
+bit Ein, 
+    Bremse, 
+    Fehler; 
+
+
+char Text[60] = "Hallo Welt";
+
+
+void main()
+{
+
+SendText("Hallo Welt"); 
+
+
+
+
+} 
+
+
+void Funktion() 
+{ 
+  char Lokal; 
+} 
+

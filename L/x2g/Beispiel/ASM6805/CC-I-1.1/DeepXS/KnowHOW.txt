@@ -1,0 +1,338 @@
+
+ 
+Hallo Simon!
+
+Ich adressiere jede Sp-Zelle einzeln.
+Ein Datensatz hat bei mir 20 Werte, den Adr_z musst du nur begrenzen
+ zB.(Byte *20 *Adr_z)=freier Speicher
+
+Define adr_z Byte[1]  
+define adr &h6590           'zB: im internen 256k EEprom ab 26kb f.Daten
+oder 
+define adr &h0fa0          'im Org.64k EEprom ab 4kb
+
+sys dx_w day, eeprom, (adr_z *20)+adr
+ sys dx_w month, eeprom, (adr_z *20)+adr+1
+  sys dx_w year, eeprom, (adr_z *20)+adr+2
+  sys dx_w hour, eeprom, (adr_z *20)+adr+3
+
+usw.
+
+Somit kann ich 255 Datensätze a 20 Werte speichern, bei adr_z als word kannst Du 65000 Datensätze
+speichern (wenn der Speicher reicht)
+
+mfg Gerd
+
+> Hallo, ich bins nochmal!
+> Hab mir jetzt mal das Programm DXS 200 angeschaut. Ist genau das, was ich suche. Nun wollte ich 
+> noch wissen, ob es auch mit diesem möglich ist, das Ende der gespeicherten Werte festzustellen und 
+> ob der EEPROM voll ist. Und wie geht das? Welcher Befehl?
+> 
+> Danke im Vorraus.
+> mfg Simon  
+
+
+--------------------------------------------------------------------------------
+    Antwort schreiben
+
+--------------------------------------------------------------------------------
+
+Antworten:
+
+ 
+
+
+
+
+
+
+**************************************************************************************
+
+Hier ein Beispielprogramm, das zeigt, wie in CCBASIC ohne Assemblermodul ein beliebiges Word des seriellen EEPROMS (24C65) ausgelesen oder beschrieben werden kann. Es wird allerdings ein gepatchter CCBASIC-Compiler benoetigt (siehe mehrvars.zip in der Download Area oder DLL-Switcher auf Idels Homepage).
+
+Das Betriebssystem benutzt die drei Systemvariablen FILESTART, FILEOFF und FILELEN, um die EEPROM-Datei zu verwalten. Je nachdem, welche OPEN#-Befehlsvariante in einem CCBASIC-Programm benutzt wird, werden diese Variablen auf unterschiedliche Weise initialisiert: FILESTART wird grundsätzlich auf die erste EEPROM-Adresse hinter dem BASIC-Programm gesetzt (Adresse 4 plus BASIC-Programmlänge). Ein "OPEN# FOR WRITE"-Befehl setzt FILEOFF und FILELEN gleich 0; ein "OPEN# FOR READ"-Befehl speichert die vom CLOSE#-Befehl auf EEPROM-Adresse 2 hinterlegte Dateilänge in FILELEN und setzt FILEOFF auf 0; ein "OPEN# FOR APPEND"-Befehl speichert ebenfalls die Dateilänge in FILELEN und setzt FILEOFF gleich FILELEN.
+
+Ein Lesen oder Schreiben mittels INPUT# oder PRINT# findet an der Dateiposition FILEOFF statt. Anschließend wird FILEOFF um zwei inkrementiert. Der PRINT#-Befehl setzt zusätzlich FILELEN gleich FILEOFF, was beim nicht-sequentiellen Schreiben, bei dem FILEOFF auf eine beliebige Dateiposition gesetzt wird, Probleme macht. Man sollte sich deshalb überlegen, den maximalen Wert von FILELEN in einer eigenen Variable zwischenzuspeichern, bis er beim CLOSE#-Befehl benötigt wird.
+
+Das folgende Programm ist auf einer mit dem neuen Betriebssystem ausgestatteten C-Control nicht lauffähig (siehe "Neue C-Control"). Im neuen Betriebssystem in der Zugriff auf die Datei-Variablen erheblich einfacher durchzuführen und der PRINT#-Befehl unterstützt bereits das nicht-sequentielle Schreiben und der Fehler beim Überschreiten der Page-Grenzen wurde korrigiert.
+
+Weitere Informationen zum Betriebssystem und zum Speicherlayout befinden sich in der Download Area.
+
+
+' Lesen und Schreiben eines beliebigen Words des seriellen EEPROMs mit Hilfe
+' der CCBASIC-Befehle INPUT# und PRINT#
+
+' Mittels FILEOFF ist auch der nicht-sequentielle Zugriff auf die EEPROM-
+' Datei moeglich.
+
+
+' Definitionen zum Ansprechen der EEPROM-Datei
+
+DEFINE FILESTART_hi BYTE [44] ' hierfuer wird ein gepatchter CCBASIC-Compiler
+DEFINE FILESTART_lo BYTE [45] ' benoetigt (siehe mehrvars.zip oder Idels
+DEFINE FILEOFF_hi BYTE [42]   ' Homepage)
+DEFINE FILEOFF_lo BYTE [43]
+DEFINE FILELEN_hi BYTE [40]
+DEFINE FILELEN_lo BYTE [41]
+
+
+' Definitionen zum Ansprechen des Rechenstacks (spart Variablen)
+
+DEFINE PUSH AD[1]             ' in einen AD-Port kann man nicht schreiben
+DEFINE POP DA[1]              ' von einem DA-Port kann man nicht lesen
+
+
+' sonstige Definitionen
+
+DEFINE temp word
+
+
+' Programm
+
+PUSH=0                        ' Beginn der Datei auf Adresse 0 setzen
+GOSUB SETFILESTART
+
+PUSH=0                        ' Lese- oder Schreibposition auf 0 setzen
+GOSUB SETFILEOFF
+
+PUSH=0                        ' Laenge auf 0 setzen (ist hier unnoetig)
+GOSUB SETFILELEN
+
+INPUT# temp                   ' Laenge des BASIC-Programms auslesen
+
+PRINT
+PRINT "FILESTART: ";FILESTART
+PRINT "FILEOFF: ";FILEOFF
+PRINT "FILELEN: ";FILELEN
+PRINT
+PRINT "LAENGE DES BASIC-PROGRAMMS: ";temp
+
+END
+
+
+
+' die EEPROM-Anfangsadresse der EEPROM-Datei auslesen oder setzen
+
+#FILESTART
+RETURN (FILESTART_hi SHL 8)+FILESTART_lo
+
+#SETFILESTART
+FILESTART_lo=POP : FILESTART_hi=POP SHR 8
+RETURN
+
+
+' aktuelle Lese- oder Schreibposition in der EEPROM-Datei
+
+#FILEOFF
+RETURN (FILEOFF_hi SHL 8)+FILEOFF_lo
+
+#SETFILEOFF
+FILEOFF_lo=POP : FILEOFF_hi=POP SHR 8
+RETURN
+
+
+' Anzahl der Bytes in der EEPROM-Datei
+' (Nach jedem PRINT#-Befehl setzt das Betriebssystem FILELEN gleich FILEOFF,
+'  was beim nicht-sequentiellen Schreiben Probleme macht.)
+
+#FILELEN
+RETURN (FILELEN_hi SHL 8)+FILELEN_lo
+
+#SETFILELEN
+FILELEN_lo=POP : FILELEN_hi=POP SHR 8
+RETURN
+
+
+
+Meine Seite: http://ccintern.dharlos.de  
+
+
+
+Re: EEPROM Problem Kategorie: Programmierung Basic (von BeAthlon - 22.03.2004 21:40) 
+Als Antwort auf EEPROM Problem von Simon - 22.03.2004 20:26 
+
+ 
+Ich habs zwar noch nie gebraucht, kann daher auch nicht sagen ob es klappt, aber denke so müsste es funktionieren:
+Lese in einer Schleife deine Datei bis zu der Stelle z.B."2222" aus. Mit Hilfe einer Zählvariable bekommst du die Position raus.
+Nun liest du jede weitere Position aus und schreibst sie nach vorn.
+
+Folgendes ist nicht verifiziert oder jemals compiliert worden. Es kann elso kleine Schreibfehler oder große logische Fehler geben.
+
+DEFINE wert word
+DEFINE merk word
+DEFINE merk2 word
+DEFINE merk3 word
+
+merk = 0 
+
+'======= Zum Merken der Anfangsposition des brauchbaren Blockes ===========
+OPEN# FOR READ
+  #Anf1
+     merk = merk + 1
+     INPUT# wert
+     IF wert=2222 THEN  GOTO Step1
+  GOTO Anf1
+
+#Step1
+merk3 = 1
+CLOSE#
+
+'=============== Einzelnes Verschieben der Werte ===============
+
+#Anf2
+
+  merk2 = 0
+   '======== Lesen des Wertes =========
+  OPEN# FOR READ
+    #Anf3
+        merk2 = merk2 + 1
+        INPUT# wert
+        IF merk2 = merk + merk3 THEN  GOTO Step2
+    GOTO Anf3
+   
+    '======== Schreiben des Wertes ========
+    #Step2
+    CLOSE#
+    IF merk3 = 1 THEN OPEN# FOR WRITE ELSE OPEN# FOR APPEND
+     PRINT# wert
+     CLOSE#
+    
+    '======== Abbruch beim Auffinden des Endwertes =========
+    IF wert = 0 THEN GOTO Ende '
+
+  merk3 = merk3 + 1
+GOTO Anf2
+
+#Ende
+
+Ich hoffe es funktioniert so. Ich weiss aber nicht ob die Logik der CC diese etwas ungewöhnliche Konzept zulässt. 
+Viel Glück!  
+
+
+--------------------------------------------------------------------------------
+    Antwort schreiben
+
+--------------------------------------------------------------------------------
+
+Antworten:
+
+Re: EEPROM Problem (von Simon - 23.03.2004 11:57)
+ 
+
+ 
+Hallo Medano,
+hier zu Deinen Assembler-Fragen, die sich wohl auf Dietmars Tips und Tricks Dokument beziehen
+(ASM-Code auf Stack pushen).
+
+zu 1. Laut Adresse.txt Dokument liegt der Stack ab Adresse $91. Im Bsp. Programm wird durch den
+Print-Befehl das ASM-Programm auf den Rechenstack geladen (getarnt als Programmtokens).
+Der Sysbefehl springt dann an $91 Adresse. wo ja dann die ASM-Programm-Bytes liegen und führt diese
+als Maschinencode aus.
+Beim Assemblieren mußt Du natürlich org $91 angeben, um eventuelle relative Sprungadressen
+im Listing des assemblierten Codes angegeben zu bekommen. Aus diesem Listung holst Du Dir dann
+auch die Code-Bytes raus (wie im Bsp gezeigt, beginnend mit dem Ende des Codes) und trägst es im
+CCBASIC-Programm ein. Ob aber ein bra oder bsr im Rechenstack zu irgendeiner Adresse anstandslos
+funktioniert, weiß ich nicht (hab es nicht ausprobiert).
+
+Wegen des Opcodes brauchst Du das Listing des assemblierten Programms: AS05 -l (generiert PASS2
+Listing). Da stehen sie drin.
+
+zu 2. Wie im Bsp von Dietmar angegeben, statt SYS $101 schreibe dann SYS $91. Wenn Du mit
+org $91 beim Assemblieren die relativen Adressen berechnen hast lassen, das Laden wird automatisch
+geschehen, dann kannst Du mit SYS $91 ins Maschinenprogramm springen und los gehts...
+
+Grüsse,
+Mak
+
+> Hallo!
+>
+> Ich hab in der Info-Sammlung gelesen, dass es möglich ist, Assemblercode auch direkt in
+> Basic einzufügen, der dann vom BS bei Gebrauch geladen wird.
+> 
+> Nun meine zwei kurze Fragen: Dann muss doch nach dem Befehl a) ein anderer Speicherbereich
+> als der 0101h angegeben werden; welcher ist das ? b) Werden doch dort Opcodes angegeben;
+> woher erfahre ich nun den Opcode z.B. von "bclr" oder "bset" ? Kann jemand vielleicht sogar ein
+> kleines Beispiel posten ?
+> 
+> Zweite Frage: Ich kann doch nur ein Assemblerprogramm als "SYSCODE" angeben und per 
+> "SYS &H0101" aufrufen. Wie kann ich jetzt eigentlich nur eine dort abgespeicherte Funktion
+> aufrufen ? Mit dem obrigen Befehl fängt doch der Assemblercode bei "opp 101" an. Also läuft
+> der Code ab dieser Adresse!?
+> 
+> Hoffe dringenst auf Antwort =)
+> 
+> Medano C. Caserson  
+
+ 
+Hallo zusammen,
+
+ich habe mir für den Einstieg in die Roboterwelt den Robby von Conrad mit der CC1 gekauft. Ich möchte ihn eigentlich nicht in Basic programmieren sondern lieber mit dem C3C Compiler Programme erstellen.
+
+Ich habe ein Demoprogramm (siehe Mailende) in der Erweiterung für den Compiler gefunden welches die 4 Leds ein bzw. ausschaltet. Mein Problem ist jetzt wie folgt:
+
+Ein Reaktion auf das Einschalten einer Led erhalte ich erst beim 4. Durchlauf der while Schleife. Warum?
+Das Programm funktioniert nur nach einem Neustart des Roboters wenn alle 4 Leds leuchten. Bei einem Neustart der Programms mit augeschalteten Leds erfolgt keine Reaktion der Selben.
+
+1) Kann mir jemand des Problem erklären?
+2) Hat noch jemand weitere Demo Programme für C3C?
+3) Gibt es Tips für das Umstellen der Basic Beispiele?
+
+Gruß
+
+Sascha
+
+Im Anhang das Demo Programm:
+
+// Einfaches DEMO-Programm fuer C3C
+// Es wird ein Bitmuster am Byteport [1] ausgegeben
+
+// Konstante definieren
+#define BYTEPORT1 0
+
+// Array im EEPROM anlegen
+eeprom char a[8]={1,2,4,8,16,32,64,128};
+
+// Hauptprogramm
+void main()
+{
+
+// lokale Byte-Variable im RAM anlegen
+// (oder EEPROM, falls der Platz im RAM nicht ausreicht)
+char b=0;
+
+// Wert im Array aendern
+a[3]=0xaa;
+
+// Endlosschleife
+while(1) {
+
+  // FOR-Schleife
+  for(b=0; b<8; b++) {
+
+    // Ausgabe auf dem Byteport [1]
+    OutByte(BYTEPORT1,a[b]);
+
+    // 5*20 ms warten
+    Wait(5);
+
+  } //for
+
+} //while
+
+
+} //main
+
+
+
+ich habe eine lcd ansteuerung von cctools (http://cctools.hs-control.de/).
+
+
+
+
+Servo Ansteuerung:
+
+http://www.c-control.de/downloads/servo_pack.zip  
+
+ 
+
+

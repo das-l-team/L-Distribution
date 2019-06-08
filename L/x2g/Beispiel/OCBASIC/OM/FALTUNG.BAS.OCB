@@ -1,0 +1,187 @@
+
+' ===========================================================================
+' Demoprogramm zum Samplen und zur Faltung (hier: Tiefpassfilterung)
+' lauffaehig auf der Open-Micro, Open-Mini und Open-Midi
+' ===========================================================================
+
+' Fuer dieses Demoprogramm sollte an AD5, bzw. PORT[6] ein Signal, z.B.
+' ein Sinussignal mit einer Amplitude von maximal 5 Vss angeschlossen
+' werden. Es kann von einer Test-CD stammen oder von einer Soundkarte.
+' Die Frequenz des Signals sollte im Bereich zwischen 0 und 2238 Hz liegen.
+' Ausserdem wird ein Gleichspannungsoffset von 2,5 Volt benoetigt, der sehr
+' gut mit Hilfe des AD-Potis auf dem PE-Board erzeugt werden kann.
+
+' Das Programm sampelt das Signal mit einer Frequenz (Abtastrate) von rund
+' 4476 Hz und speichert die Samplewerte in den 64 Byte User-RAM ab. Sie
+' werden anschliessend auf der seriellen Schnittstelle einzeln als Balken
+' ausgegeben. Danach wird mittels Faltung eine Tiefpassfilterung durchge-
+' fuehrt. Signale oberhalb von rund 1065 Hz werden durch diese Faltung
+' herausgefiltert. Auch das Ergebnis der Filterung wird ausgegeben.
+
+' Diese Filterung ist nuetzlich, um DTMF-Toene zu detektieren. Durch den
+' Tiefpass wird der obere DTMF-Ton entfernt und der untere kann durch
+' Auswertung des Amplitudenverlaufs ermittelt werden. Das Verfahren laesst
+' sich noch verfeinern. Unter anderem kann die Faltung zur Interpolation
+' von Zwischenwerten verwendet werden, also zur nachtraeglichen Erhoehung
+' der Abtastfrequenz ohne zusaetzlichen RAM-Speicherbedarf.
+
+
+INCLUDE "om.def"
+
+pullupa=&b00011111   'internen Pull-Up-Widerstand an AD5=PORT[6] deaktivieren
+
+DEFINE ^p BYTE[65]   'eigentlich ausserhalb des User-RAMs, aber hier nutzbar
+DEFINE output ON
+
+PrintSpc=ON
+
+WHILE TRUE
+
+  sample()
+
+  IF output THEN ?:?:?
+  
+  FOR p=0 TO 63
+    IF output THEN
+      DBNZCTR=@p SHR 2
+      #loop_1
+        PUT "*"
+      DBNZ loop_1
+      'PRINT
+      PRINT @p
+      @p=@p-128
+    ELSE
+      @p=@p-128   'Vorzeichen fuer Faltung hinzufuegen
+      PUT @p
+    END IF
+  NEXT p
+  
+  IF output THEN ?:?:?
+  
+  FOR p=0 TO 63
+    IF output THEN
+      DBNZCTR=(faltung(p)+128) SHR 2
+      #loop_2
+        PUT "="
+      DBNZ loop_2
+      PRINT
+    ELSE
+      PUT faltung(p)
+    END IF
+  NEXT p
+
+WEND
+
+End2Host=ON
+END
+
+
+' ---------------------------------------------------------------------------
+' Das Signals an AD5 mit fSAMPLE=4476 Hz abtasten und im RAM speichern
+' ---------------------------------------------------------------------------
+
+PROC sample
+  disable             '     ***             <- 5 Volt, Wert=255
+  p=0                 '    *   *
+  DBNZCTR=64          '   *     *
+  #sample_1           '  *       *       *  <- 2.5 Volt, Wert=128
+    @p=ad5            '           *     *
+    ADD p,1           '            *   *
+  DBNZ sample_1       '             ***     <- 0 Volt, Wert=0
+  enable              '
+RETURN                ' (die Werte sind "unsigned", also ohne Vorzeichen)
+
+PROC disable INLASM
+! sei                 ' die Interrupts deaktivieren
+! rts
+END PROC
+
+PROC enable INLASM
+! cli                 ' die Interrupts wieder aktivieren
+! rts
+END PROC
+
+' ---------------------------------------------------------------------------
+' Koeffizienten der Impulsantwort eines Tiefpassfilters mit fg=0.238*fSAMPLE
+' ---------------------------------------------------------------------------
+
+TABLE si0_238 BYTE    '37 Koeffizienten, Summe der Betraege: 467
+  1 2 0 -2 1 4 0 -6 2 9 -1 -11 2 16 -1 -27 2 83 127
+  83 2 -27 -1 16 2 -11 -1 9 2 -6 0 4 1 -2 0 2 1
+END TABLE             'max. Ergebnis bei der Faltung: 467*(+/-)128=+/-59776
+
+' ---------------------------------------------------------------------------
+' Speicher fuer die Faltungsroutine
+' ---------------------------------------------------------------------------
+
+DEFINE sign    FREERAM1
+DEFINE resulth FREERAM2
+DEFINE resultl FREERAM3
+DEFINE indexsi FREERAM4
+
+' ---------------------------------------------------------------------------
+' Faltung fuer einen Punkt durchfuehren
+' ---------------------------------------------------------------------------
+
+PROC faltung(index) INLASM
+! sub #18             'Index im RAM -18..45 ("Startposition der SI-Funktion")
+! tax
+! clr resulth         'Ergebnis
+! clr resultl
+! clr indexsi         'Index in SI-Tabelle 0..36
+
+#faltung_loop         'loop ueber alle Koeffizienten in der SI-Tabelle
+! tstx                'Index im RAM -18..63
+! bmi faltung_nokoeff
+! cmpx #63            'hier koennte man noch optimieren
+! bgt faltung_nokoeff
+
+! pushx               'Vorzeichenbehaftete 8*8 Bit Multiplikation
+! clr sign
+! lda URAMBASE,x
+! bpl faltung_1
+! inc sign            'die zwei untersten Bits wuerden ausreichen
+! nega
+#faltung_1
+! ldx indexsi
+! ldx si0_238,x
+! bpl faltung_2
+! inc sign
+! negx
+#faltung_2
+! mul
+! brclr #0,sign,faltung_3
+! coma
+! comx
+! inca
+! bne faltung_3
+! incx
+#faltung_3
+'! asrx                'eigentlich ist diese Amplitudenreduzierung notwendig
+'! rora                '(fuer den "Worst Case")
+'! adc resultl
+! add resultl
+! sta resultl
+! txa
+! adc resulth
+! sta resulth
+! popx
+
+#faltung_nokoeff
+! incx
+! inc indexsi
+! lda indexsi
+! cmpa #37
+! bne faltung_loop
+
+! lda resulth
+! clrx
+! swi                  'FwPush
+END PROC
+
+' ---------------------------------------------------------------------------
+' Einbinden der Firmwareroutinen
+' ---------------------------------------------------------------------------
+
+'INCLUDE "omfwia.pro"
+

@@ -1,0 +1,7 @@
+
+die |_ Distribution - (Versionsnummer ergibt sich aus numerischem Teil des Namens dieser Datei)
+
+
+the |_ distribution - (refer to numeric part of this file's name to determine which version of L-Distribution you run)
+
+

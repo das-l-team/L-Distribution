@@ -1,0 +1,165 @@
+
+------------------------------------------------------------------------------
+In-System-Debugger f¸r die OM-Controller - Version 1.0
+von Dietmar Harlos ADPC ab 25. Mai bis 31. Mai 2017
+------------------------------------------------------------------------------
+
+In diesem ZIP-Archiv befindet sich ein In-System-Debugger f¸r die
+OM-Controller.
+
+Der In-System-Debugger besteht aus zwei Teilen: Ein Teil wird in die OM
+¸bertragen und in den Interpreter eingebunden. Ein anderer Teil l‰uft auf dem
+PC und ¸bernimmt die Steuerung. Es handelt sich dabei um ein Win32-Programm.
+Der Teil in der OM wird jedesmal aktiviert, nachdem ein neuer Tokenbefehl aus
+dem Speicher geholt wurde. Das ist unmittelbar bevor der Tokenbefehl vom
+Interpreter ausgef¸hrt wird.
+
+Durch das Einf¸gen von zwei Befehlen kann jedes OCBASIC-Programm debuggt
+werden: Am Programmbeginn muﬂ ein INCLUDE "DEBUG.IIA" stehen und der Debugger
+wird durch SYS debug an beliebiger Stelle aktiviert. So wie in DEMO.BAS
+geschehen. Nat¸rlich ist darauf zu achten, die zum jeweiligen OM-Controller
+passende Definitionsdatei einzubinden. In DEMO.BAS ist das INCLUDE "omid.def"
+am Beginn des Sourcecodes.
+
+Der Debugger DEBUG.EXE kann in ConTEXT auf die Taste F12 gelegt werden.
+Siehe Bild "ConTEXT - Debugger auf F12.png".
+
+Der Debugger wird ¸ber die PC-Tastatur gesteuert. Es werden die Befehle L, V,
+S, B, D, R, W und T unterst¸tzt, die weiter unten beschrieben werden.
+
+------------------------------------------------------------------------------
+
+Die Dateien in diesem ZIP-Archiv:
+
+DEBUG.EXE ..... der Debugger f¸r den PC
+DEBUG.IIA ..... In-System-Debugger f¸r die OM, wird in DEMO.BAS eingebunden
+DEMO.BAS ...... Demoprogramm f¸r den In-System-Debugger
+DEMO.dat ...... Tokencode f¸r die Open-Midi
+DEMO.map ...... MAP-Datei f¸r die Open-Midi
+INFO.TXT ...... Diese Textdatei
+OM.DEF ........ Definitionen f¸r die Open-Micro & Open-Mini
+OMID.DEF ...... Definitionen f¸r die Open-Midi
+OMAC.DEF ...... Definitionen f¸r die Open-Macro
+OMAX.DEF ...... Definitionen f¸r die Open-Maxi
+Starten.bat ... Den Debugger auf dem PC starten. Zuerst muﬂ DEMO.BAS auf
+                der OM gestartet werden.
+
+------------------------------------------------------------------------------
+
+Die Beschreibung zu den Befehlen:
+
+[L]ISTING:
+
+Mit dem Befehl L wird ein Programm-Listing der MAP-Datei angezeigt. Mit
+den Cursortasten kann man sich im Sourcecode bewegen. Wird dann RETURN
+gedr¸ckt, wird ein Breakpoint gesetzt und die OM f¸hrt ihr Programm bis
+zu diesem Breakpoint aus. Beenden mit ESC-Taste.
+
+[V]ARS:
+
+Mit dem Befehl V wird eine Variablen-Liste der MAP-Datei angezeigt. Mit
+den Cursortasten kann man sich in der Liste bewegen. Wird dann RETURN
+gedr¸ckt, wird ein Daten-Breakpoint gesetzt und die OM f¸hrt ihr
+Programm bis zu diesem Daten-Breakpoint aus. Beenden mit ESC-Taste.
+
+[S]INGLE STEP:
+
+Es wird ein Tokenbefehl von der OM ausgef¸hrt.
+
+[B]REAK POINT:
+
+Mit dem Befehl B wird ein Breakpoint gesetzt, allerdings im internen Format.
+D.h. die anzugebende Adresse muﬂ dem Program Counter in der OM entsprechen.
+
+[D]ATA BREAK POINT:
+
+Mit dem Befehl D wird ein Daten-Breakpoint im Byte-Format gesetzt.
+
+[R]EAD:
+
+Speicher der OM auslesen und am PC anzeigen.
+
+[W]RITE:
+
+Speicher der OM beschreiben.
+
+[T]ERMINAL
+
+Ein rudiment‰res Sendeterminal.
+
+------------------------------------------------------------------------------
+
+Beispiele:
+
+Zuerst DEMO.BAS mittels OCBASIC v1.11a compilieren und zur Open-Midi schicken.
+Dann Starten.bat auf dem PC starten (eventuell muﬂ die Nummer der Seriellen
+Schnittstelle angepaﬂt werden). Der Debugger meldet sich mit:
+
+PC: $e5a8 (58792) $ea (234)
+00e9: 55 7b       PUSH 123
+[L]isting [V]ars [S]ingle step [B]reakpoint [D]ata BP [R]ead [W]rite [T]erminal
+>
+
+Nun den Buchstaben L auf der PC-Tastatur dr¸cken. Es erscheint ein Programm-
+Listing des DEMO.BAS-Programms. Nun mittels Cursortasten auf die vorletzte
+Zeile "End2Host=ON" gehen und RETURN (bzw. ENTER, Eingabetaste) dr¸cken.
+Nun wird das in der OM befindliche Programm bis zu diesem Punkt ausgef¸hrt.
+Nun wiederum L dr¸cken. Wie zu sehen ist, wurde das Programm bis zu diesem
+Punkt ausgef¸hrt. Jetzt ESC dr¸cken, um die Anzeige des Sourcecodes zu
+beenden.
+
+Nun die OM resetten und in den Host-Modus versetzen und den Debugger mittels
+Starten.bat neu starten. Jetzt die Taste V dr¸cken. Es erscheint eine Liste
+mit Variablen- und Labelnamen. Auf der rechten Seite ist aufgef¸hrt, welchen
+Inhalt die Variablen haben. Jetzt RETURN dr¸cken, um die Variable "A" anzu-
+w‰hlen. Es erscheint eine Abfrage:
+
+Adresse: $80
+Wert:
+
+Nun die Zahl 10 mit der PC-Tastatur eingeben und RETURN dr¸cken. Das Programm
+in der OM wird nun ausgef¸hrt, bis die Variable A den Wert 10 hat:
+
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+PC: $e5c2 (58818) $104 (260)
+0103: 16 00       PUSH BYTE[1]
+[L]isting [V]ars [S]ingle step [B]reakpoint [D]ata BP [R]ead [W]rite [T]erminal
+>
+
+------------------------------------------------------------------------------
+
+Besonderheiten:
+
+Die Kommunikation zwischen Anwenderprogramm in der OM und dem PC ist
+schwierig, da dieselbe Serielle Schnittstelle sowohl vom Debugger als auch vom
+Anwenderprogramm verwendet wird. Sollte der Debugger einmal "h‰ngen" kann
+mittels ESC-Taste die Kommunikation abgebrochen werden. Anschlieﬂend muﬂ
+mittels S (Single Step) die Synchronisation wieder hergestellt werden.
+
+Wenn der PC als ung¸ltig angesehen wird, liegt daran, daﬂ die Synchronisation
+zwischen OM und PC aus irgendeinem Grund aus dem Takt geraten ist. Auch in
+diesem Fall kann die Synchronisation mittels S (Single Step) wieder
+hergestellt werden.
+
+------------------------------------------------------------------------------
+
+Fehlermeldungen zum Debugger bitte direkt an meine E-Mail-Adresse schicken.
+
+Allgemeine Fragen werden im Forum zur C-Control-1 beantwortet:
+
+http://ccintern.dharlos.de/forum
+
+Viel Spaﬂ und Erfolg mit dem Debugger!
+
+Dipl.-Ing. Dietmar Harlos
+dharlos@web.de
+

@@ -1,0 +1,328 @@
+'
+' *** Beispielprogramm mit Nutzung von Exportfunktionen aus der 'Lbit' Firmware:  ***
+'------------------------------------------------------------------------------
+
+ 'INFO' >  Programmbeschreibung        |  Tipps und weitere Info zu 'Lbit', siehe
+ 'INIT' >  Initialisierung             |
+ 'MAIN' >  Hauptschleife               |  http://visit.ghn-sensorik.de/L-Team/Lvm
+ 'SUBS' >  Subroutinen                 |
+ 'DATA' >  Tabellen                    |              das |_ Team
+
+
+' |_ ->>
+'----------------------------------------------------------------------------
+' Programmbeschreibung Anfang ->>                                  I----------
+'                                                                      N-------
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Hier kannst du die Funktion deines Programms beschreiben.        ''
+  ' Moechtest du das Programm auch anderen Anwendern zur Verfuegung  '''
+  ' stellen, besuche bitte  (http://www.   ???   .de)                ''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+  'Dies ist ein simpler Speichermonitor mit dessen Hilfe der Inhalt des
+  'kombinierten Programm/Datenspeichers im externen EEPROM des C-Control
+  'in Form einer Liste ueber die Serielle Schnittstelle dargestellt wird.
+
+'                                                                      F-------
+' <<- Programmbeschreibung Ende                                    O----------
+'----------------------------------------------------------------------------
+ INCLUDE "L:\x2g\Include\OCBASIC\L-INIT.PRO"'<<- Anweisungen Anfang
+'----------------------------------------------------------------------------
+' Anweisungen fuer (#INIT) beginnen in ^^^^^^^^^^                  I----------
+'                                                                      N-------
+ ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+ ' Zur Laufzeit kann der #INIT Bereich per Direktvektor uebersprungen ''
+ ' werden. Selbst registrierende Erweiterungsmodule (z.B. UIP) sollen '''
+ ' damit Zeitverhalten und Bedienungsfreundlichkeit optimieren.       '''
+ ' WICHTIG: Hier keine (Daten)-Tabellen einfuegen, s.u.               ''
+ ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+ DEFINE RETURN_LINE 13
+
+                    w3=&hff00' Voreinstellung für die Highlight-Funktion: (255/000 entsprechend Alle Bits der Speicherzelle unprogrammiert/programmmiert)
+
+print " LMEMVIEW4f.ocb"' (ohne Fastbas)"'<-Zukuenftige Erweiterung, 1. PRINT als Label nutzen.
+'                                                                      I-------
+' <<- Initialisierung Ende                                         T----------
+'----------------------------------------------------------------------------
+
+'----------------------------------------------------------------------------
+#MAIN 'Hauptschleife Anfang ->>                                     M---------
+'                                                                      A-------
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Dieser Programmteil wird nach Verlassen von #INIT ausgefuehrt,   ''
+  ' oder mittels Direktvektor Funktionen unmittelbar gestartet.      '''
+  ' WICHTIG: Hier keine (Daten)-Tabellen einfuegen, s.u.              ''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+ 'IF LReg_TmpBaud(-2304) THEN
+ '   PRINT "Umschaltung auf 230400 Baud"
+ '   LReg_TmpBaud(-2304)
+ '   END IF
+
+' sys &h101 ' Nur bei Verwendung mit C-Control I 1.1, zuvor muss aber die
+           ' syscode-Anweisung am Ende dieses Quelltextes einmalig auskommentiert
+           ' und das Beschleunigungsprogramm "Fastbas.s19" zum Kontroller uebertragen
+           ' worden sein. Mehr Infos zu Fastbas.s19, siehe http://ccintern.dharlos.de/downloads.htm
+           ' (Dort unter "BASIC-Programme um rund 12% beschleunigen!".)
+
+ WHILE TRUE
+  PRINT
+  w2=w1+192
+
+ FOR w1 = w1 TO w2 STEP 12
+
+   PrintDEC(w1)
+
+'Ausgabezeile: Erste 4er-Spalte:
+ Print "  ";
+ b7_b8=LPeek16(w1) : b9_b10=LPeek16(w1+2) '4 Bytes aus dem Speicher lesen (2 Words)
+ b23=2   ' nachfolgende PrintLZ Funktionen werden (5 minus 2) = 3 Ausgabestellen verwenden (LPeek16 aenderte b23)
+
+'#ifdef _MINIMIZE_PRGLENGTH
+ PrintLZHLbytes
+'#endif
+
+ '#ifndef _MINIMIZE_PRGLENGTH
+ 'PrintLZHLbyte(b7)     ' <--- Optimierung
+ 'PrintLZHLbyte(b8)     ' <--- fuer
+ 'PrintLZHLbyte(b9)     ' <--- Programm-
+ 'PrintLZHLbyte(b10)    ' <--- geschwindigkeit
+ '#endif
+
+'Ausgabezeile: Zweite 4er-Spalte:
+ Print " ";
+ b7_b8=LPeek16(w1+4) : b9_b10=LPeek16(w1+6) '4 Bytes aus dem Speicher lesen (2 Words)
+ b23=2   ' nachfolgende PrintLZ Funktionen werden (5 minus 2) = 3 Ausgabestellen verwenden (LPeek16 aenderte b23)
+
+
+'#ifdef _MINIMIZE_PRGLENGTH
+ PrintLZHLbytes
+'#endif
+
+ '#ifndef _MINIMIZE_PRGLENGTH
+ 'PrintLZHLbyte(b7)     ' <--- Optimierung
+ 'PrintLZHLbyte(b8)     ' <--- fuer
+ 'PrintLZHLbyte(b9)     ' <--- Programm-
+ 'PrintLZHLbyte(b10)    ' <--- geschwindigkeit
+ '#endif
+
+'Ausgabezeile: Dritte 4er-Spalte:
+ Print " ";
+ b7_b8=LPeek16(w1+8) : b9_b10=LPeek16(w1+10) '4 Bytes aus dem Speicher lesen (2 Words)
+ b23=2   ' nachfolgende PrintLZ Funktionen werden (5 minus 2) = 3 Ausgabestellen verwenden (LPeek16 veraendert leider b23)
+
+
+'#ifdef _MINIMIZE_PRGLENGTH
+ PrintLZHLbytes
+'#endif
+
+ '#ifndef _MINIMIZE_PRGLENGTH
+ 'PrintLZHLbyte(b7)     ' <--- Optimierung
+ 'PrintLZHLbyte(b8)     ' <--- fuer
+ 'PrintLZHLbyte(b9)     ' <--- Programm-
+ 'PrintLZHLbyte(b10)    ' <--- geschwindigkeit
+ '#endif
+
+
+'Ausgabezeile: Vierte 4er-Spalte (1. ASCII-Darstellung:)
+ Print "  ";
+ b7_b8=LPeek16(w1) : b9_b10=LPeek16(w1+2) '4 Bytes aus dem Speicher lesen (2 Words)
+
+'#ifdef _MINIMIZE_PRGLENGTH
+ ShowASCIIs
+'#endif
+
+'#ifndef _MINIMIZE_PRGLENGTH
+ 'ShowASCII(b7)
+ 'ShowASCII(b8)
+ 'ShowASCII(b9)
+ 'ShowASCII(b10)
+'#endif
+
+ Print " ";
+ b7_b8=LPeek16(w1+4) : b9_b10=LPeek16(w1+6) '4 Bytes aus dem Speicher lesen (2 Words)
+
+'#ifdef _MINIMIZE_PRGLENGTH
+ ShowASCIIs
+'#endif
+
+'#ifndef _MINIMIZE_PRGLENGTH
+ 'ShowASCII(b7)
+ 'ShowASCII(b8)
+ 'ShowASCII(b9)
+ 'ShowASCII(b10)
+'#endif
+
+ Print " ";
+ b7_b8=LPeek16(w1+8) : b9_b10=LPeek16(w1+10) '4 Bytes aus dem Speicher lesen (2 Words)
+
+
+'#ifdef _MINIMIZE_PRGLENGTH
+ ShowASCIIs
+'#endif
+
+'#ifndef _MINIMIZE_PRGLENGTH
+ 'ShowASCII(b7)
+ 'ShowASCII(b8)
+ 'ShowASCII(b9)
+ 'ShowASCII(b10)
+'#endif
+
+   b23=2 ' nachfolgende PrintLZ Funktionen werden (5 minus 2) = 3 Ausgabestellen verwenden
+
+   print
+ NEXT
+ w1=w1+12
+ print "(A)dresse, (H)ighlight:"; :   Gosub HiA : PrintLZ(b13) : Gosub NoHi : PRINT ","; : HiB : PrintLZ(b14) : Gosub NoHi :Print ", (Q)uit"; :
+  GET b24
+  IF b24="q" THEN LPrg_END ' END
+  IF b24="h" THEN GOSUB Input_Highlight_Bytes
+  IF b24="a" THEN GOSUB Input_Address
+ WEND
+
+ LPrg_END 'END                                                          I-------
+' <<- Hauptschleife  Ende                                          N----------
+'----------------------------------------------------------------------------
+
+'----------------------------------------------------------------------------
+#SUBS'Subroutinen Anfang ->>                                       S----------
+'                                                                      U-------
+
+  '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Dieser Bereich ist fuer Subroutinen (Prozeduren und Funktionen)       ''
+  ' reserviert. Dieses Programm kann mit der #LCall_Slot Funktion auch    '''
+  ' von anderen Programmen im selben Dateisystem als Modul aufgerufen     '''
+  ' werden.  WICHTIG: Auch hier bitte keine Daten-Tabellen einfuegen, s.u.''
+  '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+Function Input_Highlight_Bytes'(b19,b20)
+          for b20=1 to 27 : PUT 8 : NEXT
+          Gosub HiA
+          PRINT "(H)ighlight Bytes: A=";
+          INPUT b13
+          PrintLZ(b13)
+          NoHi
+          PUT ","
+          HiB
+          Print "B=";
+          INPUT b14
+          PrintLZ(b14) 'IF b19 > 32 and b19 < 128 THEN b19=
+          NoHi
+          print
+    RETURN
+
+Function Input_Address(w1)
+          for w1=1 to 38 : PUT 8 : NEXT
+          Gosub HiA
+          PRINT "(A)dresse von EEPROM-Speicherzelle: ";
+          INPUT w1
+          b23=0 ' nachfolgende PrintDEC Funktionen soll (5 minus 0) = 5 Ausgabestellen verwenden
+          PrintLZ(w1)
+          b23=2 ' nachfolgende PrintDEC Funktionen soll (5 minus 2) = 3 Ausgabestellen verwenden
+          Gosub NoHi
+          print
+    RETURN
+
+
+Procedure HiA
+          PUT ESC : PRINT "[1;37;44m";
+
+    RETURN
+
+Procedure HiB
+          PUT ESC : PRINT "[34;47m";
+    RETURN
+
+Procedure NoHi
+          PUT ESC : PRINT "[0m";
+    RETURN
+
+
+Procedure PrintLZHLbyte(b7) ' (Print with LeadingZeroesHighLightBytes)
+
+'3-stellige Dezimalausgabe eines Bytes mit fuehrenden Nullen und farblicher Hervorhebung bei Uebereinstimmung mit b13, bzw. b14:
+
+     Put " "
+
+     IF (b7 >< b13) AND (b7 >< b14) THEN
+
+         PrintLZ(b7)
+
+       ELSE
+
+         IF b7=b13  THEN
+            HiA : PrintLZ(b7)
+           ELSE
+            HiB : PrintLZ(b7)
+         END IF
+
+     END IF
+
+     NoHi
+
+   RETURN
+
+'print "?return err"
+
+'#ifdef _MINIMIZE_PRGLENGTH
+ Procedure PrintLZHLbytes
+
+         PrintLZHLbyte(b7)
+         PrintLZHLbyte(b8)
+         PrintLZHLbyte(b9)
+         PrintLZHLbyte(b10)
+ RETURN
+'#endif
+
+'#ifdef _MINIMIZE_PRGLENGTH
+ Procedure ShowASCIIs
+
+         ShowASCII(b7)
+         ShowASCII(b8)
+         ShowASCII(b9)
+         ShowASCII(b10)
+ RETURN
+'#endif
+
+
+Procedure ShowASCII(b23)
+
+         IF isPrintable(b23) THEN put b23 ELSE put "."
+RETURN
+
+
+Function isPrintable(b24)
+
+        IF  (b24 > 32) AND (b24 < 127) THEN RETURN TRUE
+RETURN FALSE
+
+
+
+
+
+'                                                                      B-------
+' <<- Subroutinen Ende                                             S----------
+'----------------------------------------------------------------------------
+ INCLUDE "L:\x2g\Include\OCBASIC\L-EXIT.PRO"'<<- Anweisungen Ende
+'----------------------------------------------------------------------------
+#DATA 'Datenbereich Anfang ->>                                     D----------
+ TABLE Dieses_Programm_wurde_entworfen_fuer_L_Modul 0853 TABEND'      A--------
+'(oben: Falls |_ Funktionen genutzt werden, die evt. mit einer frueheren
+'       Version des Basismoduls nicht zur Verfuegung stehen, kann dort
+'       die minimal benoetigte Versionsnummer angegeben werden.)
+
+  '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Tabellen, die innerhalb dieses Quelltextes mit LOOKTAB gelesen werden, ''
+  ' muessen hier im Datenbereich stehen! Falls BASIC-Anweisungen in diesem '''
+  ' Datenbereich stehen so ist dies wahrscheinlich falsch, es sei denn sie '''
+  ' werden nur als Konstanten benoetigt, oder sie enthalten keine Sprung-  '''
+  ' anweisungen, weil das Virtualisierungsmodul (LVM) Adressen von BASIC-  '''
+  ' Anweisungen im Tabellenbreich nicht virtualisiert.                      '''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+'                                                                     T--------
+' <<- Datenbereich Ende                                            A----------
+'----------------------------------------------------------------------------
+#LEND'<<- |_
+
+' syscode "L:\X2G\L-DRIVER\CC-I-1.1\WATCHDOG\WATCHDOG.S19"
+

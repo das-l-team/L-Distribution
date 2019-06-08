@@ -1,0 +1,5 @@
+[ C-Control/BASIC Parser - fuer mehrzeilges IF..THEN..ELSE, 24-Byte-Variablenliste, Umgehung eines Bugs im C-Control/BASIC Kompiler 1.7 ]
+[ C-Control/BASIC Kompiler - erweiterte Version von http://ccintern.dharlos.de (max. 256 Variablen, max. 8099 Bytes Programmlaenge) ]
+
+C-Control/BASIC Parser Version 1.1
+Copyright (c) 2003 Dietmar Harlos ADPC

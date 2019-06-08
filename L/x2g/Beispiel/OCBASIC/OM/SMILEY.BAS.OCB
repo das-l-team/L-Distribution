@@ -1,0 +1,121 @@
+
+' ===========================================================================
+' Grafik mit der OM. ;-) Ausgaben mit TERMINAL.EXE betrachten!
+' lauffaehig auf der Open-Micro, Open-Mini und Open-Midi
+' ===========================================================================
+
+INCLUDE "om.def"
+
+DEFINE bytenr  BYTE     'Variablen
+DEFINE daten   BYTE
+DEFINE bitnr   BYTE
+DEFINE zeile   BYTE
+DEFINE tablenr BYTE
+
+
+PUT 12
+
+WHILE TRUE
+
+  FOR tablenr=0 TO 3
+    PUT 11
+    FOR zeile=0 TO 17
+      FOR bytenr=0 TO 1
+        IF tablenr=0 THEN
+          outbyte LOOKTAB(tab1,zeile*2+bytenr)
+        ELSEIF tablenr=1 THEN
+          outbyte LOOKTAB(tab3,zeile*2+bytenr)
+        ELSEIF tablenr=2 THEN
+          outbyte LOOKTAB(tab1,zeile*2+bytenr)
+        ELSEIF tablenr=3 THEN
+          outbyte LOOKTAB(tab2,zeile*2+bytenr)
+        END IF
+      NEXT bytenr
+      PRINT
+    NEXT zeile
+  NEXT tablenr
+
+WEND
+
+End2Host=ON
+END
+
+
+PROC outbyte(daten)
+  FOR bitnr=0 TO 7
+    daten=daten SHL 1
+    IF carry THEN
+      PRINT "лл";  'oder "**"
+    ELSE
+      PRINT "  ";
+    END IF
+  NEXT bitnr
+RETURN
+
+
+TABLE tab1 BYTE
+  &b00000111 &b11100000
+  &b00011111 &b11111000
+  &b00110011 &b11001100
+  &b01100101 &b10010110
+  &b01100101 &b10010110
+  &b11100101 &b10010111
+  &b11110011 &b11001111
+  &b11111111 &b11111111
+  &b11111110 &b01111111
+  &b11111110 &b01111111
+  &b11111110 &b01111111
+  &b11101110 &b01110111
+  &b11100111 &b11100111
+  &b01110011 &b11001110
+  &b01111000 &b00011110
+  &b00111111 &b11111100
+  &b00011111 &b11111000
+  &b00000111 &b11100000
+  &b00000000 &b00000000
+END TABLE
+
+TABLE tab2 BYTE
+  &b00000111 &b11100000
+  &b00011111 &b11111000
+  &b00110011 &b11111100
+  &b01100101 &b11111110
+  &b01100101 &b11111110
+  &b11100101 &b10110111
+  &b11110011 &b11001111
+  &b11111111 &b11111111
+  &b11111110 &b01111111
+  &b11111110 &b01111111
+  &b11111110 &b01111111
+  &b11101110 &b01110111
+  &b11100111 &b11100111
+  &b01110011 &b11001110
+  &b01111000 &b00011110
+  &b00111111 &b11111100
+  &b00011111 &b11111000
+  &b00000111 &b11100000
+  &b00000000 &b00000000
+END TABLE
+
+TABLE tab3 BYTE
+  &b00000111 &b11100000
+  &b00011111 &b11111000
+  &b00110011 &b11001100
+  &b01101001 &b10100110
+  &b01101001 &b10100110
+  &b11101001 &b10100111
+  &b11110011 &b11001111
+  &b11111111 &b11111111
+  &b11111110 &b01111111
+  &b11111110 &b01111111
+  &b11111110 &b01111111
+  &b11101110 &b01110111
+  &b11100111 &b11100111
+  &b01110011 &b11001110
+  &b01111000 &b00011110
+  &b00111111 &b11111100
+  &b00011111 &b11111000
+  &b00000111 &b11100000
+  &b00000000 &b00000000
+END TABLE
+

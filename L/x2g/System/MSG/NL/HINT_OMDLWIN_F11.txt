@@ -1,0 +1,1 @@
+[ Tip:  If the target system is not supported, or baud rates of above 38400 are used, try using another transmission program via the F11 key as an alternative ]

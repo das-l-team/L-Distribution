@@ -1,0 +1,2 @@
+[ 'CCBASBIG.EXE' (courtesy http://ccintern.dharlos.de) will now be invoked to process a CCBASIC source code. Up to 24 user variables in RAM and a maximum of 32000 bytes in bytecode size are permitted. However, for some target systems, a limit of only 8 KiB or less may have to be maintained manually. ]
+ 

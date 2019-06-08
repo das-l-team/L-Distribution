@@ -1,0 +1,15 @@
+
+OMAX32TS_16Bit: Testsuite, in der die 32-Bit-Erweiterung mittels 16-Bit-Zufallszahlen getestet wird.
+
+OMAX32TS_16Bit.BAS .... Automatisierter Programmtest, muß in die Open-Maxi geladen und ausgeführt werden
+OMAX32TS_16Bit.exe .... Automatisierter Programmtest, auf dem PC ausführen
+OMAX32TS_16Bit.zip .... FreeBASIC-Sourcecode, nach "C:\FreeBASIC\FbEdit1076c\Projects\OMAX32TS_16Bit" entpacken
+
+OMAX32TS_32Bit: Testsuite, in der die 32-Bit-Erweiterung mittels 32-Bit-Zufallszahlen getestet wird.
+
+OMAX32TS_32Bit.BAS .... Automatisierter Programmtest, muß in die Open-Maxi geladen und ausgeführt werden
+OMAX32TS_32Bit.exe .... Automatisierter Programmtest, auf dem PC ausführen
+OMAX32TS_32Bit.zip .... FreeBASIC-Sourcecode, nach "C:\FreeBASIC\FbEdit1076c\Projects\OMAX32TS_32Bit" entpacken
+
+
+

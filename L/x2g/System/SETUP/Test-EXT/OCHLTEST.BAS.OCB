@@ -1,0 +1,78 @@
+'-------------------------------------------------------------------------------
+' Test-Highlighting: Open-Control/Basic in ConTEXT
+' Die Originaldatei stammt von Gerhard Fischer.
+' Letzte Änderung von Dietmar Harlos am 6. Dezember 2017. (noch unvollständig)
+' am 27. Februar 2018 hinzugefügt: psha pshx pshh pula pulx pulh
+' am 3. Juli 2018 hinzugefügt: bcc bcs & NumConstBegChars angepaßt
+'-------------------------------------------------------------------------------
+
+' Alle Farben können im Menue unter /Einstellungen/Umgebungseinstellungen/Farben
+' geändert werden.
+
+' Darauf achten, daß das gewünschte Highlight-File ausgewählt ist !!!
+
+' Ebenfalls kann der Pfad zum CCBasic-Helpfile (F1 auf Schlüsselwort) im Menue
+' unter /Einstellungen/Umgebungseinstellungen/Verschiedenes angepaßt werden.
+'-------------------------------------------------------------------------------
+
+
+' bisherige Standard CCBasic-Befehle
+' KeyWords1:
+    ABS AD APPEND AND BAUD BEEP BIT BYTE BYTEPORT
+    CLOSE DA DAY DEACT DEFINE DOW ELSE END EOF FILEFREE FREQ
+    GET GOTO GOSUB HOUR IF INPUT LOOKTAB MAX MIN MINUTE MOD MONTH
+    NAND NOR NOT ON OFF OPEN OR PAUSE PORT PULSE PUT PRINT
+    RANDOMIZE RAND RETURN RXD R1200 R2400 R4800 R9600 READ
+    SECOND SGN SHL SHR SLOWMODE SQR SYSEND SYS SYSCODE THEN
+    TIMER TOG WAIT WORD WORDPORT WRITE XOR YEAR
+
+' Reservierte Variablen-Namen zur Konf. des Betriebssystems (Nur für OC-Basic)
+' KeyWords2:
+    OPTION CCBAS CLASSIC OCBAS OPENBASIC OPENMICRO OPENMINI
+    OM OPENMIDI OPENMACRO OPENMAXI END2HOST PrintHex PrintSpc URIllTok
+  	ClockDis RealPop RunOnErr Carry IrqReq IrqSet IrqAct FileChg IiarFnd
+	  UIRIrq UIRSwi UIRTim0 UIRTim1 UIRTovl UIRKyb UIRAdc URTok
+	  INTERRUPT VERSION ConOnErr INCLUDE UIRTofl
+
+' Schleifen- und Tabellen-Befehle, allerdings alt und neu zusammen
+' auch Prozeduren und Funktionen
+' KeyWords3:
+    FOR TO NEXT STEP DOWNTO
+    WHILE WEND REPEAT UNTIL
+    TABLE TABEND ENDTAB DBNZ DBNZCTR
+    FUNCTION PROCEDURE FUNC PROC INLASM
+
+' INLINE-Assembler
+' KeyWords4:
+    adc add ais aix and asr asra asrx bclr beq bge bgnd bgt bhcc
+    bhcs bhi bhs bih bil bit ble blo bls blt bmc bmi bms bne bpl bra brclr
+    brn brset bset bsr cbeq cbeqa cbeqx clc cli clr clra clrh clrx cmp cmphx
+    cmpx com coma comx cphx daa dbnz dbnza dbnzx dec deca decx div eor inc
+    inca incx jmp jsr lda ldhx ldx lsl lsla lslx lsr lsra lsrx mov mul neg
+    nega negx nop nsa ora popa poph popx pusha pushh pushx rol rola rolx
+    ror rora rorx rsp rti rts sbc sec sei sta sthx stop stx sub swi tap
+    tax tpa tst tsta tstx tsx txa txs wait
+    asl asla aslx
+    sei stc sti cpx cphx or
+    db fcb fcc dw fcw fdb
+    psha pshx pshh pula pulx pulh
+    bcc bcs
+
+' neue OCBasic-Befehle
+' KeyWords5:
+    ADD AS CTS CSTKPTR DIM ELSEIF ENDIF ERR ERRADR
+    FALSE FILEPOS FILELEN FREERAM FREERAM1 FREERAM2 FREERAM3 FREERAM4 FREERAM5
+    FREQ1 FREQ2 GSTKPTR HANDSHAKE INT IVAR LONG PCADR PUSH POP R600 R300 R150
+    R75 REMOVETOS RTS SUB SYSADR TICKS TRUE R38400 R19200 INLINE ASC ASCII
+    LOOKTABWORD LOOKTABBYTE PEEK POKE PEEKW POKEW LCDINIT LCDCLS LCDLOCATE
+    LCDCMD LCDPUT LCDPRINT CVBYT CVI CVWRD
+
+"String"
+1+2+3
+#label
+! lda #123
+! lda #$45
+! lda 123
+?&h123
+
+

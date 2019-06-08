@@ -1,0 +1,28 @@
+[ Hilfstext zur |_ Distribution ]
+
+
+  Sie können jetzt den zu verwendenden Seriellen COM-Port auswählen.
+
+
+     _____       _____       _____       _____
+    ||F9 ||     ||F10||     ||F11||     ||F12||
+    ||___||     ||___||     ||___||     ||___||
+    |/___\|     |/___\|     |/___\|     |/___\|
+
+
+     COM:1       COM:2       COM:3       COM:4
+
+
+  Die neue Einstellung bleibt bis zur nächsten Änderung gespeichert.
+
+Bekannte Probleme:
+
+- Derzeit sind nur die COM-Ports 1,2,3 oder 4 möglich. Bei einigen
+  Seriell Adaptern könnten Schwierigkeiten auftreten, wenn diese
+  einen anderen COM-Port (z.B. 5, 9, o.ä.) erfordern.
+
+- Auslesen des Bytekodes (verfügbar via F9, wenn '.DAT'-Datei geöffnet ist)
+  wird weiterhin auf COM 1 ausgeführt. Um die Einstellung zu ändern kann
+  hilfsweise im Pull-Down Menü "Einstellungen-Umgeungseinstellungen-Benutzerbefehle"
+  bei Dateityp-Taste F9, Parameter die Ziffer 1 manuell auf 2,3, oder 4 geändert
+  werden.

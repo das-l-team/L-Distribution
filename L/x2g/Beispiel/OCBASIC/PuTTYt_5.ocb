@@ -1,0 +1,21 @@
+option ccbas
+
+           'Dateiname L:\x2g\Beispiel\OCBASIC\PuTTYt_5.ocb
+
+put 5      'Dieses Programm testet, ob die ANSWERBACK Einstellung
+           'des hier verwendeten PuTTY-Terminal deaktiviert ist.
+
+           'Falls nicht, schickt die ANSWERBACK-Funktion des PuTTY-
+           'Terminalprogramm bei Empfang des ASCII Zeichen '5'
+           'selbstaendig eine voreingestellte Zeichenkette (meist 'PuTTY')
+           'an den Mikrokontroller zurueck.
+
+           'Weil hierdurch aber bei einem Anwenderprogramm, welches
+           'Benutzereingaben ueber die Serielle Schnittstelle
+           'erwartet Fehlfunktionen auftreten koennen, sollte die
+           'ANSWERBACK-Funktion des PuTTY-Terminalprogramms vorsorglich
+           'deaktiviert sein.
+
+           'Innerhalb der L-Distribution ist dies normalerweise der Fall,
+           'und die ANSWERBACK-Funktion des PuTTY-Terminalprogramms als
+           'Voreinstellung deaktiviert.

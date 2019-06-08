@@ -1,0 +1,134 @@
+'------------------------------------------------------------------------------
+'* Programmbeispiel fuer OCBASIC, getestet mit Version V1.07/1.07a.           *
+'------------------------------------------------------------------------------
+
+ 'INFO' >  Programmbeschreibung        |      Tipps und Tricks zu |_><
+ 'INIT' >  Initialisierung             |
+ 'MAIN' >  Hauptschleife               |        www.linkeinfuegen.de
+ 'SUBS' >  Subroutinen                 |
+ 'DATA' >  Tabellen                    |             (c) |_ 2011
+
+
+' |_ ->>
+'----------------------------------------------------------------------------                                       -
+' Programmbeschreibung Anfang ->>                                  I----------
+'                                                                      N-------
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Hier koennen Sie die Funktion Ihres Programms beschreiben.       ''
+  ' Moechten Sie Ihr Programm auch anderen Anwendern zur Verfuegung  '''
+  ' stellen, besuchen Sie bitte  www.linkeinfuegen.de                ''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'                                                                      F-------
+' <<- Programmbeschreibung Ende                                    O----------
+'----------------------------------------------------------------------------
+ INCLUDE "L:\X2G\INCLUDE\OCBASIC\L-INIT.PRO"'<<- Anweisungen Anfang
+'----------------------------------------------------------------------------
+' Anweisungen fuer (#INIT) beginnen in ^^^^^^^^^^                  I----------
+'                                                                      N-------
+ ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+ ' Zur Laufzeit kann der #INIT Bereich per Direktvektor uebersprungen ''
+ ' werden. Selbst registrierende Erweiterungsmodule (z.B. UIP) koennen'''
+ ' damit Zeitverhalten und Bedienungsfreundlichkeit optimieren.       '''
+ ' WICHTIG: Hier keine Daten Tabellen einfuegen, s.u.                 ''
+ ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+ PRINT "Zeige Baudraten ..."
+'                                                                      I-------
+' <<- Initialisierung Ende                                         T----------
+'----------------------------------------------------------------------------
+
+'----------------------------------------------------------------------------
+#MAIN 'Hauptschleife Anfang ->>                                     M---------
+'                                                                      A-------
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Dieser Programmteil wird nach Verlassen von #INIT ausgefuehrt,   ''
+  ' oder mittels Direktvektor Funktionen unmittelbar gestartet.      '''
+  ' WICHTIG: Hier keine Daten Tabellen einfuegen, s.u.               ''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  DIM count AS BYTE
+
+'Beispiel A:
+'Zur Pruefung, ob die aktive RS232 Schnittstelle des Hostsystems eine
+'benoetigte Baudrate innerhalb der RS232 Toleranzen bereitstellt, kann
+'dieser Funktion die gesuchte Baudrate, gekuerzt um die letzten zwei
+'Stellen, uebergeben werden. Im Erfolgsfall liefert die Funktion einen
+'Wert ungleich 0, und in w12 die Abweichung vom Idealwert in Baud.
+'Jedoch wird die neue Baudrate nur eingestellt wenn diese als negativer
+'Wert der Funktion uebergeben wurde.
+
+' IF LReg_TmpBaud(96) THEN PRINT "9600 mit ";w12;" Baud Abweichung verfuegbar."
+
+'Beipiel B:
+'Liefert Anzahl der verfuegbaren Baudraten auf dem Stack und in w12. Mit diesen
+'Informationen kann zur LZ des Programms ein Auswahlmenue erstellt werden.
+
+
+
+
+   IF LGet_BaudAvail(0) THEN   'Ist die 'Lbit' Funktion "Verfuegbare Baudraten" implementiert?
+
+      b1=w12                   'Falls ja, befindet sich nun die Anzahl verfuegbarer Baudraten in w12...
+
+      REPEAT 'Idee: (Auf Open-Micro Systemen koennte man mit DBNZCTR=b1 diese Schleife beschleunigen)
+
+                            ' Wichtig: Der Inhalt von w12 wird durch den Aufruf von LGet_BaudAvail neu gesetzt.
+                            ' Deshalb kann diese Schleife nicht mit w12 als Laufvariable aufgebaut werden.
+
+      b23=3 ' Nachfolgende Aufrufe der Funktion PrintLZ minus 3 (von 5) fuehrenden Nullen.
+      PrintLZ(b1): PRINT" "; : PrintDEC( LGet_BaudAvail(b1)) : PRINT "00 Baud (Abweichung: ";LGet_BaudErr(b1);" Baud.)"
+      b1=b1-1
+
+      UNTIL b1=0 'Future: DBNZ
+
+   END IF
+
+
+ PRINT "Index der gewuenschten Baudrate eingeben (1..";LGet_BaudAvail(0);") + [Eingabetaste]";
+
+ INPUT b1 : print b1 : IF b1 = 0 THEN PRINT : PRINT "Keine Aenderung, Programmende.":END
+
+ b2=LGet_BaudAvail(b1)
+
+ print "b1=";b1
+
+
+   ' PRINT "OK"
+
+  'ELSE
+
+  ' PRINT "Nicht in Liste."
+
+  'END IF
+
+ PRINT "Terminalprogramm auf "; LGet_Baudavail(b1); "00 Baud einstellen, danach <Strg+A> druecken."
+ PRINT LReg_TMPBAUD(LGet_BaudAvail(b1))
+
+' b1=0
+ WHILE b1<>1 'Strg+A   ("U" ware 'Binaer: 01010101)
+ GET b1
+ WEND
+
+
+' Teste Divisionsroutine der C-Control I 1.1:
+' PRINT "30001/(-912)="; 30001/(-912)   ' Soll: -32.8958333~
+' PRINT "10*sqrt(314)="; 10*sqr(314)    ' Soll: 177.20045146669350401991125097536
+
+ LPrg_END                                               '              I-------
+' <<- Hauptschleife  Ende                                          N----------
+'----------------------------------------------------------------------------
+
+'----------------------------------------------------------------------------
+#SUBS'Subroutinen Anfang ->>                                       S----------
+'                                                                      U-------
+'                                                                      B-------
+' <<- Subroutinen Ende                                             S----------
+'----------------------------------------------------------------------------
+ INCLUDE "L:\X2G\INCLUDE\OCBASIC\L-EXIT.PRO"'<<- Anweisungen Ende
+'----------------------------------------------------------------------------
+#DATA 'Datenbereich Anfang ->>                                     D----------
+ TABLE Dieses_Programm_wurde_entworfen_fuer_L_Modul 0 TABEND'      A--------
+'                                                                     T--------
+' <<- Datenbereich Ende                                            A----------
+'----------------------------------------------------------------------------
+#LEND'<<- |_
+
+'syscode "fastbas.s19"

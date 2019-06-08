@@ -1,0 +1,198 @@
+
+
+    // CCbasic(++) highlighter adapted by Henrik Reimers
+    // umgestellt und erweitert auf Open-Control/BASIC by Gerhard Fischer
+    // weitere Anpassungen von Dietmar Harlos am 3. September 2005
+    // weitere Anpassungen von  das |_ Team
+
+
+    Language: -->  C-Control/BASIC++
+
+    Description: C-Control I V2 BASIC-Compiler von Stefan Tappertzhofen
+
+
+
+    CaseSensitive: 0
+
+    LineComment: '
+    BlockCommentBeg:
+    BlockCommentEnd:
+
+    IdentifierBegChars: a..z A..Z _%@
+    IdentifierChars: a..z A..Z _ 0..9 ?
+
+    NumConstBegChars: # //als Label mißbraucht
+
+
+    NumConstChars: a..z A..Z _ 0..9
+
+    EscapeChar:
+
+    KeyWords1: ABS AD APPEND AND BAUD BEEP BIT BYTE BYTEPORT
+    CLOSE DA DAY DEACT DEFINE DOW ELSE END EOF FILEFREE FREQ
+    GET GOTO GOSUB HOUR IF INPUT LOOKTAB MAX MIN MINUTE MOD MONTH
+    NAND NOR NOT ON OFF OPEN OR PAUSE PORT PULSE PUT PRINT
+	RANDOMIZE RAND RETURN RXD R1200 R2400 R4800 R9600 READ
+	SECOND SGN SHL SHR SLOWMODE SQR SYSEND SYS SYSCODE THEN
+	TIMER TOG WAIT WORD WORDPORT WRITE XOR YEAR
+
+
+    // Hier bitte weitere Kategorien von Schlüsselwörtern eintragen, z.B.
+    // eigene feste Funktionen. Detaileinstellungen können in ConTEXT
+    // geändert werden.
+
+
+
+
+
+	// Reservierte Variablennamen zur Konf. des Betriebssystems
+    KeyWords2: OPTION CCbas OpenMicro END2HOST PrintHex PrintSpc URIllTok
+	ClockDis RealPop RunOnErr Carry IrqReq IrqSet IrqAct FileChg IiarFnd
+	UIRIrq UIRSwi UIRTim0 UIRTim1 UIRTovl UIRKyb UIRAdc URTok
+	config1 config2 dERR dERRADRh dERRADRl dFILEPOSh dFILEPOSl
+	dDBNZCTR dCSTKPTR dGSTKPTR dPCADRh dPCADRl dFREERAM1
+	INTERRUPT PULLUPA PULLUPB VERSION ConOnErr INCLUDE UIRTofl
+
+
+
+	// Schleifen- und Tabellen-Befehle
+    KeyWords3: FOR TO NEXT STEP DOWNTO
+    WHILE WEND REPEAT UNTIL
+    TABLE TABEND  LXGET_EUIVECT
+
+
+
+
+
+
+    KeyWords4:
+
+   //Elementare Funktionen
+      Call Success // |_
+
+
+   //Symbolische Konstanten
+     b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 b13 b14 b15 b16 b17 b18 b19 b20 b21 b22 b23 b24 // BYTES 1 bis 24 |_
+     b1_b2 b3_b4 b5_b6 b7_b8 b9_b10 b11_b12 b13_b14 b15_b16 b17_b18 b19_b20 b21_b22 b23_b24 // WORDS 1 bis 12 |_
+       w1    w2    w3    w4    w5      w6      w7      w8      w9      w10     w11     w12  // WORDS 1 bis 12 |_
+
+
+     LGet_EUISLOT LReg_EUISLOT LGet_EUIADDR LReg_EUIADDR LGet_HOSTIDS
+     LReg_HOSTIDS LGet_MEMSIZE LReg_MEMSIZE LGet_BUSCLCK LReg_BUSCLCK
+     LGet_FREEMEM LPrg_RUNSNGL LGet_FILEFRE LGet_FILELEN LSyn_NEXTSEC
+     LGet_LBMBASE LGet_LBMLENG LGet_ASJSLOT
+
+     LGet_BMVERSION LGet_E2SIZEPNTR LGet_HOSTTYPE LErr LGet_SLTOFFST
+
+     LGet_IEC LGet_EEC LGet_POC LGet_NOM LGet_BMVERSION LGet_E2SIZEPNTR
+
+     LXREG_BAUDREG_0 LXREG_BAUDREG_1 LXREG_BAUDREG_2
+     LXREG_BAUDREG_3 LXREG_BAUDREG_4 LXREG_TMPBAUD
+     LXGET_BAUD_TX_1 LXGET_BAUD_RX_1 LXREG_BAUD_TX_1 LXREG_BAUD_RX_1
+     LXGET_BAUDREG
+     LXGET_DA1 LXGET_DA2
+
+     LXLNK_RECEIVEDATA LXLNK_RECEIVEPROG LXLNK_FIND1STSTRG LXLNK_DUMP1STSTRG
+     LXLNK_REALLOCATE
+
+     LXEUI_CLEAR LXEUI_GETHANDLE LXEUI_CALL LXEUI_CFG LXEUI_SENDMSG
+
+     LXINF_NOEUI LXMSG_STARTSLOT LXINF_HELPSCREEN LXINF_MAXMOD LXINF_NONE
+     LXINF_MODDISCARD LXINF_MODREMAINING LXINF_MODRUNNING LXINF_ASJUMPER_DONE
+     LXINF_PRGINFO LXINF_MODCOUNT LXINF_EXPIRED LXINF_PRGNAME
+     LXINF_ASJUMPERCLOSE LXINF_BASUPLDOK LXINF_NEXTOFFSET LXINF_BYTESFREE
+     LXINF_BASICLEN LXINF_FILELEN LXINF_VERSTRING LXINF_LIST_TOP LXINF_LIST_BTM
+     LXMSG_OUTPROMPT LXMSG_IDLELOOP
+
+     LXCMD_CLRSCR LXCMD_PLUGVASJ LXCMD_DUMPFILE LXCMD_MODDISCARD LXCMD_MORE
+     LXCMD_IDLELOOP LXCMD_CLEARRAM LXCMD_RETURN
+
+     LX_PEEK LX_POKE LXMSG_KEEPBAUD LXTRIGGER_ADR LXCMD_ECHOINPUT LXINF_TIMEOUT
+     LXMSG_SLOTRUN LXMSG_SLOTFAIL
+
+     LXHST_HIBERNATE LXHST_RESET LXHST_COLDRESET LXHST_WARMSTART LXPRG_CALLERR
+     LXPRG_DEBUGMON  LXPRG_NEWTHREAD LXPRG_CALL LXPRG_RUNKEEPRAM LXPRG_RUN
+     LXPRG_PAUSEMSEC LXPRG_SYN2TICKS LXPRG_SYN2EVENT LXPRG_EXIT  LXPRG_END
+
+     LXMSG_UNKNOWNCMD PRGEND_NOLIST PRGEND_NOPROMPT LXERR_RETURN
+
+     OPT_WARMSTART OPT_COLDSTART LXERR_NOREGEUI LXTRUE LX_TESTONLY LXERR_UPLOAD
+     LXERR_UPLDTOK LXERR_UPLDS19 LXERR_RETURN_1 LXERR_RETURN_2 LXERR_RETURN_3
+     LXERR_RETURN_4 LXERR_RETURN_5 LXERR_RETURN_6 LXERR_RETURN_7 LXERR_RETURN_8
+     LXERR_RETURN_PP LXERR_SLOTNOTFOUND LXERR_DUMPFILE LXGET_LASTERROR
+     LXERR_EEWRITEFAIL LXERR_PRGLEN LXERR_NOSPACE LXERR_UPLDTOKEN LXERR_NONE
+     LXERR_SLOT_CREATE LXERR_SLOT_APPEND LXERR_SLOT_SETFREE LXERR_SLOT_CLOSE
+     LXERR_EXCD_BMHIGHVEC LXREG_EUIVECT LXGET_EUIVECT UNKNOWN_CMD
+
+     NO_INTERFACE INPUT_EMPTY INPUT_OUTOFRANGE INPUT_SPACEBAR INPUT_TIMEDOUT
+     LXGET_MAXVAR LXGET_MAXITR
+'
+
+
+
+
+
+	// neue OC-Befehle
+    KeyWords5: ADD AS CTS CSTKPTR DIM DBNZ DBNZCTR ELSEIF ENDIF ERR ERRADR
+    FALSE FILEPOS FILELEN FREERAM FREERAM1 FREERAM2 FREERAM3 FREERAM4 FREERAM5
+    FREQ1 FREQ2 GSTKPTR HANDSHAKE INT IVAR LONG PCADR PUSH POP R600 R300 R150
+    R75 REMOVETOS RTS SUB SYSADR TICKS TRUE
+
+
+
+    StringBegChar: "
+    StringEndChar: "
+    MultilineStrings: 0
+
+    UsePreprocessor: 0
+
+
+    CurrLineHighlighted: 0
+
+    SpaceCol: clWindowText clWindow
+    Keyword1Col: $00C00000 clWindow
+    Keyword2Col: clPurple clWindow
+    Keyword3Col: clBlue clWindow
+    Keyword4Col: clBlue clWindow
+    Keyword5Col: clBlue clWindow
+    IdentifierCol: clWindowText clWindow
+    CommentCol: clGreen clWindow I
+    NumberCol: $000000C0 clWindow
+    StringCol: clMaroon clWindow
+    SymbolCol: clPurple clWindow
+    PreprocessorCol: clBlue clWindow
+    SelectionCol: clWhite clNavy
+    CurrentLineCol: clBlack clYellow
+
+    OverrideTxtFgColor: 0
+    BlockAutoindent: 0
+    BlockBegStr:
+    BlockEndStr:
+    MatchedBracesCol: clWindowText clWindow
+
+
+
+CurrLineHighlighted:    1
+OverrideTxtFgColor:     0
+BlockAutoindent:        0
+BlockBegStr:
+BlockEndStr:
+SpaceCol:               clWindowText clWindow
+Keyword1Col:            clNavy clWindow B
+Keyword2Col:            $00C000C0 clWindow
+Keyword3Col:            $00FF4040 clWindow B
+Keyword4Col:            $00C000C0 clWindow B
+Keyword5Col:            clOlive clWindow B
+IdentifierCol:          clWindowText clWindow
+CommentCol:             $0000C000 clWhite I
+NumberCol:              clRed clWindow
+StringCol:              clMaroon clWindow
+SymbolCol:              $000000C0 clWindow
+PreprocessorCol:        clBlue clWindow
+SelectionCol:           $00FF4040 $00202020
+CurrentLineCol:         clBlack $0080FFFF
+MatchedBracesCol:       clWindowText clWindow
+ Filter:                 --> C-Control/BASIC++ (*.bpp, *.blib) | *.bpp; *.blib
+    HelpFile:               L:\X2G\3rdparty\OCBASIC\DOCS\GERMAN\COMPILED.HTM
+Filter:                 --> C-Control/BASIC++ (*.bpp, *.blib) | *.bpp; *.blib
+HelpFile:               L:\X2G\3rdparty\OCBASIC\DOCS\GERMAN\COMPILED.HTM

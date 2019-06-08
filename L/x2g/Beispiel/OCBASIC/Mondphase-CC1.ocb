@@ -1,0 +1,71 @@
+' ============================================================================
+' Mondphasenberechnung mit Integer-Arithmetik auf der Open-Macro und Open-Maxi
+' In OCBASIC 1.12a von Dietmar Harlos am 26. September 2018
+' - adaptiert an die 'alte' C-Control I 1.1 - am 30. September von das |_ Team,
+'  es wurden auskommentiert die OM-spezifischen Anweisungen (include, ADD, SUB)
+'  und mittels 'option ccbas' der OCBASIC Kompatibilitaetsmodus aktiviert.
+' ============================================================================
+
+' Als Mondphasen bezeichnet man die wechselnden Lichtgestalten des Mondes. Sie
+' entstehen durch die perspektivische Lageänderung seiner Tag-Nacht-Grenze
+' relativ zur Erde während seines Erdumlaufes. Gebräuchlich ist die Einteilung
+' in vier Viertel von je ungefähr einer Woche Länge.
+
+' --- Definitionen für das System --------------------------------------------
+
+'INCLUDE "omac.def"         'Definitionen für die Open-Macro
+'INCLUDE "omax.def"         'Definitionen für die Open-Maxi
+
+' --- Definitionen des Anwenders ---------------------------------------------
+option ccbas
+
+DIM a,b,c BYTE             'einige Variablen
+DIM mpyear,mpmonth,mpday,g,e INT 'Variablen für Mondphasenberechnung
+
+' --- Das Hauptprogramm ------------------------------------------------------
+
+' PrintSpc=ON   'SPACE vor einem dezimalen PRINT ausgeben (OM-Syntax)
+
+?"September:"
+FOR a=1 TO 30
+  ?a,moon_phase(2018,09,a) 'OM-Syntax: ?a;moon_phase(2018,09,a)
+NEXT a
+
+?"Oktober:"
+FOR a=1 TO 31
+  ?a,moon_phase(2018,10,a) 'OM-Syntax: ?a;moon_phase(2018,10,a)
+NEXT a
+
+'End2Host=ON   'OM-Syntax: 'Nach Programmende in den Host-Modus
+END                        'Progammende, Neustart durch AS-Jumper (oder Leer-Taste mit 'Lbit')
+               'OM-Syntax: 'Programmende, Neustart mit der Enter-Taste
+
+' --- Subroutinen ------------------------------------------------------------
+
+' Calculates the moon phase (0-7), accurate to 1 segment.
+
+' Nach "http://www.voidware.com/moon_phase.htm".
+
+' 0 => Neumond
+' 2 => Zunehmender Halbmond
+' 4 => Vollmond
+' 6 => Abnehmender Halbmond
+' 7 => ein Segment vor Neumond
+
+FUNCTION moon_phase(mpyear,mpmonth,mpday)
+  IF mpmonth=1 THEN
+    mpday=mpday-1   'eqv. OM-Syntax: SUB mpday,1
+  ELSE IF mpmonth=2 THEN
+   mpday=mpday+30   'eqv. OM-Syntax: ADD mpday,30
+  ELSE ' m >= 3
+    mpday=mpday + 28 + (mpmonth-2)*3059/100  'eqv. OM-Syntax: ADD mpday,28+(mpmonth-2)*3059/100
+    ' adjust for leap years
+    IF (mpyear AND 3)=0 THEN mpday=mpday+1   'eqv. OM-Syntax: ADD mpday,1
+    IF (mpyear MOD 100)=0 THEN mpday=mpday-1 'eqv. OM-Syntax: SUB mpday,1
+  END IF
+
+  g=((mpyear-1900) MOD 19) + 1
+  e=(11*g + 18) MOD 30
+  IF ((e=25 AND g>11) OR e=24) THEN e=e+1 'eqv. OM-Syntax: ADD e,1
+  RETURN (((e+mpday)*6+11) MOD 177)/22 AND 7
+END FUNCTION

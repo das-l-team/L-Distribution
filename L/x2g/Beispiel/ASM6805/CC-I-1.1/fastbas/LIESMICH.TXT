@@ -1,0 +1,23 @@
+
+Schnellere Befehlsausfuehrung von C-Control/BASIC-Programmen
+============================================================
+
+Bitte einfach FASTBAS.BAS laden und zur C-Control uebertragen.
+Um das Programm zu beschleunigen muss der SYS-Befehl (am Anfang
+des Programm) und der SYSCODE-Befehl (am Ende) aktiviert werden.
+Der SYSCODE-Befehl kann, nachdem die sogenannten Systembytes
+zur C-Control uebertragen wurden, wieder deaktiviert werden.
+Dadurch erhoeht sich die Lebensdauer der C-Control und die
+Uebertragung eines Programms zur C-Control geht schneller.
+
+Von nun an kann jedes BASIC-Programm beschleunigt werden, indem
+einfach ein SYS &h101 an den Anfang des Programms gestellt wird.
+Der SYSCODE-Befehl muss nur dann erneut ausgefuehrt werden, wenn
+zwischenzeitlich (in einem anderen Programm) ein anderer SYSCODE-
+Befehl auftauchte und sich dadurch der Inhalt der Systembytes
+veraendert hat.
+
+Viel Spass beim Beschleunigen!
+Dietmar Harlos
+
+

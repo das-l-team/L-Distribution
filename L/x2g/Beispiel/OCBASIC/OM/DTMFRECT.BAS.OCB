@@ -1,0 +1,287 @@
+
+' ===========================================================================
+' DTMF-Signale erzeugen ("Dual Tone Multiplexed Frequency")
+' lauffaehig auf der Open-Micro, Open-Mini und Open-Midi
+' ===========================================================================
+
+' Dieses schon recht umfangreiche Demoprogramm zeigt, wie DTMF-Signale, also
+' die Signale zum Waehlen beim Telefon-Tonwahlsystem, erzeugt werden koennen.
+' Ausserdem wird gezeigt, wie der Anwender seine Assembler-Interruptroutinen
+' (IIARs) korrekt in mehr als einen Interrupt einbindet.
+
+' DTMF-Signale setzen sich aus zwei Sinusschwingungen zusammen. Beispiels-
+' weise erzeugt ein Telefon beim Druck auf die "8" einen Ton mit 852 Hertz
+' und gleichzeitig einen zweiten mit einer Frequenz von 1336 Hz. Um solche
+' Signale mit der OM zu erzeugen, werden die beiden Toene mit Hilfe der
+' beiden Timer-Interrupts TIM0 und TIM1 erzeugt. Sie toggeln zwei Pins am
+' Kontroller und wenn zwischen die beiden Pins ein Piezo-Schallwandler
+' geschaltet wird, kann man damit waehlen, wenn man das Mikrofon vom Tele-
+' fon dicht an den Schallwandler haelt. Allerdings erzeugt der Kontroller
+' Rechtecksignale, die recht obertonreich sind. Dadurch kann es zu Fehlern
+' im DTMF-Dekoder kommen. Die Obertoene lassen sich im einfachsten Fall mit
+' einem vor den Schallwandler gehaltenen Papiertaschentuch herausfiltern.
+
+
+INCLUDE "om.def"
+
+DEFINE led PORT[4]        'diese LED wird im Hauptprogramm in BASIC getoggelt
+DEFINE taste PORT[6]
+
+DEFINE a,b,c BYTE         'temporaere Variablen
+
+DEFINE char BYTE          'Variablen zur Parameteruebergabe
+
+DEFINE tim0h BYTE         'zum Datenaustausch mit Assembler-Interruptroutinen
+DEFINE tim0l BYTE
+DEFINE tim1h BYTE
+DEFINE tim1l BYTE
+
+
+' ---------------------------------------------------------------------------
+
+
+' ---------------------------------------------------------------------------
+' DTMF mit der Open-Micro. Die folgenden Subroutinen sollten sinnvollerweise
+' in einer INCLUDE-Datei untergebracht werden.
+' ---------------------------------------------------------------------------
+
+' Das Schluesselwort INLASM kennzeichnet die folgende PROCEDURE als
+' Assemblerroutine ("IAR"). Dadurch, und dass sie unmittelbar am Anfang
+' des Programms steht, wird sie zu einer IIAR, also zu einer Assembler-
+' Interruptroutine, die bei einem aktivierten User-Interrupt gestartet wird.
+
+PROC iiar_tim0and1 INLASM
+! cbeqa #iTIM0,is_tim0    'hierdurch Unterscheidung zwischen TIM0 und TIM1
+! cbeqa #iTIM1,is_tim1
+! jmp iiar_tim0and1_next+2  'falls keins, dann zur naechsten IIAR springen
+
+' In output compare mode (MSxB:MSxA <> 0:0), writing to the high byte of the
+' TIM channel x registers (TCHxH) inhibits output compares until the low
+' byte (TCHxL) is written.
+
+#is_tim0
+! lda TCH0L   'Low-Byte   'Naechsten Aufrufzeitpunkt festlegen
+! add tim0l
+! tax
+! lda TCH0H   'High-Byte
+! adc tim0h
+! sta TCH0H   'High-Byte
+! stx TCH0L   'Low-Byte
+! clc                     'Diese Assemblerroutine uebergibt nun wieder an
+! rts                     'das Betriebssystem. Dazu wird Carry geloescht.
+
+#is_tim1
+! lda TCH1L               'Das gleiche fuer TIM1
+! add tim1l 
+! tax       
+! lda TCH1H
+! adc tim1h
+! sta TCH1H
+! stx TCH1L
+! clc       
+! rts       
+END PROC
+
+' Mit der folgenden Assemblerroutine wird das Timer Interface Module (TIM)
+' passend fuer DTMF umkonfiguriert.
+
+PROC init_tim0and1 INLASM
+'"Before changing a channel function by writing to the MSxB or MSxA bit,
+' set the TSTOP and TRST bits in the TIM status and control register (TSC)."
+! mov #&b00110000,TSC     'TSC: TOF TOIE TSTOP TRST 0 PS2 PS1 PS0
+! mov #&b01010000,TSC0    'TSC0: CH0F CH0IE MS0B MS0A ELS0B ELS0A TOV0 CH0MAX
+! mov #&b01010000,TSC1    'TSC1: CH1F CH1IE 0 MS1A ELS1B ELS1A TOV1 CH1MAX
+! ldhx #&hffff
+! sthx TMODH              'Modulo-Register auf Standardwert $ffff
+! clr TCH0H
+! clr TCH0L               'Die TIM-Channel-Register sind
+! clr TCH1H               ' "indeterminate after reset".
+! clr TCH1L
+! mov #&b01000000,TSC     'Timer wieder starten
+! rts
+END PROC
+
+' Nach der Initialisierung PORT[1] und PORT[2] auf TCH0 und TCH1 umschalten
+' (in diesem Beispiel koennte man das auch in init_tim0and1 machen)
+
+PROC start_tim0and1 INLASM
+! mov #&b01010100,TSC0
+! mov #&b01010100,TSC1
+! rts
+END PROC
+
+' Nach der Initialisierung TCH0 und TCH1 auf PORT[1] und PORT[2] umschalten
+' (in diesem Beispiel koennte man das auch in reset_tim0and1 machen)
+
+PROC stop_tim0and1 INLASM
+! mov #&b01010000,TSC0
+! mov #&b01010000,TSC1
+! rts
+END PROC
+
+' Timer Interface Module (TIM) wieder so setzen, wie vom OS erwartet
+
+PROC reset_tim0and1 INLASM
+! mov #&b00110000,TSC     'TSC: TOF TOIE TSTOP TRST 0 PS2 PS1 PS0
+! clr TSC0                'TIM Channel Status and Control Registers
+! clr TSC1                '  TSC0 & TSC1
+! ldhx #999               'Modulo-Register zurueck auf OS-Wert
+! sthx TMODH
+! mov #&b01000110,TSC     'Timer wieder starten
+! rts
+END PROC
+
+' Tabelle mit den Konstanten zur Erzeugung von DTMF-Signalen
+
+TABLE dtmf_tab WORD
+  1700, 1198  ' "0"
+  2296, 1323  ' "1"       ' Hz 1209 1336 1477 1633
+  2296, 1198  ' "2"       '697   1    2    3    A
+  2296, 1083  ' "3"       '770   4    5    6    B
+  2078, 1323  ' "4"       '852   7    8    9    C
+  2078, 1198  ' "5"       '941   *    0    #    D
+  2078, 1083  ' "6"
+  1878, 1323  ' "7"       'f[Hz] = 3.2e6/(N*2*1)
+  1878, 1198  ' "8"       'N     = 3.2e6/(f*2*1)
+  1878, 1083  ' "9"
+  1700, 1323  ' "*"
+  1700, 1083  ' "#"
+  2296,  980  ' "A"
+  2078,  980  ' "B"
+  1878,  980  ' "C"
+  1700,  980  ' "D"
+    -1,   -1  ' unbekannt
+'  1600, 1600  ' 1 kHz zum Kalibrieren
+END TABLE
+
+' IIAR-Variablen passend laden, um DTMF-Signal zu einem Zeichen zu erzeugen
+' benutzte Variablen: char, a, tim0h, tim0l, tim1h, tim1l
+
+PROC dtmf(char)
+
+  ' Offset in der Tabelle berechnen
+  
+  IF char>="0" AND char<="9" THEN
+    a=char-"0"
+  ELSEIF char="*" THEN
+    a=10
+  ELSEIF char="#" THEN
+    a=11
+  ELSEIF char>="A" AND char<="D" THEN
+    a=char-"A"+12
+  ELSE
+    a=16
+  END IF  
+  a=a*4
+
+  ' Variablen fuer Interruptroutine laden
+  ' (falls die Interruptroutine aktiv ist, muessen vorher die Interrupts
+  '  mittels SEI deaktiviert und spaeter mit CLI aktiviert werden)
+    
+  tim0h=LOOKTAB(dtmf_tab,a)
+  tim0l=LOOKTAB(dtmf_tab,a+1)
+  tim1h=LOOKTAB(dtmf_tab,a+2)
+  tim1l=LOOKTAB(dtmf_tab,a+3)
+
+  ' IIAR-Assemblerroutine in die zwei Timer-Interrupts haengen und aktivieren
+
+  UIRTim0=ON
+  UIRTim1=ON
+  init_tim0and1
+  start_tim0and1
+  
+  ' Die Toene werden jetzt generiert. Das Programm laeuft normal weiter.
+
+  ' Der 20-ms-Interrupt ist durch die Veraenderungen am TIM jetzt genau-
+  ' genommen ein 20.48-ms-Interrupt, deshalb arbeitet der folgende PAUSE-
+  ' Befehl 2.4% zu lang.
+
+  PAUSE 5
+
+  ' alles wieder rueckgaengig machen
+  
+  stop_tim0and1
+  reset_tim0and1
+  UIRTim0=OFF
+  UIRTim1=OFF
+
+  ' 100 ms Break-Time
+  
+  PAUSE 5
+
+RETURN
+
+#iiar_tim0and1_next
+
+' ---------------------------------------------------------------------------
+' Ende von DTMF mit der Open-Micro. Hier koennen weitere IIARs folgen.
+' ---------------------------------------------------------------------------
+
+
+#main        'durch die IIAR am Programmbeginn wird ein "GOTO main" erzeugt
+
+' ---------------------------------------------------------------------------
+' Das Hauptprogramm
+' ---------------------------------------------------------------------------
+
+' Subroutine zum Erzeugen von DTMF-Signalen aufrufen
+
+dtmf "0"
+dtmf "1"
+dtmf "2"
+dtmf "3"
+dtmf "4"
+dtmf "5"
+dtmf "6"
+dtmf "7"
+dtmf "8"
+dtmf "9"
+dtmf "*"
+dtmf "#"
+dtmf "A"
+dtmf "B"
+dtmf "C"
+dtmf "D"
+PAUSE 50
+
+' Lied: "Merrily We Go Along"
+
+dtmf "9" : dtmf "5" : dtmf "1" : dtmf "5" : PAUSE 2
+dtmf "9" : dtmf "9" : dtmf "9" : PAUSE 5
+dtmf "5" : dtmf "5" : dtmf "5" : PAUSE 5
+dtmf "9" : dtmf "9" : dtmf "9" : PAUSE 5
+
+dtmf "9" : dtmf "5" : dtmf "1" : dtmf "5" : PAUSE 2
+dtmf "9" : dtmf "9" : dtmf "9" : PAUSE 5
+dtmf "9" : dtmf "5" : dtmf "5" : PAUSE 5
+dtmf "9" : dtmf "5" : dtmf "1" : PAUSE 5
+
+' Nun folgt noch etwas Blinken, um zu demonstrieren, dass der Timer-
+' Interrupt wieder korrekt arbeitet.
+
+led=ON
+WHILE taste=ON
+  TOG led
+  PAUSE 25
+WEND
+
+End2Host=ON
+END
+
+' ---------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

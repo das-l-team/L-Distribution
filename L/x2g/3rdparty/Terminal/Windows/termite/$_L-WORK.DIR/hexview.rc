@@ -1,0 +1,54 @@
+/*  Termite filter: Display received text as a hex dump
+ *
+ *  Copyright (c) CompuPhase, 2008-2012
+ *
+ *  This software is provided "as-is", without any express or implied warranty.
+ *  In no event will the authors be held liable for any damages arising from
+ *  the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any purpose,
+ *  including commercial applications, and to alter it and redistribute it
+ *  freely, subject to the following restrictions:
+ *
+ *  1.  The origin of this software must not be misrepresented; you must not
+ *      claim that you wrote the original software. If you use this software in
+ *      a product, an acknowledgment in the product documentation would be
+ *      appreciated but is not required.
+ *  2.  Altered source versions must be plainly marked as such, and must not be
+ *      misrepresented as being the original software.
+ *  3.  This notice may not be removed or altered from any source distribution.
+ */
+
+#include <windows.h>
+#include "hexview.h"
+
+FilterConfig DIALOGEX DISCARDABLE  50, 20, 222, 74
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_CAPTION | WS_POPUP | WS_VISIBLE
+EXSTYLE WS_EX_CLIENTEDGE | WS_EX_DLGMODALFRAME
+CAPTION "HexView filter settings"
+FONT 8, "Tahoma"
+BEGIN
+	CONTROL "Enable &entry of hexadecimal values",   IDD_HEXENTRY, "BUTTON", BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 8, 8, 132, 10
+	CONTROL "Send low byte first for multi-byte values", IDD_HEXLBF, "BUTTON", BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 20, 20, 136, 10
+	CONTROL "&Prefix",                               -1, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 20, 33, 55, 8
+	CONTROL "",                                      IDD_HEXPREFIX, "EDIT", ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 80, 32, 25, 11, WS_EX_STATICEDGE
+
+	CONTROL "&Display received data in hexadecimal", IDD_HEXDISPLAY, "BUTTON", BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 8, 48, 132, 10
+	CONTROL "&Bytes per line",                       -1, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 20, 60, 55, 8
+	CONTROL "",                                      IDD_BYTESPERLINE, "EDIT", ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 80, 59, 25, 11, WS_EX_STATICEDGE
+
+	CONTROL "OK",                                    IDOK, "BUTTON", BS_PUSHBUTTON | BS_CENTER | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 165, 4, 50, 15
+	CONTROL "Cancel",                                IDCANCEL, "BUTTON", BS_PUSHBUTTON | BS_CENTER | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 165, 24, 50, 15
+	CONTROL "Help",                                  IDHELP, "BUTTON", BS_PUSHBUTTON | BS_CENTER | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 165, 44, 50, 15
+END
+
+FilterInfo DIALOGEX 50, 50, 258, 190
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_CAPTION | WS_POPUP | WS_VISIBLE
+EXSTYLE WS_EX_CLIENTEDGE | WS_EX_DLGMODALFRAME
+CAPTION "Information"
+FONT 8, "Tahoma"
+BEGIN
+    CONTROL "",                                      INFOTEXT, "RichEdit", ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_BORDER | WS_CHILD | WS_VISIBLE | WS_VSCROLL, 4, 4, 250, 160
+    CONTROL "&Close",                                IDCANCEL, "BUTTON", BS_PUSHBUTTON | BS_CENTER | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 109, 170, 40, 14
+END
+

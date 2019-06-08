@@ -1,0 +1,468 @@
+
+
+'
+' *** Beispiel fuer ein User Interface Programm (UIP) für das |_ System  ***
+'------------------------------------------------------------------------------
+
+ 'INFO' >  Programmbeschreibung        |  Tipps und weitere Informationen, siehe
+ 'INIT' >  Initialisierung             |
+ 'MAIN' >  Hauptschleife               |  http://visit.ghn-sensorik.de/L-Team/Lvm
+ 'SUBS' >  Subroutinen                 |
+ 'DATA' >  Tabellen                    |              das |_ Team
+
+
+' |_ Programm ->>
+'----------------------------------------------------------------------------
+' Programmbeschreibung (Anfang) ->>                                  I----------
+'                                                                         N-------
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Hier koennen Sie die Arbeitsweise Ihres Programms beschreiben    ''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+ 'Mittels INCLUDE-Datei 'L-VECTORS.PRO' und diesen 2 Defines wird
+ 'bei einer Browseranfrage (GET) die Anzahl der HTML-Bytes fuer das
+ 'HTTP-Feld "Content-Length:" berechnet.
+
+  DEFINE idx_HTML_Begin -15
+  DEFINE idx_HTML_End  -13
+ '                                                                        F-------
+' <<- Programmbeschreibung (Ende)                                    O----------
+'----------------------------------------------------------------------------
+ INCLUDE "L:\X2G\INCLUDE\OCBASIC\L-INIT.PRO"'<<- Anweisungen (Anfang)
+'----------------------------------------------------------------------------
+' Initialisierung #INIT   (Anfang) ->>                             I----------
+'                                                                      N-------
+  DEFINE TON_A 50 'Ertoent waehrend HTTP Datenuebertragung zum Client
+  DEFINE TON_B 100  'Ertoent nach Abschluss, falls noch Daten vom Client kommen.
+
+  DEFINE CRON_4PPS                172
+  DEFINE CRON_2PPS                173
+  DEFINE CRON_1PPS                174
+  DEFINE CRON_MINUTE              175
+  DEFINE CRON_HOUR                176
+  DEFINE CRON_DAY                 177
+  DEFINE CRON_WEEK                178
+  DEFINE CRON_YEAR                179
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Der #INIT Bereich enthaelt Anweisungen die beim Kaltstart dieses ''
+  ' Moduls ausgefuehrt werden. Die Initialisierung kann verwendet    ''
+  ' werden, um eine Sprungmarke im Modul festzulegen, die zukuenftig ''
+  ' durch die Funktion 'LCall_UIP' angesprochen wird. Dabei sollte   ''
+  ' beachtet werden, dass von |_ Modul geladene Programme an unter-  ''
+  ' schiedlichen Startpositionen im Speicher abgelegt sein koennen.  ''
+  ' Daher ist die Adresse der Sprungmarke nicht zum Zeitpunkt der    ''
+  ' Programmentwicklung, sondern erst zur Laufzeit des Moduls bekannt''
+  ' Hierzu dient die Tabelle 'vectors' in der Datei 'L-EXIT.PRO'     ''                             ''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+    PUT 27 : PRINT "[2J"
+'(geplant) Erste Print Sring Anweisung als Programmlabel erkennen:
+ PRINT "User Interface Programm in Slot #"; : PrintDEC(w11) ' (lxslot=w11)
+
+'Code zur Aktivierung mittels 'LReg_UIPslot' und 'LReg_UIPvctr':
+ IF LGet_UIPslot <> w11 THEN
+    'UIP mit Slotnummer registrieren:
+    IF LReg_UIPslot(w11) <> w11 THEN GOTO ERR_1
+
+   'UIP Aufrufe beschleunigen:
+    LOOKTAB VECTORS, idx_MAIN_vctr, w11     ' Vectors: 'MAIN'
+
+    IF LReg_UIPvctr(w11) <> w11 THEN GOTO ERR_2
+    PRINT "='EIN' Vektoren:";
+
+    LOOKTAB Vectors, idx_INIT_vctr, lxSlot : PrintDEC(lxSlot) : PrintDEC( LGet_UIPvctr)
+    LOOKTAB Vectors, idx_SUBS_vctr, lxSlot : PrintDEC(lxSlot)
+    LOOKTAB Vectors, idx_DATA_vctr, lxSlot : PrintDEC(lxSlot) : Print
+    return 'Wenn von anderem Programm aufgerufen wurde
+    LPrg_END
+    'END
+
+ ELSE
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Ab hier den Code einfuegen der ausgefuehrt werden soll wenn dieses ''
+  ' Modul bereits als UIP aktiviert ist und jetzt erneut ueber das     ''
+  ' Dateisystem / bzw. im Hostmodus aufgerufen wird.                   ''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+                                                                                      
+ 'Kode zur Deaktivierung mittels 'LReg_UIPslot' = 0 und 'LReg_UIPvctr' =0
+ 'Man koennte an dieser Stelle natuerlich eine Passwortabfrage einbauen ..
+
+  LReg_UIPslot(0) : LREg_UIPvctr(0) : PRINT "='AUS' (v.9.Jan'18)" : return 'Wenn von anderem Programm aufgerufen wurde
+  LPrg_END
+
+
+ END IF
+
+'                                                                      I-------
+' <<- Initialisierung (Ende)                                       T----------
+'----------------------------------------------------------------------------
+
+'----------------------------------------------------------------------------
+#MAIN 'Hauptschleife Anfang ->>                                     M---------
+'                                                                      A-------
+
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Dieser Programmteil wird nach Verlassen von #INIT ausgefuehrt.   ''
+  ' Ist das UIP bereits als aktiv im System registriert, verzweigt   '''
+  ' die |_ Modul Funktion 'LCall_UIP' ohne Umweg direkt zu #MAIN.    '''
+  ' Dies verringert z.B. die Latenz beim Aufruf des U.I.P.           '''
+  ' WICHTIG: Datentabellen stets an das Programmende stellen.        ''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+  ' Kommandos an das UIP koennen in Variable b24 uebermittelt werden.
+  ' evt. Funktionsparameter folgen in b23, b22, b21, ... usw.
+  ' Beim Verlassen des UIP sollte b24 einen gueltigen Funktionswert fuer
+  ' das 'Lbit'-Funktionsmodul en ' enthalten, oder den Wert '0'.
+
+   w6=timer 'WORD-Variable 'w6'
+   if b24="G" THEN HTTP_serv_content'(HTTP_parse_GET_argument)
+
+   if b24=9 THEN
+
+    END IF
+
+    IF b24=CRON_1PPS and (not rxd) then
+
+              b23=3 : put 13 : ? "  "; : PrintLZ(hour) : ? ":"; : PrintLZ(minute) : ? ":"; : PrintLZ(second) : GOSUB Print_Portstatus
+
+               ELSE
+
+                END IF
+
+  IF b24 = "l" THEN ' (L)
+     PUT 27 : PRINT "[2J";
+  END IF
+
+  IF b24 = INF_LIST_TOP  THEN
+     PRINT " BASIC Bytes frei."
+
+      lxCmd=255
+
+
+     PUT ESC : PRINT "[36m"
+     GOSUB Print_TOPBTM_Line'PRINT"  ==========================";
+   END IF
+
+  IF b24 = INF_LIST_BTM  THEN
+     GOSUB Print_TOPBTM_Line'PRINT"  =========================="
+     PUT ESC : PRINT "[0m"
+     IF LGet_FILELEN  THEN PRINT "  Words in globaler Datei:"; : PrintDEC(w12/2):print
+
+     IF LGet_BUSCLOCK THEN PRINT "  f-CPU="; w12; " kHz";
+     IF LGet_MAXBAUD  THEN PRINT " max.BAUD="; w12; "00"
+
+     IF LGet_LastErr  THEN PRINT "  ERR"; LGet_LastErr
+
+     lxCmd=255
+     print " ";
+     PrintDEC(-32768)
+     PRINT
+     PRINT "  Reset-Statistik"  ' (Oben:  Als Kurzform von 'PRINT' kann ein '?' geschrieben werden')
+     PRINT "  ==============="
+     PRINT "  Power-On:"; : PrintDEC(LGet_POC) : PRINT
+     PRINT "  Hardware:"; : PrintDEC(LGet_ERC) : PRINT
+     PRINT "  Watchdog:"; : PrintDEC(LGet_WRC) : PRINT
+     PRINT "  Software:"; : PrintDEC(LGet_SRC) : PRINT
+     PRINT
+
+     GOSUB Print_PortNames
+     GOSUB Print_Portstatus
+
+     'PRINT"  LXGET_MEMSIZE=";: w11=Call(LGet_MEMSIZE) : Call(PLZ)
+     'PRINT"  LXGET_UIPSLOT=";: w11=Call(LGet_UIPSLOT) : Call(PLZ)
+
+
+     PRINT
+  END IF
+
+
+    IF b24=MSG_OUTPROMPT THEN
+       PRINT
+       PUT ESC : PRINT "[0;1;44m"; ': PUT 8 : PUT 8
+       GOSUB Print_HostIDS
+       PRINT " |_ > <"; : PUT 8 : put 8 :PUT ESC : PRINT "[0m";
+       b24=255
+    END IF
+                                                                              '123  1
+      IF b24 = 1 THEN    'XCTRL 01.03.96 CTC/MF     'CCTRL-BASIC   'CCTRL-BASIC   OS V2.07 (28.03.07) +BS
+
+	  PRINT "CCTRL-BASIC ";LGet_MEMSIZE;" KiB |_ >";     ' (fuer OMDLWIN v1.4 )
+         'PRINT "C-Control I 1.1 ";LGet_MEMSIZE;" KiB |_ >"; ' (fuer CCTrans32 juengste Version)
+
+
+             GOSUB Print_HostIDS 'Falls |_ diese Funktion unterstuetzt die  Host-ID mit ausgeben
+
+
+                       b24=LGet_LastErr
+
+                       IF b24 THEN
+
+
+                               IF b24=ERR_PRGLEN THEN
+                                  PRINT " [ ! ] Nur";
+
+                                 ELSE
+
+                                  PRINT ", Zuvor ";
+                                  IF b24=ERR_UPLDTOK OR b24=ERR_UPLDS19 THEN
+                                     PRINT "Timeout,";
+                                   ELSE
+                                     PRINT "Kode ";b24;
+                                   END IF
+
+                               END IF
+
+                        ELSE
+                               PRINT ", ";  LGet_NOM;" Slots,";
+                       END IF
+                 PRINT " "; Lget_FREEMEM; " BASIC Bytes frei";
+              PRINT" <"; : PUT &h0d : b24=255
+
+           END IF
+
+  '---------------------------------------------------------------------------
+
+
+
+       'IF b24=REG_UIPSLOT THEN
+
+
+       '    PRINT "Wirklich? (j/n)"
+
+       '  GET b24
+       '     IF b24<>"j" THEN b24=0
+
+      '   END IF
+
+     ' IF b24=REG_UIPVECT THEN
+
+          'Hier koennte eine Sicherheitsabfrage stehen, bevor das UIP
+          'deaktiviert wird.
+
+         ' PRINT "will UI loesen. (VECT) OK? <j/n>"
+           'PRINT TIMER'GET b24
+           'IF b24="j" THEN b24=LXREG_UIPSLOT:RETURN
+
+
+    '  END IF
+
+      'IF b24=LXREG_TMPBAUD THEN PRINT "Schalte RS232 auf Baudrate "; w11; "0"
+
+
+   '  IF b24=WAIT_KEY THEN
+
+   '       WHILE NOT rxd
+   '       WEND
+   '       print "key"
+   '   END IF
+
+
+
+  '--------------------------------------------------------------------------
+     'IF b24 = UNKNOWN_CMD THEN
+
+     '         IF b23 = MSG_SLOTFAIL THEN
+     '            PRINT " n. geladen od. gesperrt."
+     '          ELSE
+     '            PRINT " (";b24;") Unbekannte Funktion."
+     '         END IF
+     'b24=0
+     'END IF
+ '       b23=100
+ '       print timer
+ ' print "x=";LSync_MTicks; " ";
+
+
+
+RETURN
+
+' <<- Ende des eigentlichen UIP - Kodes                               'I-------
+                                                                  'N-----------
+'------------------------------------------------------------------------------
+'------------------------------------------------------------------------------
+'------------------------------------------------------------------------------
+#SUBS                                                             'S-----------
+' Beginn der Subroutinen ->>                                         'U--------
+
+  #ERR_1
+   PRINT "'UIPSLOT'&";
+  #ERR_2
+   PRINT "'UIPVECT' Reg.Fehler!"
+   END
+
+Procedure  PRINT_HOSTIDS
+           IF LGet_HOSTIDS THEN  put b19: put b20: put b21: put b22
+      RETURN
+
+Procedure  Print_TOPBTM_Line                                                                
+           PRINT"  ==============================";
+      RETURN
+
+Procedure Print_PortNames
+    print
+    b23=2 '<-- Nachfolgende PrinLZ() zeigen maximal (5-2)=3 fuehrende Nullen...
+    ?"  AD1 AD2 AD3 AD4 AD5 AD6 AD7 AD8   DA1 DA2 DA3  BP1 BP2  FREQ1 FREQ2"
+    RETURN
+
+Procedure Print_Portstatus
+     b23=2
+     ?"  ";: PrintLZ(AD1): ?" ";: PrintLZ(AD2): ?" ";: PrintLz(AD3): ?" ";: PrintLZ(AD4): ?" ";:
+             PrintLZ(AD5): ?" ";: PrintLZ(AD6): ?" ";: PrintLz(AD7): ?" ";: PrintLZ(AD8): ?"   ";:
+             PrintLZ(LGet_DA1): ?" ";: PrintLZ(LGet_DA2): ?" ";: PrintLZ(LGet_DA3): ?"  ";: PrintLZ(BP1): ?" ";: PrintLZ(BP2)
+     ?" ";:  PrintDEC(Freq1)   :  PrintDEC(Freq2)
+  RETURN
+
+Function HTTP_parse_GET_argument
+
+     'get b24
+     'if b24 <> "E"  then return 0 '2
+     'get b24
+     'if b24 <> "T"  then return 0 '3
+     'get b24
+     'if b24 <> " "  then return 0 '4
+     'GET b24
+     'if b24 <> "/"  then return 0 '5
+     'get b24
+     'if b24 = 13 THEN b24=0
+     'if select = "9" then gosub bargraph:select=0
+     'if select = "1" then beep 400,10,0
+     'if select = "2" then beep 400,10,10:beep 400,10,0
+
+     RETURN b24
+
+
+
+Procedure HTTP_serv_content(b24)
+beep TON_A,0,0
+print "HTTP/1.1 200 OK"
+print "Content-Type: text/html; charset=UTF-8"
+'print "HTTP/1.1 307 Temporary Redirect"
+'print "Location: http://temporary.de/maintenance.html"
+ print "Server: UserHost.ocb (mit 'Lbit' v."; : PRINT BmVers; : Print " ";
+ IF LGet_HOSTTYPE  = 1 THEN PRINT "auf C-Control I 1.1";
+ IF LGet_BUSCLOCK THEN PRINT " @ f-CPU="; w12; " kHz";
+ PRINT ")"
+
+print "Connection: close"
+print "Content-Length: ";
+LOOKTAB VECTORS, idx_HTML_End, w12
+LOOKTAB VECTORS, idx_HTML_Begin, w11
+print ABS(w12-w11)+15' +32
+
+print '<--- WICHTIG!
+GOSUB HTML_Print_RS232
+
+w5=timer
+PrintDEC( (w5-w6)*20 ) 'Ausgabe 6-stellig
+Print " / "; '3
+DA1=(LGet_DA1+1)
+PrintDEC(  Lget_DA1) 'Ausgabe 6-stellig
+
+
+'PrintDEC( w6 )         'Ausgabe 6-stellig
+'PrintDEC( w4 )         'Ausgabe 6-stellig
+'PrintDEC( w5 )         'Ausgabe 6-stellig
+
+ beep TON_B,0,0
+ while rxd  'Evt. noch eintreffende Zeichen der GET-Anfrage des
+ get w1     'Browsers verwerfen. (lesepuffer leern)
+ wend
+ beep 0,0,0
+ b24=255
+return
+
+'Procedure PQV(w1) 'In BASIC
+'          put QM
+'          'Print Byte Formatted
+'          if w1 >=10000 then print w1;
+'          if w1 >= 1000 and w1 < 10000 then print    "0";w1;
+'          if w1 >=  100 and w1 <  1000 then print   "00";w1;
+'          if w1 >=   10 and w1 <   100 then print  "000";w1;
+'          if w1 >=    1 and w1 <    10 then print "0000";w1;
+'          put QM
+'          return
+
+'Procedure PQV(w1) 'Mit |_ Funktion PrintDEC(zahl)
+'          put Q
+'          PrintDEC(w1)
+'          put Q
+'          return
+
+
+
+
+
+'Procedure  IE2_REPRG
+'        PRINT " [ Schreiberlaubnis auf Vorrat ]"
+'        PRINT
+'        PRINT "Wie oft darf das interne FLASH/EEPROM "
+'       'PRINT "des Mikrokontrollers neu programmiert"
+'        PRINT "werden, falls dies zum Update neuer"
+'        PRINT "Treiber erforderlich wird?"
+'        PRINT "(Gilt nur bei manuellem Start per Hostmodus.)
+'        PRINT "Bisher programmiert ca.: ";Call(Lget_IEC);"
+'        PRINT "Anzahl: (1 bis 255)"
+'
+'     RETURN
+
+
+'                                                                      B-------
+' <<- Subroutinen Ende                                             S----------
+
+'----------------------------------------------------------------------------
+ INCLUDE "L:\X2G\INCLUDE\OCBASIC\L-EXIT.PRO"'<<- Anweisungen Ende
+'----------------------------------------------------------------------------
+ INCLUDE "L:\X2G\INCLUDE\OCBASIC\L-VCTRS.PRO"'<<-
+#DATA 'Datenbereich Anfang ->>                                     D----------
+ TABLE Dieses_Programm_wurde_entworfen_fuer_L_Modul 0855 TABEND'      A--------
+'(oben) Wird in "L:\x2g\Include\OCBASIC\L-INIT.PRO" ausgewertet: Ist die
+' Version von |_ Basismodul kleiner, wird das Programm nicht ausgefuehrt.
+
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Tabellen, fuer die in diesem Quelltext ein LOOKTAB existiert muessen '
+  ' im Datenbereich stehen! Tabellen auf die _kein_ LOOKTAB zeigt werden '
+  ' wie gewöhnliche Programmanweisungen verarbeitet. (sie muessen jedoch '
+  ' vor dem Datenbereich stehen.) Alle im Datenbereich befindlichen      '
+  ' Elemente werden als Konstanten verarbeitet, selbst wenn es Bytekode  '
+  ' ist der - absichtlich oder zufaellig - Programmanweisungen enthaelt. '
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+DEFINE Q 34 '<-- ergibt doppelte obere Anfuehrungszeichen (engl.: quotes).
+
+ TABLE HTML_Print_RS232 byte
+ 31 ' <-- startet das PRINT Unterprogramm des Hostsystems
+ TABEND
+ #HTML_Begin
+ TABLE HTML_static_001 byte
+ "<html>"
+ "<head>" '6
+ "<title>UserHost.ocb</title>" '35
+ "</head>" '7
+ "<body><h1>Es funktioniert!</h1>"
+ "<br>"  '4
+ "(ca.) Sendedauer 'ms'/Anfragen"
+ "</body>"  '7
+ "</html>"  '7
+ TABEND   '
+ #HTML_End
+ TABLE HTML_End_Print_Return byte
+ 0 6' Ende Token fuer PRINT Unterprogramm des OS
+ TABEND
+ PRINT "!R.ERR" : END
+
+' TABLE DayNames
+' "EDN Mon Tue Wed Thu Fri Sat Sun " 'Tabellenlaenge muss gerade sein.
+' TABEND
+
+ 'TABLE MonNames
+ '"EMN Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec " 'Tabellenlaenge muss gerade sein.
+ 'TABEND
+
+'                                                                     T--------
+' <<- Datenbereich Ende                                            A----------
+'----------------------------------------------------------------------------
+#LEND'<<- Programm Ende
+
+
+
+

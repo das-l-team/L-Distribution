@@ -1,0 +1,219 @@
+
+' --------------------------------------------------------------------------
+' In-System-Debugger für OM-Mikrocontroller
+' von Dietmar Harlos in OCBASIC v1.11a ab 25. Mai bis 31. Mai 2017
+' --------------------------------------------------------------------------
+
+DEFINE debug_vers  2                ' Versionsnummer des Debuggers
+DEFINE debug_code  FREERAM1         ' auszuführender Token-Code
+DEFINE debug_adr_h FREERAM2         ' Adresse für Debugger (LOW-Byte)
+DEFINE debug_adr_l FREERAM3         ' Adresse für Debugger (HIGH-Byte)
+DEFINE debug_bits  FREERAM4         ' Bit-Array des Debuggers
+DEFINE debug_ser   0                ' Serielle Schnittstelle aktiv
+DEFINE debug_tobp  1                ' PC-Breakpoint aktiv
+DEFINE debug_todbp 2                ' Daten-Breakpoint aktiv
+DEFINE debug_temp  FREERAM5         ' temporäres Byte für Debugger
+
+' Die OM-Controller unterstuetzen das Einbinden einer Assemblerroutine in
+' den Interpreter des Systems. Die Routine wird jedesmal gestartet, nachdem
+' ein neuer Tokenbefehl aus dem Speicher geholt wurde. Das ist unmittelbar
+' bevor der Tokenbefehl vom Interpreter ausgefuehrt wird. Auf FREERAM1
+' hinterlegt das Betriebssystem den auszuführenden Token-Code.
+
+PROC debug_URTok_iiar INLASM
+! cbeqa #iTOK,debug_urtok_1         ' Unterscheidung der Interruptquellen
+! jmp debug_URTok_iiar_next+2
+
+#debug_urtok_1
+! brclr debug_ser,debug_bits,debug_urtok_noprint
+! bclr debug_ser,debug_bits         ' Null hinter serieller Kommunikation ausgeben
+! clra
+! jsr debug_PutSCI
+#debug_urtok_noprint
+
+! brclr debug_todbp,debug_bits,debug_urtok_nodbp
+! ldhx debug_adr_h                  ' bis zum Daten-Breakpoint ausführen
+! lda debug_temp
+! cmpa ,x
+! bne debug_urtok_run
+! bclr debug_todbp,debug_bits
+! bra debug_urtok_host
+#debug_urtok_nodbp
+
+! brclr debug_tobp,debug_bits,debug_urtok_host
+! ldhx debug_adr_h                  ' bis zum Breakpoint ausführen
+! cmphx PCADR
+! bne debug_urtok_run
+! bclr debug_tobp,debug_bits
+'! bra debug_urtok_host
+
+#debug_urtok_host
+
+! lda PCADR                         ' PRINT PCADR
+! bsr debug_PutSCI_hex
+! lda PCADR+1
+! bsr debug_PutSCI_hex
+
+! jsr debug_GetSCI
+! cmpa #13                          ' RETURN
+! beq debug_urtok_run
+
+! cmpa #"r"                         ' Speicherdump
+! bne debug_urtok_w
+! bsr debug_GetSCIAdr
+! jsr debug_GetSCI
+! sta debug_temp
+#debug_urtok_dumploop
+! ldhx debug_adr_h
+! lda ,x
+! aix #1
+! sthx debug_adr_h
+! bsr debug_PutSCI
+! dbnz debug_temp,debug_urtok_dumploop
+! bra debug_urtok_host
+
+#debug_urtok_w
+! cmpa #"w"                         ' Write to memory
+! bne debug_urtok_bp
+! bsr debug_GetSCIAdr
+! bsr debug_GetSCI
+! ldhx debug_adr_h
+! sta ,x
+! lda ,x
+! bsr debug_PutSCI
+! bra debug_urtok_host
+
+#debug_urtok_bp
+! cmpa #"b"                         ' PC-Breakpoint
+! bne debug_urtok_dbp
+! bsr debug_GetSCIAdr
+! bset debug_tobp,debug_bits
+! bra debug_urtok_run
+
+#debug_urtok_dbp
+! cmpa #"d"                         ' Daten-Breakpoint
+! bne debug_urtok_vers
+! bsr debug_GetSCIAdr
+! bsr debug_GetSCI
+! sta debug_temp
+! bset debug_todbp,debug_bits
+! bra debug_urtok_run
+
+#debug_urtok_vers
+! lda #"D"                          ' Versionskennung
+! bsr debug_PutSCI
+! lda #"0"+debug_vers
+! bsr debug_PutSCI
+
+! bra debug_urtok_host
+
+' Subroutinen zur Kommunikation über die Serielle Schnittstelle - Teil 1
+
+#debug_PutSCI_hex
+! pusha
+! nsa
+! bsr debug_PutSCI_hex_1
+! popa
+#debug_PutSCI_hex_1
+! and #$0f
+! cmp #10
+! blo debug_PutSCI_hex_2
+! add #39
+#debug_PutSCI_hex_2
+! add #"0"
+'! bra debug_PutSCI
+
+#debug_PutSCI
+! bsr debug_FwPutSCI
+! cli
+! rts
+
+#debug_urtok_run
+! lda debug_code
+
+! cbeqa #30,debug_urtok_PRINT_NUMBER
+! cbeqa #31,debug_urtok_PRINT_STRING
+! cbeqa #32,debug_urtok_PUT
+! cbeqa #33,debug_urtok_RXD
+! cbeqa #34,debug_urtok_GET
+! cbeqa #35,debug_urtok_INPUT
+! cbeqa #38,debug_urtok_PRINTCRLF
+! bra debug_urtok_rts
+
+#debug_urtok_PRINT_NUMBER           ' 1 vor serieller Kommunikation ausgeben
+#debug_urtok_PRINT_STRING
+#debug_urtok_PUT
+#debug_urtok_RXD
+#debug_urtok_GET
+#debug_urtok_INPUT
+#debug_urtok_PRINTCRLF
+! lda #1
+! bsr debug_PutSCI
+! bset debug_ser,debug_bits
+! lda debug_code
+
+#debug_urtok_rts
+! clc                               ' Tokencode (in A) ausführen
+! rts
+
+END PROC
+
+' Subroutinen zur Kommunikation über die Serielle Schnittstelle - Teil 2
+
+#debug_GetSCIAdr
+! bsr debug_GetSCI
+! sta debug_adr_h
+! bsr debug_GetSCI
+! sta debug_adr_l
+! rts
+
+#debug_GetSCI
+! bsr debug_FwGetSCI
+! cli
+! rts
+
+' Firmwareroutinen
+
+#debug_FwPutSCI        ' ein Byte ueber die serielle Schnittstelle senden
+! ldx #2               ' Uebergabe vom Byte im Akkumulator (A)
+! swi                  ' (deaktiviert das Interruptsystem, bei Bedarf also CLI)
+                       ' auf Open-Macro: aktive Schnittstelle wird verwendet,
+                       '  ausserdem kein CLI notwendig
+
+#debug_FwGetSCI        ' ein Byte ueber die serielle Schnittstelle empfangen
+! ldx #3               ' Rueckgabe vom Byte im Akkumulator (A)
+! swi                  ' (deaktiviert das Interruptsystem, bei Bedarf also CLI)
+                       ' auf Open-Macro: aktive Schnittstelle wird verwendet,
+                       '  ausserdem kein CLI notwendig
+
+
+#debug_FwIVarAddr      ' Adresse einer beliebigen internen Variable ermitteln;
+! ldx #6               ' Uebergabe der Variablennummer auf dem Hardwarestack
+! swi                  ' (ist anschliessend mit z.B. AIS #1 zu entfernen),
+                       ' das H-Register muss geloescht sein
+                       ' Rueckgabe im X-Register, Akkumulator und den Flags
+                       ' (Z=1: Adresse in X, Bitmaske in A)
+                       ' (Z=0: Adresse in X, Variablennummer in A)
+
+' Die folgende Routine muß mit "SYS debug" im OCBASIC-Programm aufgerufen
+' werden, sobald der OM-Debugger aktiv werden soll.
+
+PROC debug INLASM
+
+! clr debug_bits          ' debug_bits=0
+
+! lda #URTok              ' URTok=ON
+! clrh
+! pusha
+! bsr debug_FwIVarAddr
+! ais #1
+! ora ,x
+! sta ,x
+
+! rts
+
+END PROC
+
+#debug_URTok_iiar_next    'hier hinter folgt die naechste IIAR
+
+' --- Ende des In-System-Debuggers für OM-Mikrocontroller --------------------

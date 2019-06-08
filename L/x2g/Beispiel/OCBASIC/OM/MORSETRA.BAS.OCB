@@ -1,0 +1,168 @@
+
+' Morsetrainer fuer Open-Micro/Mini
+
+' Dieses Beispiel demonstriert die Benutzung von Tabellen im
+' Byteformat in Open-Control/BASIC.
+
+
+include "om.def"
+
+dim zei byte
+dim len byte
+dim mor byte
+
+dim p byte
+dim z byte
+dim i byte
+dim l byte
+dim speed 3
+dim ton 34 '24
+
+dim beeper port[6]
+
+dim Carry    ivar[73]
+dim End2Host ivar[88]
+
+
+End2Host=on
+
+put 12
+print
+print "Morsetrainer"
+print
+pause 50
+
+p=0
+
+while looktab(strings,p)
+
+  while looktab(strings,p)
+
+    z=looktab(strings,p)
+
+    if z>="0" and z<="9"
+      z=z-"0"+26
+    else if z>="a" and z<="z"
+      z=z-"a"
+    else
+      print "Ungueltiges Zeichen!"
+      end
+    end if
+
+    z=z*3
+
+    zei=looktab(morse,z)
+    len=looktab(morse,z+1)
+    mor=looktab(morse,z+2) shl (8-len)
+
+    put zei
+    put " "
+    pause 3*speed
+
+    for i=1 to len
+      mor=mor shl 1
+      if Carry
+        put "-"
+        l=3
+      else
+        put "."
+        l=1
+      end if
+      beep ton,l*speed,beeper
+      pause speed
+    next i
+    print
+
+    p=p+1  
+  wend
+
+  pause 6*speed
+  print
+
+  p=p+1
+wend
+
+print "Das war's!"
+end
+
+
+table strings byte
+  "eve",0
+  "qam",0                    ' hier koennen eigene Texte eingefuegt werden
+  "heute",0
+  "brennpunkt",0
+  "paris",0
+  "aaaaa",0
+  "bbbbb",0
+  "ccccc",0
+  "ddddd",0
+  "eeeee",0
+  "fffff",0
+  "ggggg",0
+  "hhhhh",0
+  "iiiii",0
+  "jjjjj",0
+  "kkkkk",0
+  "lllll",0
+  "mmmmm",0
+  "nnnnn",0
+  "ooooo",0
+  "ppppp",0
+  "qqqqq",0
+  "rrrrr",0
+  "sssss",0
+  "ttttt",0
+  "uuuuu",0
+  "vvvvv",0
+  "wwwww",0
+  "xxxxx",0
+  "yyyyy",0
+  "zzzzz",0
+  "programmende",0
+  0
+end table
+
+
+
+table morse byte
+  "a" 2 &b01
+  "b" 4 &b1000               ' Der Morsecode ist ohne Gewaehr!
+  "c" 4 &b1010
+  "d" 3 &b100
+  "e" 1 &b0
+  "f" 4 &b0010
+  "g" 3 &b110
+  "h" 4 &b0000
+  "i" 2 &b00
+  "j" 4 &b0111
+  "k" 3 &b101
+  "l" 4 &b0100
+  "m" 2 &b11
+  "n" 2 &b10
+  "o" 3 &b111
+  "p" 4 &b0110
+  "q" 4 &b1101
+  "r" 3 &b010
+  "s" 3 &b000
+  "t" 1 &b1
+  "u" 3 &b001
+  "v" 4 &b0001
+  "w" 3 &b011
+  "x" 4 &b1001
+  "y" 4 &b1011
+  "z" 4 &b1100
+  
+  "0" 5 &b11111
+  "1" 5 &b01111
+  "2" 5 &b00111
+  "3" 5 &b00011
+  "4" 5 &b00001
+  "5" 5 &b00000
+  "6" 5 &b10000
+  "7" 5 &b11000
+  "8" 5 &b11100
+  "9" 5 &b11110
+  
+  0
+end table
+

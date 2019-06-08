@@ -1,0 +1,57 @@
+
+' ---------------------------------------------------------------------------
+' Demoprogramm fuer den echten Open-Control/BASIC-Compiler OCBASR
+' ---------------------------------------------------------------------------
+
+' Ein Port wird getoggelt, so dass ein am Port angeschlossener Piezo-Beeper
+' einen auf- und abschwellenden Ton ausgibt.
+
+' Ohne Schluesselwort "COMPILE" hinter "PROCEDURE signalton" ergibt sich
+' ein tiefer Ton, weil das gesamte Programm interpretiert ablaeuft. Mit
+' Compilierung ergibt sich ein Ton, dessen Frequenz rund 3-mal hoeher liegt.
+' Die Subroutine wird somit dementsprechend schneller ausgefuehrt.
+
+' --- Definitionen ----------------------------------------------------------
+
+INCLUDE "om.def"
+
+DEFINE a,b,c,d BYTE     'ein paar Variablen
+DEFINE beeper PORT[6]   'Piezo-Beeper
+
+' --- Hauptprogramm ---------------------------------------------------------
+
+PRINT "Signaltonausgabe auf BEEPER an PORT[6]"
+
+signalton               'Aufruf der Subroutine, entspricht GOSUB signalton
+
+END
+
+' --- Subroutine ------------------------------------------------------------
+
+PROCEDURE signalton COMPILE
+
+  beeper=OFF            'Initialisierung
+  c=1
+
+  WHILE TRUE            'Endlosschleife
+
+    TIMER=0             '20 ms lang den Port toggeln
+    REPEAT
+      TOG beeper  
+      FOR a=1 TO b      'Periodendauer wird mittels
+      NEXT a            'FOR..NEXT-Schleife festgelegt
+    UNTIL TIMER
+  
+    b=b+c               'Die Periodendauer veraendern
+  
+    IF b=20 THEN        'Periodendauer zwischen 20 und 40
+      c=1
+    ELSEIF b=40 THEN
+      c=-1              'genaugenommen ist das c=255, es
+    END IF              'bewirkt aber das gleiche
+
+  WEND
+
+  RETURN
+
+END PROCEDURE

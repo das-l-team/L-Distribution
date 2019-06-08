@@ -1,0 +1,57 @@
+''' Dieses Programm und Begleittext sind  aus dem Beitrag im Forum der Website C-Control Intern abgeleitet.
+''' Aenderungen haben wir vorgenommen damit, unabhaengig vom jeweiligen Testergebnis, auf jeden Fall wieder
+''' der Hostmodus aktiviert wird.
+'''
+''' das |_ Team
+'''
+''' Der Originalbeitrag ist weiterhin im Forum der Website C-Control Intern unter dem nachfolgenden Link abrufbar:
+'''
+''' http://ccintern.dharlos.de/forum/lesen.php?eintrag=16680
+''
+''
+''
+''  Hallo zusammen,
+''
+''  offenbar faellt es einigen Anwendern schwer, in jedem Fall die richtige Definitionsdatei fuer die Open-Micro,
+''  Open-Mini, Open-Midi, Open-Macro und Open-Maxi auszuwaehlen. Mitunter werden auch die OM-Controller vertauscht,
+''  was bei Open-Midi und Open-Macro leicht passieren kann, da sie beide auf dem selben QB8-Controller basieren und
+''  ihr Aufdruck demnach identisch ist.
+''
+''  Eine falsche Definitionsdatei zu verwenden kann schnell passieren: Man compiliert fuer die Open-Macro, benutzt
+''  also OMAC.DEF, will dann das gleiche Programm fuer Open-Mini compilieren und aendert den INCLUDE-Befehl in OM.DEF,
+''  vergisst das neue Compilieren und übertraegt dann das Programm in die Open-Mini. Nun ist immer noch die Datei OMAC.DEF
+''  aktiv.
+''
+''  Uebrigens zeigt OMDLWIN waehrend des Uebertragens der DAT-Datei den augenblicklich verwendeten OM-Controller an.
+''
+''  Der folgende Code kann an den Beginn eines eigenen Programms gestellt werden und prueft, ob der richtige OM-Controller
+''  und die richtige Definitionsdatei ausgewaehlt wurden.
+
+
+
+'INCLUDE "om.def"              'Definitionen fuer Open-Micro und Open-Mini
+INCLUDE "omid.def"            'Definitionen fuer Open-Midi
+'INCLUDE "omac.def"            'Definitionen fuer Open-Macro
+'INCLUDE "omax.def"            'Definitionen fuer Open-Maxi
+ End2Host=ON                   'Nach Programmende zurueck in den Hostmodus...
+' ... (restliche Definitionen) ...
+
+' Bei Programmbeginn einmalig machen:
+
+' Auf den richtigen OM-Controller und auf die richtige Definitionsdatei testen.
+' Wenn falsche Definitionsdatei ausgewählt, wird vom OCBASIC-Compiler ein
+' Fehler gemeldet. Ein falscher Controller gibt zur Laufzeit einen Fehler.
+  PAUSE 50 ' (Das _automatische_ Umschalten zum Terminalfenster innerhalb L-Distribution benoetigt etwa 1 s Wartezeit)
+'If version<>138 OR byte63 THEN    'für Open-Micro und Open-Mini
+If version<>148 OR byte173 THEN   'für Open-Midi
+'If version<>158 OR byte139 THEN   'für Open-Macro
+'If version<>168 OR byte255 THEN   'für Open-Maxi
+
+    PRINT "Falscher Controller!"
+    END
+
+END IF
+version=0
+PRINT "Alles okay."
+
+

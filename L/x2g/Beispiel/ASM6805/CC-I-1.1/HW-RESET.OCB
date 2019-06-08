@@ -1,0 +1,73 @@
+' hardware reset using 68HC05b6 's built-in hardware based watchdog circuitry
+' source code and idea inspired by  http://ccintern.dharlos.de/tipsutri.txt
+' (ressource in German language)
+'
+'  das |_ Team
+
+
+option ccbasic
+
+
+DEFINE b1 byte[1]
+
+PRINT
+PRINT
+
+
+
+FOR b1 = 7 TO 0 STEP -1
+
+  IF rxd THEN
+
+    PRINT : PRINT "**ABORTED" : GET b1 : END
+
+   ELSE
+
+    PRINT "  Hardware-Reset in _";b1"_ (oder TASTE) "; : PUT 13
+
+  END IF
+
+
+PAUSE 50
+
+NEXT
+
+PRINT
+PRINT
+
+  sys &h91 &h8e9d,&h100c
+'(the machine code listed below is pushed onto math stack and then executed)
+
+
+'AS05 Assembler for M6805 [1.44].  Copyright 1994-2015, Frank A. Kingswood                                                Page    1
+'----------------------------------------- L:\x2g\Beispiel\ASM6805\CC-I-1.1\CPURESET.ASM ------------------------------------------
+'
+'10 lines read, no errors in pass 1.
+'                        ; hardware reset using the 68HC05b6 built-in hardware based watchdog circuitry
+'                        ; source code and idea inspired by  http://ccintern.dharlos.de/tipsutri.txt  (ressource in German language
+'                        ;
+'                        ; das |_ Team
+'
+'0091 =                   org $91
+'
+'0091 : 100c                 bset #0,$0c
+'0093 : 8e                   stop
+'0094 : 9d                   nop
+'
+'-------------------------------------------- Memory Usage Map ('x'=used, '-'=unused) ---------------------------------------------
+'
+'0080 : ---------------- -xxxx----------- ---------------- ----------------
+'
+'No errors in pass 2.
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,2 @@
+
+[ compile not successful - double click on above error message to locate cursor on errorline ]

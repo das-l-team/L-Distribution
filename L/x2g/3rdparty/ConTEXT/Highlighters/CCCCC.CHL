@@ -1,0 +1,237 @@
+
+
+    // CCbasic(++) highlighter adapted by Henrik Reimers
+    // umgestellt und erweitert auf Open-Control/BASIC by Gerhard Fischer
+    // weitere Anpassungen von Dietmar Harlos am 3. September 2005
+    // erweitert von  das |_ Team
+
+
+    Language:    --> C-Control/C-Cross-Compiler
+
+    Description: C-Control/Open-Control ANSI-C Implementation by Oliver Haag
+
+    
+
+    CaseSensitive: 1
+
+    LineComment: //
+    BlockCommentBeg: /*
+    BlockCommentEnd: */
+
+    IdentifierBegChars: a..z A..Z _%@
+    IdentifierChars: a..z A..Z _ 0..9 ?
+
+    NumConstBegChars: # //als Label mißbraucht
+
+
+    NumConstChars: a..z A..Z _ 0..9
+
+    EscapeChar: \
+
+    KeyWords1: inport inportb inportw outport outportb outportw
+    inportad outportpwm invport pulseport deactport deactportb
+    deactportw sqrt delay getyear getmon getday getdow gethour
+    getmin getsec gettimer setyear setmon setday setdow sethour
+    setmin setsec sound nosound rs_baud rs_send rs_sendint rs_sendstr
+    rs_receive rs_receiveint rs_recieve rs_recieveint rs_handshake
+    rs_ready  setinterrupt clearinterrupt getregister setregister
+    acs_interrupt acs_power dst_clear dst_counter initrp5 ir_mode
+    ir_receive ir_recieve ir_send leds setextport subsys_getmode
+    subsys_getstate subsys_power
+    sgn abs ad append and baud beep bit byte byteport
+    close da day deact define dow else end eof filefree freq
+    get goto gosub hour if input looktab max min minute mod month
+    nand nor not on off open or pause port pulse put print
+	randomize rand return rxd r1200 r2400 r4800 r9600 read
+	second sgn shl shr slowmode sqr sysend sys syscode then
+	timer tog wait word wordport write xor year
+
+
+
+    // Hier bitte weitere Kategorien von Schlüsselwörtern eintragen, z.B.
+    // eigene feste Funktionen. Detaileinstellungen können in ConTEXT
+    // geändert werden.
+
+       AD1 AD2 AD3 AD4 AD5 AD6 AD7 AD8 // |_>< Project
+
+
+
+	// Reservierte Variablennamen zur Konf. des Betriebssystems
+    KeyWords2: OPTION CCbas OpenMicro OpenMini OpenMidi OpenMacro
+        END2HOST UseEsci PrintHex PrintSpc URIllTok FileByte
+	ClockDis RealPop RunOnErr Carry IrqReq IrqSet IrqAct FileChg IiarFnd
+	EsciErr UIRIrq UIRSwi UIRTim0 UIRTim1 UIRTovl UIRKyb UIRAdc URTok
+	config1 config2 dERR dERRADRh dERRADRl dFILEPOSh dFILEPOSl
+	dDBNZCTR dCSTKPTR dGSTKPTR dPCADRh dPCADRl dFREERAM1
+	INTERRUPT PULLUPA PULLUPB VERSION ConOnErr INCLUDE UIRTofl
+	UIRSpiR UIRSpiT UIRTim2 UIRTim3 UIRTim3 UIRTim3 UIREsciE
+	OSTEMP OSTEMP1 OSTEMP2 RTCTIMER URAMBASE UPROGBASE
+	ESCIBUF ESCIPTR
+	iIRQ iSWI iTIM0 iTIM1 iTOFL iKYB iADC iTOK iSPIr iSPIt
+	iTIM2 iTIM3 iESCIr iESCIt iESCIe
+
+
+
+	// Schleifen- und Tabellen-Befehle
+    KeyWords3: FOR TO NEXT STEP DOWNTO
+    WHILE WEND REPEAT UNTIL
+    TABLE TABEND  LXGET_EUIVECT
+
+
+
+
+
+
+    KeyWords4:
+    
+   //Elementare Funktionen (pipe underscore |_>< )
+      Call C Success L
+
+
+   //Symbolische Konstanten (Lx)
+
+     Dieses_Programm_wurde_entworfen_fuer_LxBM_Version  //
+
+     //Byte- und Integervariablen
+
+     b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 b13 b14 b15 b16 b17 b18 b19 b20 b21 b22 b23 b24
+     b1_b2 b3_b4 b5_b6 b7_b8 b9_b10 b11_b12 b13_b14 b15_b16 b17_b18 b19_b20 b21_b22 b23_b24
+       w1    w2    w3    w4    w5      w6      w7      w8      w9      w10     w11     w12
+
+     Lx
+     PrintDEC
+     LxGET  // Syntax: LxGET(integer)
+     LxREG  // Syntax: LxREG(integer)
+     LxSLOT // Syntax: LxSLOT(CALL) LxSLOT(RUN) LxSLOT(WAIT) LxSLOT(END) LxSLOT(KILL)
+     LxPROG // Syntax: LxPROG(END)
+     LxFILE // Syntax: LxFILE(NEW) LxFILE(GETDATA)
+
+
+     //Aufrufe anderer Module im Speicher
+     LxCALL_SLOT LxGOSUB_SLOT
+     LxJUMP_SLOT LxSTART_SLOT
+     LxCALL_ADDR LxGOSUB_ADDR
+     LxJUMP_ADDR LxSTART_ADDR
+
+
+     GET_EUISLOT REG_EUISLOT GET_EUIADDR REG_EUIADDR GET_HOSTIDS
+     REG_HOSTIDS GET_MEMSIZE REG_MEMSIZE GET_BUSCLCK REG_BUSCLCK
+     GET_FREEMEM PRG_RUNSNGL GET_FILEFRE GET_FILELEN SYN_NEXTSEC
+     GET_CALLBSE GET_LXBMLEN GET_ASJSLOT
+
+     GET_BMVERS GET_E2SIZEPNTR GET_HOSTTYPE ERR GET_SLTOFFST
+     GET_BMSIZE GET_BMDATE BmVersOK
+     GET_IEC GET_EEC GET_POC GET_NOM GET_BMVERSION GET_E2SIZEPNTR
+
+     REG_BAUDREG_0 REG_BAUDREG_1 REG_BAUDREG_2
+     REG_BAUDREG_3 REG_BAUDREG_4 REG_TMPBAUD
+     GET_BAUD_TX_1 GET_BAUD_RX_1 REG_BAUD_TX_1 REG_BAUD_RX_1
+     GET_BAUDREG   REG_BAUDRATES
+     GET_DA1 GET_DA2 GET_DA1 GET_DA2
+
+     LNK_RECEIVEDATA LNK_RECEIVEPROG LNK_FIND1STSTRG LNK_DUMP1STSTRG
+     LNK_REALLOCATE
+
+     EUI_CLEAR EUI_GETHANDLE EUI_CALL EUI_CFG EUI_SENDMSG
+
+     INF_NOEUI MSG_STARTSLOT INF_HELPSCREEN INF_MAXMOD INF_NONE
+     INF_MODDISCARD INF_MODREMAINING INF_MODRUNNING INF_ASJUMPER_DONE
+     INF_PRGINFO INF_MODCOUNT INF_EXPIRED INF_PRGNAME
+     INF_ASJUMPERCLOSE INF_BASUPLDOK INF_NEXTOFFSET INF_BYTESFREE
+     INF_BASICLEN INF_FILELEN INF_VERSTRING INF_LIST_TOP INF_LIST_BTM
+     MSG_OUTPROMPT MSG_IDLELOOP
+
+     CMD_CLRSCR CMD_PLUGVASJ CMD_DUMPFILE CMD_MODDISCARD CMD_MORE
+     CMD_IDLELOOP CMD_CLEARRAM CMD_RETURN
+
+     WPEEK WPOKE MSG_KEEPBAUD TRIGGER_ADR CMD_ECHOINPUT INF_TIMEOUT
+     MSG_SLOTRUN MSG_SLOTFAIL
+
+     HST_HIBERNATE HST_RESET HST_COLDRESET HST_WARMSTART PRG_CALLERR
+     PRG_DEBUGMON  PRG_NEWTHREAD PRG_CALL PRG_RUNKEEPRAM PRG_RUN
+     PRG_PAUSEMSEC PRG_SYN2TICKS PRG_SYN2EVENT PRG_EXIT  PRG_END
+
+     HST_HIBERNATE HST_RESET HST_COLDRESET HST_WARMSTART PRG_CALLERR
+     PRG_DEBUGMON  PRG_NEWTHREAD PRG_CALL PRG_RUNKEEPRAM PRG_RUN
+     PRG_PAUSEMSEC PRG_SYN2TICKS PRG_SYN2EVENT PRG_EXIT  PRG_END
+
+     MSG_UNKNOWNCMD PRGEND_NOLIST PRGEND_NOPROMPT ERR_RETURN
+
+     OPT_WARMSTART OPT_COLDSTART ERR_NOREGEUI TRUE _TESTONLY ERR_UPLOAD
+     ERR_UPLDTOK ERR_UPLDS19 ERR_RETURN_1 ERR_RETURN_2 ERR_RETURN_3
+     ERR_RETURN_4 ERR_RETURN_5 ERR_RETURN_6 ERR_RETURN_7 ERR_RETURN_8
+     ERR_RETURN_PP ERR_SLOTNOTFOUND ERR_DUMPFILE GET_LASTERROR
+     ERR_EEWRITEFAIL ERR_PRGLEN ERR_NOSPACE ERR_UPLDTOKEN ERR_NONE
+     ERR_SLOT_CREATE ERR_SLOT_APPEND ERR_SLOT_SETFREE ERR_SLOT_CLOSE
+     ERR_EXCD_BMHIGHVEC REG_EUIVECT GET_EUIVECT UNKNOWN_CMD
+
+     NO_INTERFACE INPUT_EMPTY INPUT_OUTOFRANGE INPUT_SPACEBAR INPUT_TIMEDOUT
+     GET_MAXVAR GET_MAXITR
+'
+
+
+
+
+	// neue OC-Befehle
+    KeyWords5: ADD AS CTS CSTKPTR DIM DBNZ DBNZCTR ELSEIF ENDIF ERR ERRADR
+    FALSE FILEPOS FILELEN FREERAM FREERAM1 FREERAM2 FREERAM3 FREERAM4 FREERAM5
+    FREQ1 FREQ2 GSTKPTR HANDSHAKE INT IVAR LONG PCADR PUSH POP R600 R300 R150
+    R75 REMOVETOS RTS SUB SYSADR TICKS TRUE
+
+
+
+    StringBegChar: "
+    StringEndChar: "
+    MultilineStrings: 0
+
+    UsePreprocessor: 0
+
+
+    CurrLineHighlighted: 1
+
+    SpaceCol: clWindowText clWindow
+    Keyword1Col: $00C00000 clWindow
+    Keyword2Col: clPurple clWindow
+    Keyword3Col: clBlue clWindow
+    Keyword4Col: clBlue clWindow
+    Keyword5Col: clBlue clWindow
+    IdentifierCol: clWindowText clWindow
+    CommentCol: clGreen clWindow
+    NumberCol: $000000C0 clWindow
+    StringCol: clMaroon clWindow
+    SymbolCol: clPurple clWindow
+    PreprocessorCol: clBlue clWindow
+    SelectionCol: clWhite clNavy
+    CurrentLineCol: clBlack clYellow
+
+    OverrideTxtFgColor: 0
+    BlockAutoindent: 0
+    BlockBegStr:
+    BlockEndStr:
+    MatchedBracesCol: clWindowText clWindow
+
+
+
+
+CurrLineHighlighted:    1
+OverrideTxtFgColor:     0
+BlockAutoindent:        0
+BlockBegStr:
+BlockEndStr:
+SpaceCol:               clWindowText clWindow
+Keyword1Col:            clNavy clWindow B
+Keyword2Col:            $00C000C0 clWindow
+Keyword3Col:            $00FF4040 clWindow B
+Keyword4Col:            $00C000C0 clWindow B
+Keyword5Col:            clOlive clWindow B
+IdentifierCol:          clWindowText clWindow
+CommentCol:             $0000C000 clWhite
+NumberCol:              clRed clWindow
+StringCol:              clMaroon clWindow
+SymbolCol:              $000000C0 clWindow
+PreprocessorCol:        clBlue clWindow
+SelectionCol:           $00FF4040 $00202020
+CurrentLineCol:         clBlack $0080FFFF
+MatchedBracesCol:       clWindowText clWindow
+Filter:                 --> CCCCC-files (*.c5, *.h) | *.c5; *.h
+HelpFile:               L:\X2G\3rdparty\CCCCC\handbook-german.pdf

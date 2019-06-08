@@ -1,0 +1,31 @@
+2 [ Welche Schnittstelle soll verwendet werden ( COM-Port auswählen ) ]
+
+
+  Derzeit ist die Serielle Schnittstelle Nummer |2| ausgewählt.
+                  _________________________________
+               __|_ _ __                           |          _____    _____
+     _____    *  _____  *    _____       _____     |        -o     \__/     o-
+    ||F9 ||   | ||F10|| |   ||F11||     ||F12||    |        -|  uC Ziel-    |-
+    ||___||   * ||___|| *   ||___||     ||___||    +----->  -o  system mit  o-
+    |/___\|   | |/___\| |   |/___\|     |/___\|             -|              |-
+              *         *                                   -o  9600 baud   o-
+    (Wähle)   |  COM2:  |   (Wähle)     (Wähle)             -|  8,n,1       |-
+     COM1:    * ist nun *    COM3:       COM4:              -o              o-
+              | gewählt |                                   -|______________|-
+              * ~~~~~~~ *
+
+
+
+
+
+ Obige Einstellung bleibt bis zur nächsten Änderung gespeichert.
+
+  
+  Bekannte Probleme:
+
+- Derzeit sind nur die COM-Ports 1,2,3 oder 4 möglich. Bei einigen
+  Seriell Adaptern könnten Schwierigkeiten auftreten, wenn diese
+  einen anderen COM-Port (z.B. 5, 9, o.ä.) erfordern.
+
+
+  (* ASCII-Art in Anlehnung an Andreas Weber, www.tech-chat.de, und Andere)

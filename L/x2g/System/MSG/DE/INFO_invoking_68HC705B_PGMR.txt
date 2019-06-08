@@ -1,0 +1,1 @@
+[ Das DOS-kompatible Programmierwerkzeug PGMR5, geschrieben 1993-94 von Ralf Stockmann,  wird jetzt in einem separaten DOSBox Fenster gestartet ]

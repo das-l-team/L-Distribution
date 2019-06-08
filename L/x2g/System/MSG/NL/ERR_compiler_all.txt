@@ -1,0 +1,6 @@
+[ Compiling was not successful ]
+
+--> Please consult the messages on the console output.
+    
+    The console output can be hidden/unhidden respectively with Shift+Ctrl+O.
+

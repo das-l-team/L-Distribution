@@ -1,0 +1,12 @@
+
+Der im ConTEXT Editor aktive BASIC++ Quelltext kann jetzt
+innerhalb der Workbench++ IDE weiter bearbeitet werden.
+
+Wichtig:
+
+Der Quelltext ist derzeit noch immer in der ConTEXT IDE geoeffnet!
+
+Bitte schliesse den Quelltext in der ConTEXT IDE bevor du Änderungen
+mit der Workbench++ IDE vornimmst, und umgekehrt, um zu verhindern
+dass Daten verloren gehen wenn der selbe Quelltext gleichzeitig mit
+zwei Programmen bearbeitet wird.

@@ -1,0 +1,1462 @@
+
+' ============================================================================
+' Erweiterung für komfortable 32-Bit-Arithmetik auf der Open-Maxi
+' In OCBASIC 1.11a von Dietmar Harlos ab 20. Juni 2018 bis 24. Juni 2018
+' Änderung am 27. Juni 2018: PrintHex und PrintSpc hinzugefügt
+' Änderung am 29. Juni 2018: SQR in 32 Bit hinzugefügt
+' Änderung am 04. Juli 2018: Fehler im Kommentar, bei MAX, >= und < behoben
+' Änderung am 05. Juli 2018: Fehler beim Vergleichen behoben
+' Änderung am 10. Juli 2018: Zwei BSR in JSR umgewandelt
+' Änderung am 15. Juli 2018: PUSH LONGVALUE, PUSH BYTEVAR,BYTEVALUE,
+'   PUSH WORDVAR,WORDVALUE, PUSHLONGARRAY und POPLONGARRAY hinzugefügt
+' ============================================================================
+
+' Diese Erweiterung muß am Anfang des eigenen Programms hinter den eigenen
+' Definitionen mit INCLUDE "omax32.iia" eingebunden werden.
+
+' Es stehen 1024 Byte User-RAM mittels LONG-Variablen zur Verfügung.
+
+' Einschränkungen:
+
+' * nur vier Einträge auf dem Rechenstack verfügbar (bei Pointer weniger)
+' * belegt rund 1900 Byte Programmspeicher
+' * solange aktiv, wird die Befehlsausführung erheblich gebremst
+' * Benutzt den Speicher FREERAM1 und FREERAM2
+' * einige Funktionen (INPUT, TIMER, usw.) arbeiten nur in 16 Bit
+' * Carry wird nicht zurückgeliefert
+' * RealPop=ON wird nicht unterstützt
+
+' --- Variablen der 32-Bit-Erweiterung ---------------------------------------
+
+DEFINE calc32a  AS LONG   'Erster  32-Bit-Akkumulator (1. Operand & Rechenergebnis)
+DEFINE calc32b  AS LONG   'Zweiter 32-Bit-Akkumulator (2. Operand)
+DEFINE calc32c  AS LONG   'Dritter 32-Bit-Akkumulator (temp. fuer DIV und PRINT32)
+
+DEFINE calc32al AS WORD[1] OF calc32a  'LSW 'für den Zugriff in BASIC ohne 32-Bit-Erweiterung
+DEFINE calc32ah AS WORD[2] OF calc32a  'MSW
+DEFINE calc32bl AS WORD[1] OF calc32b  'LSW 'für den Zugriff in BASIC ohne 32-Bit-Erweiterung
+DEFINE calc32bh AS WORD[2] OF calc32b  'MSW
+
+' --- Einige Konstanten ------------------------------------------------------
+
+DEFINE OMAX_pushbyte &h0e3c 'Ein Byte auf den Rechenstack pushen, Highbyte des Eintrags wird 0 gesetzt. Uebergabe des Bytes im Akku.
+DEFINE OMAX_tmp &h0071 ' temporaeres Byte fuer das OS und den User
+DEFINE OMAX_pushword &h12a4 ' Word tmp:a auf Rechenstack pushen
+DEFINE OMAX_putSCI &h0f25 'Übergabe in a
+DEFINE OMAX_realpop &h0c67 'Rueckgabe in tmp:a & tsta
+DEFINE OMAX_unrealpop &h0c7e 'Rueckgabe in tmp:a & Flags werden gesetzt
+DEFINE OMAX_pushintvar &h0e7a
+DEFINE OMAX_rxd &h0e2a
+DEFINE OMAX_get &h0f1d
+DEFINE OMAX_input &h101b
+DEFINE OMAX_cts &h0e08 'Abfrage, ob die CTS-Leitung aktiv ist (Leitung ist low-aktiv)
+DEFINE OMAX_pushbitport &h0e18
+DEFINE OMAX_pushbyteport &h0cfd
+DEFINE OMAX_pushwordport &h12ba
+DEFINE OMAX_pushadport &h12c2
+DEFINE OMAX_pushbitvar &h0e00
+DEFINE OMAX_pushbytevar &h0cd1
+DEFINE OMAX_pushwordvar &h0cb3
+DEFINE OMAX_looktab &h0db9
+DEFINE OMAX_rand &h1050
+DEFINE OMAX_if &h0c5b
+DEFINE OMAX_fileio_inp &h1412
+DEFINE OMAX_eof &h1211
+DEFINE OMAX_userram &h00aa
+DEFINE OMAX_fPNum2Lcd 7
+DEFINE OMAX_urena3 &h007a
+DEFINE OMAX_putSCIorLCD &h0f05
+DEFINE OMAX_illtokorend &h0bb8
+DEFINE OMAX_calcaddr4wordvar &h125a
+DEFINE OMAX_fPrintHex 0
+DEFINE OMAX_fPrintSpc 1
+DEFINE OMAX_oscnfg &h007e
+
+' --- Die Subroutinen --------------------------------------------------------
+
+' Die OM-Controller unterstützen das Einbinden einer Assemblerroutine in
+' den Interpreter des Systems. Die Routine wird jedesmal gestartet, nachdem
+' ein neuer Tokenbefehl aus dem Speicher geholt wurde. Das ist unmittelbar
+' bevor der Tokenbefehl vom Interpreter ausgeführt wird.
+
+PROC URTok_iiar INLASM
+! cbeqa #iTOK,calc32_1         ' Unterscheidung der Interruptquellen
+! jmp iiar_URTok_ende+2
+
+#calc32_1
+! lda ,x
+! cmp #93
+! bcc calc32_groesser
+
+! ldx #3
+! mul   'Das X-Register enthält das höherwertige Byte und der Akkumulator das niederwertige Byte des Resultats.
+! pushx
+! poph
+! tax
+! lda FREERAM1
+! jmp calc32_sprungtabelle,x
+
+#calc32_groesser
+! clc
+! rts
+
+' --- Sprungtabelle ----------------------------------------------------------
+
+#calc32_sprungtabelle
+! jmp calc32_tok00 'NOP
+! jmp calc32_tok01 'PUSH 0
+! jmp calc32_tok02 'PAUSE
+! jmp calc32_tok03 'GOTO
+! jmp calc32_tok04 'IF .. THEN
+! jmp calc32_tok05 'GOSUB
+! jmp calc32_tok06 'RETURN
+! jmp calc32_tok07 'RETURN INTERRUPT
+! jmp calc32_tok08 'SYS
+! jmp calc32_tok09 'SLOWMODE
+! jmp calc32_tok10 'PUSH BITPORT
+! jmp calc32_tok11 'PUSH BYTEPORT
+! jmp calc32_tok12 'PUSH WORDPORT
+! jmp calc32_tok13 'POP BITPORT
+! jmp calc32_tok14 'POP BYTEPORT
+! jmp calc32_tok15 'POP WORDPORT
+! jmp calc32_tok16 'PUSH ADPORT
+! jmp calc32_tok17 'POP DAPORT
+! jmp calc32_tok18 'INLASM
+! jmp calc32_tok19 'PUSH -1
+! jmp calc32_tok20 'PUSH WORDVALUE
+! jmp calc32_tok21 'PUSH BITVAR
+! jmp calc32_tok22 'PUSH BYTEVAR
+! jmp calc32_tok23 'PUSH WORDVAR
+! jmp calc32_tok24 'POP BITVAR
+! jmp calc32_tok25 'POP BYTEVAR
+! jmp calc32_tok26 'POP WORDVAR
+! jmp calc32_tok27 'LOOKTAB
+! jmp calc32_tok28 'PUSH INTERNALVAR
+! jmp calc32_tok29 'POP INTERNALVAR
+! jmp calc32_tok30 'PRINT NUMBER
+! jmp calc32_tok31 'PRINT STRING
+! jmp calc32_tok32 'PUT
+! jmp calc32_tok33 'RXD
+! jmp calc32_tok34 'GET
+! jmp calc32_tok35 'INPUT
+! jmp calc32_tok36 'ARRAY/POINTER
+! jmp calc32_tok37 'CTS
+! jmp calc32_tok38 'PRINTCRLF
+! jmp calc32_tok39 'PUSH 1
+! jmp calc32_tok40 'NOT
+! jmp calc32_tok41 'AND
+! jmp calc32_tok42 'NAND
+! jmp calc32_tok43 'OR
+! jmp calc32_tok44 'NOR
+! jmp calc32_tok45 'XOR
+! jmp calc32_tok46 'SHL
+! jmp calc32_tok47 'SHR
+! jmp calc32_tok48 'RANDOMIZE
+! jmp calc32_tok49 'RAND
+! jmp calc32_tok50 'NEGIEREN (-)
+! jmp calc32_tok51 'ADDITION (+)
+! jmp calc32_tok52 'SUBTRAKTION (-)
+! jmp calc32_tok53 'MULTIPLIKATION (*)
+! jmp calc32_tok54 'DIVISION (/)
+! jmp calc32_tok55 'MOD
+! jmp calc32_tok56 'ABS
+! jmp calc32_tok57 'SQR
+! jmp calc32_tok58 'MAX
+! jmp calc32_tok59 'MIN
+! jmp calc32_tok60 'GROESSER (>)
+! jmp calc32_tok61 'GROESSER/GLEICH (>=)
+! jmp calc32_tok62 'KLEINER (<)
+! jmp calc32_tok63 'KLEINER/GLEICH (<=)
+! jmp calc32_tok64 'GLEICH (=)
+! jmp calc32_tok65 'UNGLEICH (<>)
+! jmp calc32_tok66 'SGN
+! jmp calc32_tok67 'REMOVETOS
+! jmp calc32_tok68 'ADD BYTEVAR,STACK
+! jmp calc32_tok69 'ADD WORDVAR,STACK
+! jmp calc32_tok70 'Filehandling (OPEN#, etc.)
+! jmp calc32_tok71 'EOF
+! jmp calc32_tok72 'BAUD
+! jmp calc32_tok73 'INTERRUPT
+! jmp calc32_tok74 'FOR_NEXT_CMP BYTEVAR
+! jmp calc32_tok75 'FOR_NEXT_CMP WORDVAR
+! jmp calc32_tok76 'FOR_NEXT_ADD BYTEVAR
+! jmp calc32_tok77 'FOR_NEXT_ADD WORDVAR
+! jmp calc32_tok78 'DBNZ
+! jmp calc32_tok79 'PEEK & POKE
+! jmp calc32_tok80 'TOG
+! jmp calc32_tok81 'PULSE
+! jmp calc32_tok82 'DEACT BITPORT
+! jmp calc32_tok83 'DEACT BYTEPORT
+! jmp calc32_tok84 'DEACT WORDPORT
+! jmp calc32_tok85 'PUSH BYTEVALUE
+! jmp calc32_tok86 'PUSH BYTEVAR,BYTEVALUE
+! jmp calc32_tok87 'PUSH WORDVAR,WORDVALUE
+! jmp calc32_tok88 'LOOKTABBYTE
+! jmp calc32_tok89 'I²C-LCD
+! jmp calc32_tok90 'PUSH LONGVAR (neu)
+! jmp calc32_tok91 'POP LONGVAR (neu)
+! jmp calc32_tok92 'PUSH LONGVALUE (neu)
+
+' --- Die diversen geänderten Tokenroutinen. Sie wurden nur kurz getestet. ---
+
+#calc32_tok01 'PUSH 0 (getestet, funktioniert)
+! clra
+! jsr calc32_pushbyte
+! stc
+! rts
+
+#calc32_tok04 'IF .. THEN (getestet, funktioniert)
+! jsr calc32_pop2vara
+! lda calc32a+3
+! ora calc32a+2
+! ora calc32a+1
+! ora calc32a
+! jsr OMAX_if
+! stc
+! rts
+
+#calc32_tok10 'PUSH BITPORT (getestet, funktioniert)
+! bsr calc32_pext_prolog
+! jsr OMAX_pushbitport
+! jmp calc32_pext_epilog
+
+#calc32_tok11 'PUSH BYTEPORT (getestet, funktioniert)
+! bsr calc32_pext_prolog
+! jsr OMAX_pushbyteport
+! bra calc32_pext_epilog
+
+#calc32_tok12 'PUSH WORDPORT (getestet, funktioniert)
+! bsr calc32_pext_prolog
+! jsr OMAX_pushwordport
+! bra calc32_pext_epilog
+
+#calc32_tok16 'PUSH ADPORT (getestet, funktioniert)
+! bsr calc32_pext_prolog
+! jsr OMAX_pushadport
+! bra calc32_pext_epilog
+
+#calc32_tok19 'PUSH -1 (getestet, funktioniert)
+! clra
+! deca
+! sta OMAX_tmp
+! bsr calc32_pushword
+! stc
+! rts
+
+#calc32_tok20 'PUSH WORDVALUE (getestet, funktioniert)
+! ldhx pcadr
+! mov ,x+,OMAX_tmp
+! lda ,x
+! aix #1
+! sthx pcadr
+! bsr calc32_pushword
+! stc
+! rts
+
+#calc32_pushword       'tmp:a auf Rechenstack pushen & auf 32 Bit erweitern, FREERAM2 wird verwendet
+! mov OMAX_tmp,FREERAM2
+! pusha
+! clra
+! brclr #7,FREERAM2,calc32_pushword_1
+! deca
+#calc32_pushword_1
+! sta OMAX_tmp
+! jsr OMAX_pushword
+! popa
+! mov FREERAM2,OMAX_tmp
+! jmp OMAX_pushword
+
+#calc32_tok21 'PUSH BITVAR (getestet, funktioniert)
+! bsr calc32_pext_prolog
+! jsr OMAX_pushbitvar
+! bra calc32_pext_epilog
+
+#calc32_tok22 'PUSH BYTEVAR (getestet, funktioniert)
+! clra
+! jsr OMAX_pushbyte ' Hier war ein Fehler
+! jsr OMAX_pushbytevar
+! stc
+! rts
+
+#calc32_tok23 'PUSH WORDVAR (getestet, funktioniert)
+! bsr calc32_pext_prolog
+! jsr OMAX_pushwordvar
+! bra calc32_pext_epilog
+
+#calc32_tok27 'LOOKTAB (getestet, funktioniert)
+! jsr calc32_pop2vara
+! lda calc32a+3
+! mov calc32a+2,OMAX_tmp
+! jsr OMAX_pushword
+! jsr OMAX_looktab
+! jsr OMAX_realpop    'Rueckgabe in tmp:a & tsta
+! jsr calc32_pushword
+! stc
+! rts
+
+#calc32_tok28 'PUSH INTERNALVAR (getestet, funktioniert)
+! bsr calc32_pext_prolog
+! jsr OMAX_pushintvar
+! bra calc32_pext_epilog
+
+#calc32_pext_prolog     'FREERAM2 wird verwendet
+! clra
+! jsr OMAX_pushbyte     'hier war ein Fehler
+! mov CSTKPTR,FREERAM2  'Pointer vom Rechenstack sichern
+! rts
+
+#calc32_pext_epilog     'FREERAM2 wird verwendet
+! jsr OMAX_unrealpop
+! brclr #7,OMAX_tmp,calc32_pext_epilog_no  'wenn negativ, dann Element im Rechenstack auf -1 patchen
+! clrh
+! ldx FREERAM2
+! lda #$ff
+! sta ,x
+! sta 1,x
+#calc32_pext_epilog_no
+! stc
+! rts
+
+#calc32_pop2vara
+! jsr OMAX_realpop 'tmp:a  'unteres Word
+! sta calc32a+3
+! mov OMAX_tmp,calc32a+2
+! jsr OMAX_realpop 'tmp:a  'oberes Word
+! sta calc32a+1
+! mov OMAX_tmp,calc32a
+! rts
+
+#calc32_pop2varb
+! jsr OMAX_realpop 'tmp:a  'unteres Word
+! sta calc32b+3
+! mov OMAX_tmp,calc32b+2
+! jsr OMAX_realpop 'tmp:a  'oberes Word
+! sta calc32b+1
+! mov OMAX_tmp,calc32b
+! rts
+
+#calc32_pop2vars
+! bsr calc32_pop2varb
+! bra calc32_pop2vara
+
+#calc32_tok30 'PRINT NUMBER (getestet, funktioniert)
+! jsr calc32_pop2vara
+! jsr print32
+! stc
+! rts
+
+#calc32_tok33 'RXD (getestet, funktioniert)
+! bsr calc32_pext_prolog
+! jsr OMAX_rxd
+! bra calc32_pext_epilog
+
+#calc32_tok34 'GET (getestet, funktioniert)
+! bsr calc32_pext_prolog
+! jsr OMAX_get
+! bra calc32_pext_epilog
+
+#calc32_tok35 'INPUT (getestet, funktioniert) (16-Bit-Version)
+! bsr calc32_pext_prolog
+! jsr OMAX_input
+! bra calc32_pext_epilog
+
+#calc32_tok36 'ARRAY/POINTER (getestet, funktioniert)
+! jsr calc32_pop2vara 'Index auf Variable A
+! ldhx pcadr
+! lda ,x
+! aix #1
+! sthx pcadr
+! cbeqa #0,calc32_tok36_pushbytearray
+! cbeqa #1,calc32_tok36_pushwordarray
+! cbeqa #2,calc32_tok36_popbytearray
+! cbeqa #3,calc32_tok36_popwordarray
+! cbeqa #4,calc32_tok36_pushlongarray
+! cbeqa #5,calc32_tok36_poplongarray
+! lda #36
+! jmp OMAX_illtokorend  'getestet, funktioniert
+#calc32_tok36_pushbytearray
+! clrh
+! ldx calc32a+3
+! lda OMAX_userram,x
+! jsr calc32_pushbyte
+! stc
+! rts
+#calc32_tok36_pushwordarray
+! ldx calc32a+3
+! jsr OMAX_calcaddr4wordvar 'Übergabe: x=Nummer der WORD-Variablen (0..255), Rückgabe: h:x=Offset
+! lda OMAX_userram,x
+! sta OMAX_tmp
+! lda OMAX_userram+1,x
+! jsr calc32_pushword       'tmp:a auf Rechenstack pushen & auf 32 Bit erweitern, FREERAM2 wird verwendet
+! stc
+! rts
+#calc32_tok36_popbytearray
+! jsr calc32_pop2varb 'Wert auf Variable B
+! clrh
+! ldx calc32a+3
+! lda calc32b+3
+! sta OMAX_userram,x
+! stc
+! rts
+#calc32_tok36_popwordarray
+! jsr calc32_pop2varb 'Wert auf Variable B
+! ldx calc32a+3
+! jsr OMAX_calcaddr4wordvar 'Übergabe: x=Nummer der WORD-Variablen (0..255), Rückgabe: h:x=Offset
+! lda calc32b+2
+! sta OMAX_userram,x
+! lda calc32b+3
+! sta OMAX_userram+1,x
+! stc
+! rts
+#calc32_tok36_pushlongarray
+! lda calc32a+3
+! clrx
+! lsla
+! rolx
+! lsla
+! rolx
+! pushx
+! poph
+! tax
+! lda OMAX_userram,x
+! sta calc32a
+! lda OMAX_userram+1,x
+! sta calc32a+1
+! lda OMAX_userram+2,x
+! sta calc32a+2
+! lda OMAX_userram+3,x
+! sta calc32a+3
+! jmp calc32_pushvara
+#calc32_tok36_poplongarray
+! jsr calc32_pop2varb
+! lda calc32a+3
+! clrx
+! lsla
+! rolx
+! lsla
+! rolx
+! pushx
+! poph
+! tax
+! lda calc32b
+! sta OMAX_userram,x
+! lda calc32b+1
+! sta OMAX_userram+1,x
+! lda calc32b+2
+! sta OMAX_userram+2,x
+! lda calc32b+3
+! sta OMAX_userram+3,x
+! stc
+! rts
+
+#calc32_tok37 'CTS (getestet, funktioniert)
+! jsr calc32_pext_prolog
+! jsr OMAX_cts
+! jmp calc32_pext_epilog
+
+#calc32_tok39 'PUSH 1 (getestet, funktioniert)
+! lda #1
+! jsr calc32_pushbyte
+! stc
+! rts
+
+#calc32_pushvara
+! lda calc32a+1
+! mov calc32a,OMAX_tmp
+! jsr OMAX_pushword  ' Word tmp:a auf Rechenstack pushen
+! lda calc32a+3
+! mov calc32a+2,OMAX_tmp
+! jsr OMAX_pushword  ' Word tmp:a auf Rechenstack pushen
+! stc
+! rts
+
+#calc32_tok40 'NOT (getestet, funktioniert)
+! jsr calc32_pop2vara
+! not calc32a+3
+! not calc32a+2
+! not calc32a+1
+! not calc32a
+! jmp calc32_pushvara
+
+#calc32_tok41 'AND (getestet, funktioniert)
+! jsr calc32_pop2vars
+! lda calc32a+3
+! and calc32b+3
+! sta calc32a+3
+! lda calc32a+2
+! and calc32b+2
+! sta calc32a+2
+! lda calc32a+1
+! and calc32b+1
+! sta calc32a+1
+! lda calc32a
+! and calc32b
+! sta calc32a
+! jmp calc32_pushvara
+
+#calc32_tok42 'NAND (getestet, funktioniert)
+! bsr calc32_tok41
+! bra calc32_tok40
+
+#calc32_tok43 'OR (getestet, funktioniert)
+! jsr calc32_pop2vars
+! lda calc32a+3
+! ora calc32b+3
+! sta calc32a+3
+! lda calc32a+2
+! ora calc32b+2
+! sta calc32a+2
+! lda calc32a+1
+! ora calc32b+1
+! sta calc32a+1
+! lda calc32a
+! ora calc32b
+! sta calc32a
+! jmp calc32_pushvara
+
+#calc32_tok44 'NOR (getestet, funktioniert)
+! bsr calc32_tok43
+! bra calc32_tok40
+
+#calc32_tok45 'XOR (getestet, funktioniert)
+! jsr calc32_pop2vars
+! lda calc32a+3
+! xor calc32b+3
+! sta calc32a+3
+! lda calc32a+2
+! xor calc32b+2
+! sta calc32a+2
+! lda calc32a+1
+! xor calc32b+1
+! sta calc32a+1
+! lda calc32a
+! xor calc32b
+! sta calc32a
+! jmp calc32_pushvara
+
+#calc32_tok46 'SHL (getestet, funktioniert)
+! jsr calc32_pop2vars
+! ldx calc32b+3
+! beq calc32_tok46_1
+#calc32_tok46_2
+! lsl calc32a+3
+! rol calc32a+2
+! rol calc32a+1
+! rol calc32a
+! dbnzx calc32_tok46_2
+#calc32_tok46_1
+! jmp calc32_pushvara
+
+#calc32_tok47 'SHR (getestet, funktioniert)
+! jsr calc32_pop2vars
+! ldx calc32b+3
+! beq calc32_tok47_1
+#calc32_tok47_2
+! asr calc32a
+! ror calc32a+1
+! ror calc32a+2
+! ror calc32a+3
+! dbnzx calc32_tok47_2
+#calc32_tok47_1
+! jmp calc32_pushvara
+
+#calc32_tok49 'RAND (getestet, funktioniert)
+! jsr calc32_pext_prolog
+! jsr OMAX_rand
+! jmp calc32_pext_epilog
+
+#calc32_tok50 'NEGIEREN (-) (getestet, funktioniert)
+! jsr calc32_pop2vara
+! jsr negate_a
+! jmp calc32_pushvara
+
+#calc32_tok51 'ADDITION (+) (getestet, funktioniert)
+! jsr calc32_pop2vars
+! jsr addieren
+! jmp calc32_pushvara
+
+#calc32_tok52 'SUBTRAKTION (-) (getestet, funktioniert)
+! jsr calc32_pop2vars
+! jsr subtrahieren
+! jmp calc32_pushvara
+
+#calc32_tok53 'MULTIPLIKATION (*) (getestet, funktioniert)
+! jsr calc32_pop2vars
+! jsr multiplizieren
+! jmp calc32_pushvara
+
+#calc32_tok54 'DIVISION (/) (getestet, funktioniert)
+! jsr calc32_pop2vars
+! jsr dividieren
+! jmp calc32_pushvara
+
+#calc32_tok55 'MOD (getestet, funktioniert)
+! jsr calc32_pop2vars
+! jsr modulo
+! jmp calc32_pushvara
+
+#calc32_tok56 'ABS (getestet, funktioniert)
+! jsr calc32_pop2vara
+! brclr #7,calc32a,calc32_tok56_1
+! jsr negate_a
+#calc32_tok56_1
+! jmp calc32_pushvara
+
+#calc32_tok57 'SQR (getestet, funktioniert) (der Operand wird als unsigned angenommen)
+! jsr calc32_pop2vara
+! jsr sqrt32
+! jmp calc32_pushvara
+
+#calc32_tok58 'MAX (getestet, funktioniert)
+! bsr calc32_vergleich_prolog
+! bge calc32_tok58_1   ' vorher BPL, jetzt BGE rel Branch if Greater Than or Equal To (Signed Operands) Branch if (N . V) = 0
+! bra calc32_pushvarb
+#calc32_tok58_1
+! jmp calc32_pushvara
+
+#calc32_pushvarb
+! lda calc32b+1
+! mov calc32b,OMAX_tmp
+! jsr OMAX_pushword  ' Word tmp:a auf Rechenstack pushen
+! lda calc32b+3
+! mov calc32b+2,OMAX_tmp
+! jsr OMAX_pushword  ' Word tmp:a auf Rechenstack pushen
+! stc
+! rts
+
+#calc32_tok59 'MIN (getestet, funktioniert)
+! bsr calc32_vergleich_prolog
+! ble calc32_tok59_1  ' Branch if Less Than or Equal To (Signed Operands), Branch if (Z) | (N . V) = 1
+! bra calc32_pushvarb
+#calc32_tok59_1
+! jmp calc32_pushvara
+
+#calc32_vergleich_prolog
+! jsr calc32_pop2vars
+! ldhx calc32a        ' neue Version aus "static void _LCMP_k_rel_j(_PARAM_BINARY_L)" der CodeWarrior-IDE
+! cmphx calc32b
+! bne calc32_vergleich_prolog_1  'Highwords nicht gleich? Dann beenden.
+! ldhx calc32a+2
+! cmphx calc32b+2
+! beq calc32_vergleich_prolog_1  'Lowwords gleich? Dann beenden.
+! clra
+! bcs calc32_vergleich_prolog_2  'Wenn Carry gesetzt, dann #0-#1 rechnen
+! lda #2                         'ansonsten wird #2-#1 gerechnet
+#calc32_vergleich_prolog_2
+! cmp #1
+#calc32_vergleich_prolog_1
+! rts
+
+#calc32_tok60 'GROESSER (>) (getestet, funktioniert)
+! bsr calc32_vergleich_prolog
+! bgt calc32_vergleich_pushon  ' Branch if Greater Than (Signed Operands) Branch if (Z) | (N . V) = 0
+! bra calc32_vergleich_pushoff
+
+#calc32_vergleich_pushon
+! clra
+! deca
+! sta OMAX_tmp
+! jsr calc32_pushword
+! stc
+! rts
+
+#calc32_vergleich_pushoff
+! clra
+! sta OMAX_tmp
+! jsr calc32_pushword
+! stc
+! rts
+
+#calc32_tok61 'GROESSER/GLEICH (>=) (getestet, funktioniert)
+! bsr calc32_vergleich_prolog
+! bge calc32_vergleich_pushon  ' vorher BPL, jetzt BGE rel Branch if Greater Than or Equal To (Signed Operands) Branch if (N . V) = 0
+! bra calc32_vergleich_pushoff
+
+#calc32_tok62 'KLEINER (<) (getestet, funktioniert)
+! bsr calc32_vergleich_prolog
+! blt calc32_vergleich_pushon  ' vorher BMI, jetzt BLT rel Branch if Less Than (Signed Operands), Branch if (N . V ) = 1
+! bra calc32_vergleich_pushoff
+
+#calc32_tok63 'KLEINER/GLEICH (<=) (getestet, funktioniert)
+! bsr calc32_vergleich_prolog
+! ble calc32_vergleich_pushon  ' Branch if Less Than or Equal To (Signed Operands), Branch if (Z) | (N . V) = 1
+! bra calc32_vergleich_pushoff
+
+#calc32_tok64 'GLEICH (=) (getestet, funktioniert)
+! bsr calc32_vergleich_prolog
+! beq calc32_vergleich_pushon
+! bra calc32_vergleich_pushoff
+
+#calc32_tok65 'UNGLEICH (<>) (getestet, funktioniert)
+! bsr calc32_vergleich_prolog
+! bne calc32_vergleich_pushon
+! bra calc32_vergleich_pushoff
+
+#calc32_tok66 'SGN (getestet, funktioniert)
+! jsr calc32_pop2vara
+! lda calc32a+3
+! ora calc32a+2
+! ora calc32a+1
+! ora calc32a
+! bne calc32_tok66_istnichtnull
+! bra calc32_tok66_pushen '0 pushen
+#calc32_tok66_istnichtnull
+! brclr #7,calc32a,calc32_tok66_istpositiv
+! jmp calc32_tok19 '-1 pushen
+#calc32_tok66_istpositiv
+! lda #1 '1 pushen
+#calc32_tok66_pushen
+! jsr calc32_pushbyte
+! stc
+! rts
+
+#calc32_tok67 'REMOVETOS (getestet, funktioniert)
+! jsr calc32_pop2vara
+! stc
+! rts
+
+#calc32_tok70 'Filehandling (OPEN#, etc.) (getestet, funktioniert)
+! ldhx PCADR
+! lda ,x
+! cbeqa #6,calc32_tok70_inp
+! lda FREERAM1
+! clc
+! rts
+#calc32_tok70_inp
+! ldhx PCADR
+! aix #1
+! sthx PCADR
+! jsr calc32_pext_prolog
+! jsr OMAX_fileio_inp
+! jmp calc32_pext_epilog
+
+#calc32_tok71 'EOF (getestet, funktioniert)
+! jsr calc32_pext_prolog
+! jsr OMAX_eof
+! jmp calc32_pext_epilog
+
+#calc32skipbyte
+! ldhx PCADR
+! aix #1
+! sthx PCADR
+! rts
+
+#calc32_tok79 'PEEK & POKE (getestet, funktioniert)
+! ldhx PCADR
+! lda ,x
+! cbeqa #2,calc32_tok79_poke
+! cbeqa #3,calc32_tok79_peekw
+! cbeqa #4,calc32_tok79_pokew
+! lda FREERAM1
+! clc
+! rts
+#calc32_tok79_peekw
+! bsr calc32skipbyte
+! jsr calc32_pop2vara
+! ldhx calc32a+2
+! mov ,x+,OMAX_tmp
+! lda ,x
+! jsr calc32_pushword
+! stc
+! rts
+#calc32_tok79_poke
+! bsr calc32skipbyte
+! jsr calc32_pop2vars
+! ldhx calc32a+2
+! mov calc32b+3,x+
+! stc
+! rts
+#calc32_tok79_pokew
+! bsr calc32skipbyte
+! jsr calc32_pop2vars
+! ldhx calc32a+2
+! mov calc32b+2,x+
+! mov calc32b+3,x+
+! stc
+! rts
+
+#calc32_tok85 'PUSH BYTEVALUE (getestet, funktioniert)
+! ldhx pcadr
+! lda ,x
+! aix #1
+! sthx pcadr
+! bsr calc32_pushbyte
+! stc
+! rts
+
+#calc32_pushbyte
+! pusha
+! clra
+! jsr OMAX_pushbyte
+! popa
+! jmp OMAX_pushbyte
+
+#calc32_tok86 'PUSH BYTEVAR,BYTEVALUE (getestet, funktioniert) (wird vom OCBASIC-Compiler nicht verwendet)
+! jsr calc32_tok22 'PUSH BYTEVAR
+! jmp calc32_tok85 'PUSH BYTEVALUE
+
+#calc32_tok87 'PUSH WORDVAR,WORDVALUE (getestet, funktioniert) (wird vom OCBASIC-Compiler nicht verwendet)
+! jsr calc32_tok23 'PUSH WORDVAR
+! jmp calc32_tok20 'PUSH WORDVALUE
+
+#calc32_shrinklongs2words
+! jsr calc32_pop2vars  'pop2varb & pop2vara
+! lda calc32a+3
+! mov calc32a+2,OMAX_tmp
+! jsr OMAX_pushword
+! lda calc32b+3
+! mov calc32b+2,OMAX_tmp
+! jmp OMAX_pushword
+
+#calc32_tok89 'I²C-LCD (getestet, funktioniert)
+! ldhx PCADR
+! lda ,x
+! cbeqa #3,calc32_tok89_lcdlocate '3: LCDLOCATE
+! cbeqa #6,calc32_tok89_lcdprintnum '6: LCDPRINT STACK
+! lda FREERAM1
+! clc
+! rts
+#calc32_tok89_lcdlocate
+! bsr calc32_shrinklongs2words
+! lda FREERAM1
+! clc
+! rts
+#calc32_tok89_lcdprintnum
+! ldhx PCADR
+! aix #1
+! sthx PCADR
+! jsr calc32_pop2vara
+! bset OMAX_fPNum2Lcd,OMAX_urena3
+! jsr print32_fromlcdprintnum
+! stc
+! rts
+
+#calc32_tok90 'PUSH LONGVAR (neu) (getestet, funktioniert)
+! ldhx pcadr
+! lda ,x
+! aix #1
+! sthx pcadr
+! clrx
+! lsla
+! rolx
+! lsla
+! rolx
+! pushx
+! poph
+! tax
+! lda OMAX_userram,x
+! sta calc32a
+! lda OMAX_userram+1,x
+! sta calc32a+1
+! lda OMAX_userram+2,x
+! sta calc32a+2
+! lda OMAX_userram+3,x
+! sta calc32a+3
+! jmp calc32_pushvara
+
+#calc32_tok91 'POP LONGVAR (neu) (getestet, funktioniert)
+! jsr calc32_pop2vara
+! ldhx pcadr
+! lda ,x
+! aix #1
+! sthx pcadr
+! clrx
+! lsla
+! rolx
+! lsla
+! rolx
+! pushx
+! poph
+! tax
+! lda calc32a
+! sta OMAX_userram,x
+! lda calc32a+1
+! sta OMAX_userram+1,x
+! lda calc32a+2
+! sta OMAX_userram+2,x
+! lda calc32a+3
+! sta OMAX_userram+3,x
+! stc
+! rts
+
+#calc32_tok92 'PUSH LONGVALUE (neu) (getestet, funktioniert)
+! ldhx pcadr
+! mov ,x+,calc32a
+! mov ,x+,calc32a+1
+! mov ,x+,calc32a+2
+! mov ,x+,calc32a+3
+! sthx pcadr
+! jmp calc32_pushvara
+
+' --- Die diversen unveränderten Tokenroutinen. ------------------------------
+
+#calc32_tok00 'NOP  (unverändert)
+! clc
+! rts
+
+#calc32_tok02 'PAUSE (unverändert)
+! clc
+! rts
+
+#calc32_tok03 'GOTO (unverändert)
+! clc
+! rts
+
+#calc32_tok05 'GOSUB (unverändert)
+! clc
+! rts
+
+#calc32_tok06 'RETURN (unverändert)
+! clc
+! rts
+
+#calc32_tok07 'RETURN INTERRUPT (unverändert)
+! clc
+! rts
+
+#calc32_tok08 'SYS  (unverändert)
+! clc
+! rts
+
+#calc32_tok09 'SLOWMODE (unverändert)
+! clc
+! rts
+
+#calc32_tok13 'POP BITPORT (unverändert)
+! clc
+! rts
+
+#calc32_tok14 'POP BYTEPORT (unverändert)
+! clc
+! rts
+
+#calc32_tok15 'POP WORDPORT (unverändert)
+! clc
+! rts
+
+#calc32_tok17 'POP DAPORT (unverändert)
+! clc
+! rts
+
+#calc32_tok18 'INLASM (unverändert)
+! clc
+! rts
+
+#calc32_tok24 'POP BITVAR (unverändert)
+! clc
+! rts
+
+#calc32_tok25 'POP BYTEVAR (unverändert)
+! clc
+! rts
+
+#calc32_tok26 'POP WORDVAR (unverändert)
+! clc
+! rts
+
+#calc32_tok29 'POP INTERNALVAR (unverändert)
+! clc
+! rts
+
+#calc32_tok31 'PRINT STRING (unverändert)
+! clc
+! rts
+
+#calc32_tok32 'PUT (unverändert)
+! clc
+! rts
+
+#calc32_tok38 'PRINTCRLF (unverändert)
+! clc
+! rts
+
+#calc32_tok48 'RANDOMIZE (unverändert)
+! clc
+! rts
+
+#calc32_tok68 'ADD BYTEVAR,STACK (unverändert)
+! clc
+! rts
+
+#calc32_tok69 'ADD WORDVAR,STACK (unverändert)
+! clc
+! rts
+
+#calc32_tok72 'BAUD (unverändert)
+! clc
+! rts
+
+#calc32_tok73 'INTERRUPT (unverändert)
+! clc
+! rts
+
+#calc32_tok74 'FOR_NEXT_CMP BYTEVAR (unverändert)
+! clc
+! rts
+
+#calc32_tok75 'FOR_NEXT_CMP WORDVAR (unverändert)
+! clc
+! rts
+
+#calc32_tok76 'FOR_NEXT_ADD BYTEVAR (unverändert)
+! clc
+! rts
+
+#calc32_tok77 'FOR_NEXT_ADD WORDVAR (unverändert)
+! clc
+! rts
+
+#calc32_tok78 'DBNZ (unverändert)
+! clc
+! rts
+
+#calc32_tok80 'TOG (unverändert)
+! clc
+! rts
+
+#calc32_tok81 'PULSE (unverändert)
+! clc
+! rts
+
+#calc32_tok82 'DEACT BITPORT (unverändert)
+! clc
+! rts
+
+#calc32_tok83 'DEACT BYTEPORT (unverändert)
+! clc
+! rts
+
+#calc32_tok84 'DEACT WORDPORT (unverändert)
+! clc
+! rts
+
+#calc32_tok88 'LOOKTABBYTE (unverändert) (getestet, funktioniert)
+! clc
+! rts
+
+END PROC
+
+
+' Subroutine zur 32-Bit-Addition
+
+PROC addieren INLASM
+
+! lda calc32a+3
+! add calc32b+3
+! sta calc32a+3
+! lda calc32a+2
+! adc calc32b+2
+! sta calc32a+2
+! lda calc32a+1
+! adc calc32b+1
+! sta calc32a+1
+! lda calc32a
+! adc calc32b
+! sta calc32a
+! rts
+
+END PROC
+
+
+' Subroutine zur 32-Bit-Subtraktion
+
+PROC subtrahieren INLASM
+
+! lda calc32a+3
+! sub calc32b+3
+! sta calc32a+3
+! lda calc32a+2
+! sbc calc32b+2
+! sta calc32a+2
+! lda calc32a+1
+! sbc calc32b+1
+! sta calc32a+1
+! lda calc32a
+! sbc calc32b
+! sta calc32a
+! rts
+
+END PROC
+
+
+' Schnelle 32-Bit-Multiplikation mit 32-Bit-Ergebnis
+' von Dietmar Harlos ADPC am 7. Juni 2006
+' recht schnell und recht kurz - laesst sich aber noch optimieren
+
+PROC multiplizieren INLASM
+
+! ldx #calc32a
+#mul_8
+! lda ,x
+! pusha
+! clr ,x
+! incx
+! cmpx #calc32a+#4
+! bne mul_8
+
+! ldx #4
+#mul_1
+! popa
+! pushx
+! stx ostemp
+! bsr mul_2
+! popx
+! dbnzx mul_1
+! rts
+
+#mul_2
+! ldx calc32b+3
+! bsr mul_3
+! ldx calc32b+2
+! bsr mul_3
+! ldx calc32b+1
+! bsr mul_3
+! ldx calc32b
+! bsr mul_3
+
+#mul_3
+! pusha
+! mul
+! bsr mul_4
+! dbnz ostemp,mul_5
+! ais #3
+! rts               'Ruecksprung hinter das BSR mul_2
+#mul_4
+! pushx
+#mul_5
+! ldx ostemp
+! clc
+#mul_6
+! adc calc32a-1,x
+! sta calc32a-1,x
+! bcc mul_7
+! clra
+! dbnzx mul_6
+#mul_7
+! popa
+! rts
+
+END PROC
+
+
+' Subroutine zur vorzeichenbehafteten 32-Bit-Division
+
+PROC dividieren INLASM
+
+! bsr makepositive
+! pusha
+! jsr udiv32
+#dividieren_from_mod
+! popa
+! tsta
+! bpl negate_a_1
+
+#negate_a
+! com calc32a
+! com calc32a+1
+! com calc32a+2
+! neg calc32a+3
+! blo negate_a_1
+! inc calc32a+2
+! bne negate_a_1
+! inc calc32a+1
+! bne negate_a_1
+! inc calc32a
+#negate_a_1
+! rts
+
+#makepositive
+! lda calc32a
+! xor calc32b
+! brclr #7,calc32a,makepositive_1
+! bsr negate_a
+#makepositive_1
+! brclr #7,calc32b,negate_b_1
+
+#negate_b
+! com calc32b
+! com calc32b+1
+! com calc32b+2
+! neg calc32b+3
+! blo negate_b_1
+! inc calc32b+2
+! bne negate_b_1
+! inc calc32b+1
+! bne negate_b_1
+! inc calc32b
+#negate_b_1
+! rts
+
+END PROC
+
+
+' Subroutine fuer vorzeichenbehaftetes 32-Bit-Modulo
+' Änderung: Vorzeichen des Ergebnisses ist Vorzeichen von A lt. PowerBASIC & QBASIC
+
+PROC modulo INLASM
+
+! lda calc32a
+! pusha                  'altes Vorzeichen von A festhalten
+! bsr makepositive
+! jsr udiv32
+! mov calc32c+3,calc32a+3
+! mov calc32c+2,calc32a+2
+! mov calc32c+1,calc32a+1
+! mov calc32c  ,calc32a
+! bra dividieren_from_mod
+
+END PROC
+
+
+' 32-Bit-Division mit 32-Bit Ergebnis
+' von Dietmar Harlos ADPC am 29. Juni 2006
+' geschwindigkeitsmaessig gaebe es einiges zu verbessern
+
+PROC udiv32 INLASM
+
+! clr calc32c             'Akkumulator (und Rest) calc32c loeschen
+! clr calc32c+1
+! clr calc32c+2
+! clr calc32c+3
+
+! mov #32,OSTEMP
+
+#udiv32_1
+! lsl calc32a+3           'Divident (und Quotient, Ergebnis) calc32a nach links ...
+! rol calc32a+2
+! rol calc32a+1
+! rol calc32a
+
+! rol calc32c+3           ' in den Akkumulator calc32c schieben
+! rol calc32c+2
+! rol calc32c+1
+! rol calc32c
+
+! lda calc32c+3           'Akkumulator calc32c minus Divisor calc32b
+! sub calc32b+3
+! lda calc32c+2
+! sbc calc32b+2           'Zwischenspeichern der ersten Ergebnisse per PUSHA
+! lda calc32c+1           ' macht keinen Sinn, da der Akku in den meisten
+! sbc calc32b+1           ' Faellen nicht aktualisiert werden muss.
+! tax
+! lda calc32c
+! sbc calc32b
+
+! bcs udiv32_2            'Carry ist gesetzt, wenn Akkumulator kleiner als Divisor
+
+! sta calc32c
+! stx calc32c+1           'wenn nicht zu klein, dann Akkumulator aktualisieren
+! lda calc32c+3
+! sub calc32b+3
+! sta calc32c+3
+! lda calc32c+2
+! sbc calc32b+2
+! sta calc32c+2
+
+! inc calc32a+3           ' und LSB vom Quotienten setzen
+
+#udiv32_2
+! dbnz OSTEMP,udiv32_1
+! rts
+
+END PROC
+
+
+' 32 Bit Wurzel/Squareroot nach
+' http://members.chello.nl/j.beentjes3/Ruud/sqrt32avr.htm
+' 32 Bit Square Root = Wurzel ziehen mit Ergebnis in 16 Bit
+' nicht gerundet
+
+' Nach einer Idee von Josef Fenk (Josef.Fenk@t-online.de).
+
+' Konvertierung nach Open-Maxi am 28. Juni 2018 von Dietmar Harlos.
+
+' Original-Header:
+
+'  Fast and short 32 bits AVR sqrt routine
+'
+'  calc32b+2:calc32b+3=SQRT(calc32a:calc32a+1:calc32a+2:calc32a+3) rounded down to integer
+'
+'  Registers:
+'  Destroys the argument in calc32a:calc32a+1:calc32a+2:calc32a+3
+'
+'  Cycles incl call & ret = 263 - 305
+'
+'  Stack incl call = 4
+
+PROCEDURE sqrt32 INLASM
+
+! mov #$c0,calc32b
+! clr calc32b+1     ' rotation mask in calc32b:calc32b+1
+! mov #$40,calc32b+2
+! clr calc32b+3     ' developing sqrt in calc32b+2:calc32b+3, C=0
+! clc
+
+#sqrt32_1
+! bcs sqrt32_2      ' C --> Bit is always 1
+! ldhx calc32a
+! cphx calc32b+2    ' Does test value fit?
+! bcs sqrt32_3      'brcs  _sq32_3           ; C --> nope, bit is 0
+
+#sqrt32_2
+! lda calc32a+1     'sub   calc32a+1,calc32b+3
+! sub calc32b+3
+! sta calc32a+1
+! lda calc32a       'sbc   calc32a,calc32b+2            ; Adjust argument for next bit
+! sbc calc32b+2
+! sta calc32a
+
+! lda calc32b+3     'or    calc32b+3,calc32b+1
+! ora calc32b+1
+! sta calc32b+3
+! lda calc32b+2     'or    calc32b+2,calc32b           ; Set bit to 1
+! ora calc32b
+! sta calc32b+2
+
+#sqrt32_3
+! lsr calc32b
+! ror calc32b+1     ' Shift right mask, C --> end loop
+
+! lda calc32b+2     'eor   calc32b+2,calc32b
+! eor calc32b
+! sta calc32b+2
+! lda calc32b+3     'eor   calc32b+3,calc32b+1           ; Shift right only test bit in result
+! eor calc32b+1
+! sta calc32b+3
+
+! rol calc32a+3     'Bit 0 only set if end of loop
+! rol calc32a+2
+! rol calc32a+1
+! rol calc32a       ' Shift left remaining argument (C used at _sq32_1)
+
+! lda calc32a+3     ' sbrs  calc32a+3,0 ; Skip if 15 bits developed
+! and #$01
+! beq sqrt32_1      ' Develop 15 bits of the sqrt
+
+! bcs sqrt32_4      ' brcs  _sq32_4           ; C--> Last bits always 1
+! lsl calc32a+2     ' Need bit 7 in C for cpc
+! lda calc32b+3     ' cpc   calc32b+3,calc32a+1
+! sbc calc32a+1
+! lda calc32b+2     ' cpc   calc32b+2,calc32a            ' After this C is last bit
+! sbc calc32a
+
+#sqrt32_4
+! lda calc32b+3     'adc   calc32b+3,calc32b           ; Round up if C (calc32b=0)
+! adc calc32b
+! sta calc32b+3
+
+! ldhx calc32b+2    'Ergebnis in calc32a
+! sthx calc32a+2
+! clr calc32a
+! clr calc32a+1
+
+! rts
+
+END PROCEDURE
+
+
+' Subroutine zur dezimalen Ausgabe von vorzeichenbehafteten 32-Bit-Zahlen
+' von Dietmar Harlos ADPC am 29. Juni 2006
+' Änderung am 27. Juni 2018: PrintHex und PrintSpc hinzugefügt
+
+PROC print32 INLASM
+
+! bclr OMAX_fPNum2Lcd,OMAX_urena3
+#print32_fromlcdprintnum
+
+! mov calc32a+3,calc32c+3       'Akkumulator calc32a nicht verändern
+! mov calc32a+2,calc32c+2
+! mov calc32a+1,calc32c+1
+! mov calc32a  ,calc32c
+
+! brclr OMAX_fPrintHex,OMAX_oscnfg,print32_1  'für HEX-Ausgabe
+! ldx #16
+! bra print32_4
+#print32_1
+! brclr OMAX_fPrintSpc,OMAX_oscnfg,print32_2  'für SPACE vor dezimalem PRINT
+! lda #" "
+! jsr OMAX_putSCIorLCD
+#print32_2
+! brclr #7,calc32c,print32_3
+! lda #"-"
+! jsr OMAX_putSCIorLCD
+! com calc32c             'Zahl negieren, falls negativ
+! com calc32c+1
+! com calc32c+2
+! neg calc32c+3
+! blo print32_3
+! inc calc32c+2
+! bne print32_3
+! inc calc32c+1
+! bne print32_3
+! inc calc32c
+#print32_3
+! ldx #10
+#print32_4
+! clr OSTEMP
+#print32_5
+! inc OSTEMP
+! clrh
+! lda calc32c
+! div               'Division 32-Bit durch 8-Bit
+! sta calc32c
+! lda calc32c+1
+! div
+! sta calc32c+1
+! lda calc32c+2
+! div
+! sta calc32c+2
+! lda calc32c+3
+! div
+! sta calc32c+3
+! pushh
+! ora calc32c+2
+! ora calc32c+1
+! ora calc32c
+! bne print32_5
+! cbeqx #10,print32_6
+! brclr #3,OSTEMP,print32_5
+#print32_6
+! popa
+! add #"0"
+! cmp #"9"
+! bls print32_7
+! add #$27        ' Erweiterung fuer hexadezimale Ausgabe
+#print32_7
+! jsr OMAX_putSCIorLCD
+! dbnz OSTEMP,print32_6
+! rts
+
+END PROC
+
+
+' Rechenstack auf der Seriellen Schnittstelle ausgeben
+' Der Stackzeiger enthält eine Adresse im RAM und steht auf dem nächsten zu
+' lesenden Wert. High-Byte zuerst. Low-Word zuerst.
+
+' PROC debug INLASM
+' ! lda CSTKPTR
+' ! jsr OMAX_putSCI
+' ! ldhx #&h0098
+' #debug_1
+' ! lda ,x
+' ! jsr OMAX_putSCI
+' ! aix #1
+' ! cmphx #&h00a8
+' ! bne debug_1
+' ! rts
+' END PROC
+
+
+' Einen 32-Bit-Wert auf den Rechenstack pushen.
+' Übergabe als High- und Low-Word.
+
+PROC push32(highword,lowword) INLASM
+! jmp calc32_shrinklongs2words
+END PROC
+
+
+#iiar_URTok_ende           'hier hinter folgt die nächste IIAR
+                           '(sofern vorhanden)
+
+' --- Ende der Erweiterung ---------------------------------------------------

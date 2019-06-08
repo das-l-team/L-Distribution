@@ -1,0 +1,12 @@
+**************************************************************
+*           AVR-Brenner - FUSE-Bit Sicherungskopie           *
+**************************************************************
+
+>>> Erstellt für ATTINY26 am 29.09.2009 um 22:13 Uhr <<<
+
+Lock-Fuse = 11111111
+Extended-Fuse =
+High-Fuse = 11110111
+Low-Fuse = 11011111
+
+Einstellung für PWM-Netzteil... Externer 16MHz Quarz (mit PWM Frequenz Erhöhung)

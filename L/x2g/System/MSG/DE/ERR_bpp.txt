@@ -1,0 +1,5 @@
+[ Kompiliervorgang war nicht erfolgreich ]
+
+--> Bitte die Meldungen in der Ausgabekonsole hinzuziehen.
+    
+    Die Ausgabekonsole kann mit Umschalt+Strg+O ein- bzw. ausgeblendet werden.

@@ -1,0 +1,979 @@
+
+ConTEXT - WHAT'S NEW
+~~~~~~~~~~~~~~~~~~~~
+
+
+legend:    ! bug fix
+           + added feature
+           * changed
+
+-------------------------------------------------------------------------------
+
+
+v0.98.5    + Added translation to Indonesian.
+           + Updated translation to Magyar.
+           ! Help/Contents command didn't work.
+           ! Fixed shortcuts problem when file/favorites/history panel is open.
+
+v0.98.4    + Selection size in status bar.
+           + Updated French, Swedish, Hungarian, Norwegian, Polish and Turkish
+             translation.
+           + Added British English translation.
+           * Added PHP5 class keywords in PHP highlighter.
+           ! Fixed block unindent delay.
+           ! Project files now supports UNC paths.
+           ! Fixed color defaults for internal highlighters.
+
+v0.98.3    + Esc key closes search results / output console window.
+           + "Convert tabs to spaces" and "Convert spaces to tabs" commands.
+           + "Remove comments" command.
+           + Enhanced home and end key positioning in wrapped line.
+           * Removed "Alternate file load method" option.
+           * Faster ConTEXT start when favorites or history panel visible.
+           * Different system tray icons for various Windows versions.
+           * After replace text command find next is executed.
+           * Somewhat wider file compare form.
+           * Much faster file explorer with special locations such as
+             My Computer, Network Places, Desktop etc.
+           * "Remove trailing spaces" command now works with selection, if
+             available.
+           * "Remove trailing spaces" command can be undoed now.
+           ! Auto block unindent caused invalid cursor position when editing
+             line with end block marker longer than one char.
+           ! Auto block indent incorrect positioning in certain cases.
+           ! Invalid multiline strings highlighting in custom highlighters.
+           ! Empty file tabs visible if multiline tabs off and no files open.
+           ! Tab chars in find window.
+           ! Tab chars in file compare window.
+           ! Block autounindent broken when tab used and cursor after EOL off.
+           ! File open in wrong directory if no path in file name.
+           ! Paste from clipboard to incremental search field caused paste to
+             editor.
+           ! Language change message when using keyboard with language
+             combobox.
+           ! Newly created files now can be automatically saved and executed
+             with user tools.
+           ! Access violation when file compare window active, editing
+             file is closed and recompared.
+           ! Editing position restoring was incorrect when word wrap active.
+           ! "Change to file directory" icon enabled/disabled update.
+
+v0.98.2    + XP icons.
+           + "Revert to saved" and "Revert to backup" commands.
+           + Updated German, Hungarian, Italian, Polish, Czesh and Finnish
+             translations.
+           * Minor changes to ReplaceNotepad.exe.
+           ! Main window update when changing focus to other editing file.
+           ! Code template insert window positioning.
+           ! After code template insert cancel, text block remains selected.
+           ! ConTEXT system tray icon was 4-bit instead 8-bit.
+           ! Error loading existing file from command line when editing file
+             is deleted.
+           ! Message box pops out when 'v' is pressed in incremental search
+             field.
+           ! Search results window update.
+           ! Search result window horizontal scrollbar wasn't visible.
+           ! "Wordwrap by default" wasn't working for new created documents.
+
+v0.98.1    + "Change to File Directory" command in file explorer.
+           + "Show wordwrap glyph" and "Wordwrap by default" environment
+             options.
+           * Highlighter select toolbar combobox now displays 16 items.
+           * Changed output console capture routine to filter 0x0D 0x0D 0x0A as
+             the EOL which produces HTML Tidy output.
+           * Relative paths in project files.
+           * Incremental search now remembers last search string.
+           ! BlockEndStr wasn't read from custom highlighter file.
+           ! Click on gutter wasn't selecting proper line if wordwrap turned on.
+           ! Fixed files tab display, handling and dragging.
+           ! When ConTEXT is minimized, other instance wasn't able to open file.
+           ! Fix blank characters being "eaten" at EOL if wordwrap is enabled.
+           ! Show hint in project list toolbar buttons.
+           ! Unable to set new added file from disk to project as make file
+             until project is reloaded.
+           ! Terminate button in output console didn't work.
+           ! Occasional AV when closing Increment search panel.
+
+v0.98.0    + Incremental search with text emphasizing.
+           + Ruler.
+           + Added WinXP program icons.
+           + "Change to File Directory" command which changes current directory
+             in open file dialog.
+           + "Pause after execution" and "Idle priority" in Execute keys.
+           * Increased undo/redo buffer.
+           * Changed column block paste functionality to move caret to the next
+             line.
+           * Find text history is now case-sensitive.
+           ! Output console window was always showing.
+           ! File delete bug when network connection is lost.
+           ! File panel vanish if floating and focus switched to other editing
+             file.
+           ! If "stay on top" option checked, code template insert list wasn't
+             visible.
+           ! Access violation in certain circumstances when reloading modified file.
+           ! "Replace all" on selected block ignored selection.
+           ! Hard tabs width when printing was always 8 chars.
+           ! Background color preview didn't work properly on WinXP.
+           ! Code block end marker unindenting.
+           ! Removed autocomplete in find/replace dialog.
+           ! Fixed main menu and toolbar align.
+           ! Main toolbar visibility issues.
+           ! Code template insert now filters list depending on word under caret.
+           ! Custom highlighter: incorrect block comments highlighting when line
+             comment is null size or undefined.
+           ! Fixed block autoindent/unindent. All block autoformats supported.
+           ! "Error create directory" when saving file if default backup directory
+             used (introduced in v0.98.0RC1).
+
+v0.98.0RC1 + Text wordwrap.
+           + Significant interface changes.
+           + Internal CSS highlighter.
+           + Copy filename to clipboard.
+           + Moveable file tabs.
+           + Option to close file tab with shift+click.
+           + Text statistics.
+           * It can be defined ANY type of file as highlighter-specific
+             user help.
+           * Updated many internal highlighters.
+           ! No empty line is added at the end of the line.
+           ! ConTEXT freezes if block-fill string is empty.
+           ! Main toolbar visibility (show/hide) now works fine.
+           ! File explorer window initial size.
+           ! Duplicate entries in file explorer.
+           ! Editing file may be deleted when renaming file under specific
+             circumstances.
+
+v0.97.6    + Translation to Afrikaans.
+           + Updated translation to Czech.
+           + Updated translation to German.
+           + Updated translation to Magyar.
+           + Updated translation to Finnish.
+           + Updated translation to Estonian.
+           + When "Smart tabs" option checked, smart tab delete is performed.
+           ! Few perl highlighter issues fixed.
+           ! Comment highlighting using custom highlighters with
+             print/print preview.
+           ! Inability to open locked files.
+           ! Custom highlighter: BlockCommentBeg and BlockCommentEnd
+             upper/lowercase issues.
+           ! Removed unused "Code Explorer" item from main menu.
+           ! Block autoindent was inserting hard tab even hard tabs disabled.
+
+v0.97.5    ! Fixed toolbar appearance with XP Silver theme.
+           ! Fixed Close button transparency in Print Preview on WinXP.
+           ! File compare didn't work with new created files.
+           ! Extra character when loading unicode files.
+           ! Fixed Tcl/Tk highlighter comments.
+
+v0.97.4    + File compare command (Tools / Compare).
+           + Updated internal highlighters: HTML, SQL, PHP, Python.
+           * Changed ConTEXT support e-mail address to context@fixedsys.com.
+           ! Compressed icon resources by mistake.
+           ! Access violation when using regexp in more than one editing file.
+           ! Regexp initialization when replacing text.
+           ! Bug when saving macros resulting error: "'(' expected" when
+             starting ConTEXT.
+           ! Font attributes were incorrectly interpreted for keyword4 and
+             keyword5 sections.
+           ! Tab control access error when opening many files in some
+             circumstances.
+           ! Case sensitive search flag internally remain set even checkbox
+             unchecked.
+           ! "Append File" and "Insert File" commands always converted tabs to
+             spaces.
+           ! Incorrect tabs in File Compare Results dialog.
+           ! GDI leak in file explorer.
+           ! Unfunctional file explorer filter.
+
+v0.97.3    + Keyword group count increased to 5 in custom highlighters.
+           + Regular expressions in search/replace.
+           ! Resource leak in Windows 9x.
+           ! Nasty bug: file will be deleted if already open from other
+             application in read-deny mode.
+           ! Incorrectly detected unicode file when readonly.
+           ! Minor tweaks.
+
+v0.97.2a   + Updated translation to Turkish.
+           + Updated translation to Hungarian.
+           ! Access denied opening read-only files.
+           ! Problem when typing first char in a new file.
+           ! Select all command in columnar mode now selects the whole text.
+           ! Invalid matched braces background color.
+           ! Minor cosmetic changes.
+
+v0.97.2    + "Tab Indent" option.
+           + InnoSetup Script highlighter.
+           + Translation to Catalan.
+           * Tab/Shift+Tab indents/unindents selected block again.
+           * Directory selection combobox changed to toolbar button.
+           * Backspace doesn't erases all spaces and tabs at the end of the
+             line anymore.
+           ! Multiline string highlighting in custom highlighters.
+           ! Various indent/outdent issues.
+           ! "Trim Trailing Spaces" setting wasn't saved to registry.
+           ! When clicking with mouse past the end of line, the cursor remains
+             there, instead of going to the last char of the line if
+             not "Allow cursor after end of line" checked.
+           ! ConExec problems with batch files.
+           ! "MatchedBracesCol" color attribute wasn't saved in custom
+             highlighter file.
+           ! Line selection when clicking between gutter and first character.
+           ! The enhanced home-key positioning wasn't work with hard tabs.
+           ! Garbage at the end of the line when custom highlighter active and
+             EscapeChar at the end of the line.
+           ! Moving items up or down in project files or favorites panel
+             doesn't scroll when reaching the top/bottom.
+           ! When project is created, Project panel isn't visible until it is
+             reopen.
+           ! Better backspace logic.
+           ! Editing file was deleted if opened in other program which locks
+             file for reading.
+           ! ConTEXT command excluded from Explorer shell menu which solves
+             problem with MS Office 2000 application toolbar. (Send to -> ConTEXT
+             command still exists).
+           ! When ConTEXT is minimized, file is modified by other application and
+             ConTEXT gains focus, only file reload dialog appears without
+             restoring ConTEXT.
+           ! Windows XP compatibility issues.
+
+v0.97.1    + Insert Time Stamp menu command.
+           + Show special characters menu command.
+           + Automatic horizontal scrollbar resizing.
+           + Possibility to overwrite read-only file when saving.
+           + "OEM Charset" menu command. For now, OEM charset is set default
+             to Terminal 14.
+           * Various highlighter changes.
+           ! Text files print preview AV.
+           ! "Show Path" pop-up menu in favorites window wasn't working.
+           ! Left mouse click on gutter selects line.
+           ! Fixed some Unicode issues.
+           ! New version of ConExec, fixed problems with WinNT4 and NAV.
+
+v0.97.0RC2 + Matched braces highlighting (new attribute in environment
+             options). Note: some previously defined colors may be messed, so
+             you'll have to define it again.
+           + Buttons "Add current" and "Add all files" to favorites.
+           ! BlockCommendEnd bug introduced in v0.97.0RC1.
+           ! AV when using ctrl+left and previous line is empty.
+           ! XML highlighter: syntax highlighting after DOCTYPE tag.
+           ! Exiting ConTEXT was slow.
+           ! File explorer file sorting when month in system short date is set
+             to MMMM.
+           ! AV when dragging selected text.
+           ! Editor scrolling when dragging selected text.
+           ! Python highlighter now supports multiline strings.
+           ! StringBegChar and StringEndChar custom highlighter directives
+             defines a pair of chars.
+           ! Mouse click + shift makes block selection.
+
+v0.97.0RC1 + New File panel, integrated File explorer, Favorites list, History
+             list and Project manager.
+           + Added Foxpro highlighter again.
+           + Option what to do when ConTEXT starts: Nothing, Create blank file
+             or open last file / project.
+           + Support for project make files.
+           + "Open All Files" and "Close All Files" commands added to Project
+             menu.
+           + "Scroll console to the last line" execute option.
+           + "Block autoindent", "Block begin" and "Block end" highlighter
+             options for block autoindenting with any highlighter active.
+           + "Group undo" option.
+           + More than one string begin and end character in custom
+             highlighters supported (StringBegChar and StringEndChar).
+           + Wrappable main toolbar.
+           * Changes in Fortran highlighter: Comment char 'C' is now recognized
+             as comment both upper and lowercase; Added keywords: implicit,
+             double, precision, close, rewind; D-scaling (as in 1.0d0) now
+             handled correctly; Dotted relations now are recognized as keywords.
+           * Jumping to bookmarked line now centers it.
+           * Hourglass cursor appears when lenghty operation ocurre.
+           * Files open in editor appears as bold in Manage project files
+             dialog.
+           * When ConTEXT is closing and file is modified, file gets focused.
+           * When Save All command is executed, unnamed files gets focused.
+           * Ctrl+W is now shortcut for "Close file" command.
+           * Default new empty file is closed when file is open if it isn't
+             modified.
+           * File history list expanded to 30 entries.
+           * Removed /prj switch. ConTEXT now autodetects if file is project
+             file.
+           * Updated ampersand highlighting in HTML highlighter.
+           ! "List index out of bounds" error message when opening file
+             associated with "Open With..." shell command.
+           ! First character in every line was truncated if file format is Mac.
+           ! File in Unix format wasn't possible to save in DOS format.
+           ! Click on gutter now selects line.
+           ! Renamed default templates so they can be used with ConTEXT.
+           ! Code template shortcut name validity check.
+           ! Translation for some controls.
+           ! Tab characters are expanded to spaces in output console window.
+           ! Customized file extension types weren't saved to .chl file.
+           ! Java highlighter: /**/ isn't highligted as documentation begin.
+           ! Opening nonexistant file doesn't shows blank editor window
+             anymore.
+           ! Dragging editor right margin updates in all open files.
+           ! Bookmarks are now saved in project file.
+           ! Bookmarks and positions are saved even file isn't changed.
+           ! Compatibilty with Windows XP.
+
+v0.96.3    + "Override foreground text colors" option when current line
+             highlighting active (restart ConTEXT when checked to apply
+             changes, don't ask why :).
+           + Gutter font setting.
+           + Right edge (text wrap position) moving with mouse.
+           + Translation to Esperanto (thanks to Fausto Gonçalves Cintra).
+           ! Undefined highlighter when opening file without extension. Leads
+             to various access violation errors.
+           ! Up to 100% faster huge files loading! See help on "Alternate file
+             load method".
+           ! Strange bug with Open file dialog when invalid path is entered.
+           ! Invalid Java/C '{' indenting if "Alow cursor after end of line"
+             not checked.
+           ! ',' was incorrectly highlighted in Java highlighter as invalid
+             symbol.
+           ! Tcl/Tk block comment now uses '#' character.
+           ! Rewritten comment/uncomment code. Fixed lots of bugs.
+           ! Replace all didn't work if column selection mode active and no
+             text selected.
+           ! Smarter cursor positioning when "replace all" command invoked,
+             together with selection expanding.
+           ! Removed file tabs flicker when switching focus back to ConTEXT.
+           ! "setInterval" method added to JavaScript highlighter.
+           ! When new project was created, it didn't appear in "Recent
+             projects" list until it's opened.
+           ! When performing case change with no text selected, the undo
+             information wasn't updated.
+           ! Wordwrap state is now written in registry when exiting ConTEXT.
+
+v0.96.2a   + New user exec parameter: %P (see help file!).
+           ! Extra 0x00 at the end of the file when saving in Unix or Mac
+             format.
+           ! Bug in search previous command.
+           ! Current highlighter doesn't change anymore if file extension is
+             same as before Save As command.
+
+v0.96.2    + Help file.
+           + Unicode format support.
+           + Scroll bars are now hidden if text fits in edit area.
+           * Scroll hint displays first and last line.
+           * Faster enable/disable toolbar buttons.
+           ! Improved error line positioning logic.
+           ! Space in extension if custom highlighter section "Filter" has
+             space.
+           ! Fixes in word wrap functions when printing.
+           ! Improved Windows Commander F4 compatibility.
+           ! Code templates dialog didn't remember changes if more than one
+             shortcut edited.
+           ! "Go to line" dialog now remembers last jump position.
+           ! Find/replace dialog now better handles history list.
+           ! Faster selection when mouse is out of editor window.
+
+v0.96.1a   ! Nasty bug preventing opening files from command line.
+
+v0.96.1    + "Lock File For Changes" menu command to display file in view-only
+             mode.
+           + "Copy To" file menu command to copy current editing file to the
+             new file without renaming it in editor.
+           + Command line options: /g (go to line), /m (run macro), /r
+             (open file in view-only mode), /p (print file), /i (open list of
+             files), /s (save file), /c (close file), /e (exit ConTEXT). See
+             help file for more info about it.
+           + Command line wildcards.
+           + New user exec parameters: %e (file extension), %l (current line
+             number), %c (current column number) and %w (word under cursor).
+           + Default new document highlighter and file format.
+           + Last highlighter used is remembered for each file together
+             with cursor position (ConTEXT Positions.ini).
+           ! Removed limit of max. 255 chars in file names when using "Send to
+             ConTEXT" shell command and ConTEXT instance already running.
+           ! Problem with '\' character in macros.
+           ! Execute keys: "Start In" now works correctly for captured
+             execution.
+           ! ConTEXT fail to start if there is more than 16 external
+             highlighters.
+           ! ConTEXT fails to insert the code from template if there is any
+             text in front of the insertion point.
+           ! In some circumstances, output console window gets zero pixels
+             height.
+           ! System tray icon tooltip has wrong caption when ConTEXT is
+             automatically minimized to tray if no files open.
+           ! External highlighters color settings weren't remembered after
+             exiting ConTEXT.
+           ! "Highlight current line" option wasn't working properly.
+           ! Search and replace: If manually replaced the first few
+             occurrences, "Replace All" doesn't not replace currently
+             highlighted occurrence.
+           ! Search and replace: Replace history wasn't properly restored from
+             registry.
+           ! Find next/previous direction change is more logical.
+           ! Search and replace: If '&' char present in find or replaces
+             strings, underlined char will appear.
+           ! XML highlighter: syntax highlighting after DOCTYPE tag.
+           ! Print preview and printing freezes if misspelled header or footer
+             macros in page setup dialog.
+
+v0.96.0    + Enhanced installation with optional automatic Notepad.exe
+             replacement utility.
+           + Multithreaded user execution.
+           + Terminate user execution button - only Windows NT/2000.
+           ! Setting font in print setup wasn't work properly.
+           ! Various multilanguage issues.
+           ! Short file names in Project / Recent Projects list.
+           ! Added HTML help files filter (*.chm) in Environment Options /
+             Help files.
+           ! Code template inserting now scans token until non-alphanumeric
+             character found.
+           ! Garbage in text if EscapeChar inserted at the end of the line.
+           ! C/C++ highlighter: \ at the end of the line continues multi-line
+             string highlighting.
+           ! "Close all open files?" dialog disabled when closing project and
+             no project files open.
+           ! Line numbers digit count in gutter automatically adjusted.
+
+v0.95.99   + Project workspaces.
+           + Rewritted document printing functions. Color printing supported.
+           + Fortran highlighter.
+           + Save mode option when executing user keys: current file, all open
+             files and nothing.
+           + CustomHighlighters.ini divided into separate files in
+             Highlighters\ directory. CustomHighlighters.ini is not processed
+             any more!
+           + Custom highlighters: added sections: EscapeChar, IdentifierBegChars.
+           + Possibility to define *.chm file as custom help file. Automatic
+             jumping to topic with keyword under cursor not supported yet.
+           + "Toggle Selection Mode" menu command.
+           ! Custom highlighter files were incorrectly interpreted if tabs
+             found in it.
+           ! Fixed replacement for Notepad.exe to correctly open file if
+             "ConTEXT" subdirectory exists where file is opening.
+           ! Access violation when Shift+Tab pressed and previous line is
+             empty.
+           ! More intelligent cursor positioning when find next/previous
+             command performed.
+           ! Code template names if language name has invalid char for file
+             name (for example, Tcl/Tk).
+           ! Underline char ('_') added to HTML highlighter identifier chars,
+             so double clicking word containing '_' selects whole word.
+           ! Strange issues on Windows NT with file extensions when using
+             "Save As" dialog. (thanks to Arno van Amersfoort for coding)
+           ! Open and save dialog file filters now include customized file
+             extensions.
+           ! Text deselected before jumping to bookmark.
+           ! HTML exporter: all special and international characters are now
+             correctly convering to metacharacters.
+           ! Right clicking in editor doesn't move cursor any more.
+
+v0.95.4b5  + XML syntax highlighter.
+           + C# custom syntax highlighter in CustomHighlightersSample.ini.
+           + Clipper custom syntax highlighter in CustomHighlightersSample.ini.
+           + ConTEXT registers itself as HTML editor so it appears in Internet
+             Explorer list of HTML editors.
+           * Rewritten perl highlighter and optimized for speed.
+           * Removed FoxPro highlighter.
+           ! Various user execute issues. New ConExec.exe provided by Arno van
+             Amersfoort (thanks!).
+           ! When file name has no extension and using "Save As" dialog, last
+             character from file name is truncated.
+           ! When '&' character in file name in file tabs or in
+             "String not found box", it will be shown as underscored next char
+             as shortcut.
+           ! Minor issues in RTF exporter.
+
+v0.95.4b4  * When file renamed, or doesn't exists when opening, it is removed
+             from "Recently Files" list.
+           * When opening file that doesn't exists from command line and
+             ConTEXT is already open, file is created without error dialog.
+           ! When using "Save As" or "Rename" command with files in Unix and Mac
+             format, file could be lost.
+           ! Short DOS file name is expanded to long when opening in ConTEXT.
+           ! Output console now correctly displays compiler output lines ending
+             with 0x0A char.
+
+v0.95.4b3  ! Custom highlighters weren't listed properly in Open and Save file
+             dialogs.
+           ! More intelligent changing file types in "Save As" dialog.
+           ! Custom highlighter language names didn't appear in
+             "Customize Types" and "Save As" dialog.
+
+v0.95.4b2  + Added keyword group "KeyWords3" to custom highlighter.
+           + "Replace original extension with .BAK" option.
+           ! Incorrect file tabs width when creating new file.
+           ! File icon didn't show in file tabs in some cases.
+           ! File tabs visibility wasn't restored after restarting ConTEXT.
+           ! Custom highlighter collision between LineComment and
+             BlockCommentBeg if beginning with same character.
+           ! "Error opening file" message when opening file of size 0.
+
+v0.95.4    + Compiler output parser for positioning on error line. Use double
+             click on error line in output console window or "Jump to error
+             line" pop-up menu command.
+           + Code template list when inserting template to code.
+           + Custom highlighters:
+               - LineComment, BlockCommentBeg and BlockCommentEnd keywords to
+                 define comment blocks more flexible
+               - StringBegChar, StringEndChar and MultilineStrings keywords to
+                 define strings more flexible
+              See CustomHighlightersSample.ini as example.
+           + "Shell execute" command in Tools menu which executes current file
+             in associated application.
+           + "popa" instruction added to x86asm highlighter.
+           + C/Java-style block { .. } autoindent/unindent for PHP and Perl
+             highlighters.
+           + Click on gutter selects current line.
+           + '%s' user exec parameter to insert "Start in" directory.
+           + Rewritten Find/Replace functions. Now it's possible to record
+             find commands in macros without popping Find dialog.
+           + Replace in selected text.
+           + "Remember Find/Replace dialog options" option.
+           + Horizontal scrollbar in Output console and Find in all files
+             list box.
+           + Folders can be added to File browser favorites.
+           + Keeping cursor Y position when moving vertically if "Allow
+             cursor after end of line" option is off.
+           + "Multiline file tabs" option to se file tabs as single or
+             multiline.
+           * Active file tab now changes font style to bold.
+           * When selecting the colors for syntax highlighting the font used in
+             the preview is that selected for use in the editor.
+           * Rewritten edit position storing. As result, ConTEXT loads faster
+             and problems with huge .ini files are eliminated.
+           * Changed those stupid 1/2/3/4 icons in toolbar with more stupider
+             icons :)
+           * If compiler output line contains only CR at the end of the line,
+             it wouldn't be shown anymore. Borland uses CR to display compilation
+             progress.
+           ! When canceling Rename File command, editing file was deleted!
+           ! "Out of resources" error under certain circumstances when File
+             browser active and exiting ConTEXT.
+           ! Right click on file tab selects file before pop-up menu is shown.
+           ! Finally, user exec works as it should.
+           ! Manage macros dialog caused problems with macros that have find
+             commands.
+           ! Problem with focusing ConTEXT when restored from system tray.
+           ! Error opening more than one file with "Send to ConTEXT" shell
+             command when ConTEXT is started.
+           ! Problems with focusing previously active window when exiting
+             ConTEXT and stay on top turned on.
+           ! Fixed file tabs order mixing.
+           ! Reduced flickering when switching between files, opening large
+             number of files with "Send to" shell command, closing all files
+             etc...
+           ! Last directory used wasn't remembered if more than one file opened
+             in open dialog.
+
+v0.95.3a   + Popup menu in Console output window and Search results window
+             with "Copy contents to clipboard", "Clear" and "Hide" commands.
+           + "Visible file tabs icons" option.
+           ! User exec: Command was incorrectly interpreted when space is
+             present in command.
+           ! User exec: Start directory was incorrectly interpreted.
+           ! When "Detect file changes by other application" option is checked
+             and focusing ConTEXT by clicking on scrollbar, unpredictable
+             selection ocure and scrollbar sometimes get messed.
+           ! ConTEXT freezes when reformatting paragraph which contains word
+             larger than right margin.
+           ! Under certain circumstances File explorer visibility wasn't
+             correctly saved to registry.
+           ! Access violation when closing ConTEXT with _many_ files open and
+             File explorer visible.
+           ! Incorrect selecting files when clicking in File browser and
+             Small icons view is selected.
+
+v0.95.3    + Added translation to Polish (thanks to Piotr Murawski).
+           + "CaseSensitive" option to CustomHighlighter.ini.
+           + User exec: it's possible to assign % variables to "Execute" and
+             "Start in" fields.
+           + "Minimize to system tray environment" option.
+           + Bookmarked line now appears in "View/Jump to bookmark" menu.
+           + Macro recorder now supports find command.
+           + Added file icons to file tabs.
+           + Added file icons to favorites list in file explorer.
+           * Default file type in Open and Save dialogs is the type of
+             currently editing file.
+           * When print preview window is resized, document preview is
+             repainted to maintain proportions.
+           * Updated all language files for missing keys.
+           * Window menu now shows full path to files.
+           * User exec optional parameter changed from "?" to "%?"!
+           ! Floating point exception when print preview window is resized to
+             zero width and height.
+           ! Begining of some lines truncated if file is mixed format DOS/Mac.
+           ! PHP highlighter bug: "\\" string was incorrectly highlighted.
+           ! Find dialog: fixed search from the top of the file.
+           ! Last directory used will not remembered if it is floppy drive.
+           ! Macro recorder failed loading macro file when ecString command
+             contains double quote character.
+           ! Open and Save dialogs now include custom defined file types.
+           ! User exec optional parameter input dialog remembers last input.
+
+v0.95.2c   + Added translation to Dutch (thanks to Arno Verhoeven).
+           + "Allow multiple instances" option.
+           + "Rename File" menu command.
+           + When saving file, bookmarks are saved together with last cursor
+             position.
+           + "Stay on top" menu command and toolbar button.
+           * User exec hints appears as menu items in Tools menu instead
+             "User Command #".
+           ! When doubleclicked in file explorer whitespace area, access
+             violation error ocurs.
+           ! When word wrapping is toggled and more than one file is opened,
+             cursor disappears.
+           ! Fixed "Case sensitive" checkbox shortcut in Find/replace dialog.
+           ! JavaScript highlighter: "\"" is now properly highlighted.
+
+v0.95.2b   + HelpFile definition added to CustomHighlighter.ini.
+           + Added translation to Slovakian (thanks to Marek Smolik).
+           + Added translation to Chineese (thanks to afi).
+           ! Exception error occurs when more than one custom highlighter is
+             defined.
+           ! If backup file is readonly, it will be overwritten without
+             reporting any error.
+
+v0.95.2a   ! Under specific circumstances code template wasn't updated
+             properly until reopening project or editing file.
+
+v0.95.2    + Code templates! See ReadMe.txt for details.
+           + For each file type can be defined help file which will be invoked
+             when user press F1. Help file will try to find keyword under
+             cursor.
+           + Commenting/uncommenting code block with Ctrl+Shift+C.
+           + Selecting text in braces with Ctrl+Shift+M: Same as match brace
+             (Ctrl+M) but text in braces is selected.
+           + When marking block with mouse, holding Alt key switches to
+             columnar selection mode.
+           + Printing selected text only.
+           + Printing line numbers.
+           + Added option "Show user exec completition dialog" to show dialog
+             afer execution is finished.
+           + Added option "Remember last directory used".
+           + ConTEXT now saves Search Results and Console Output dimensions.
+           + List of all supported file types in SaveAs dialog.
+           + Updated JavaScript highlighter with couple of keywords.
+           + Updated SQL highlighter with couple of keywords.
+           * Highlight current line option is unchecked by default.
+           * Find dialog remembers origin after closing.
+           ! Finally fixed all icons. If you've got ConTEXT already installed,
+             rebuild icon cache to fix icons.
+           ! Left locked files saved in UNIX and MAC on network drive. Some
+             users reported that saved file had zero size on local drive.
+           ! Trimming trailing spaces now works how it should work.
+           ! Tons of minor internal bugfixes.
+
+v0.95.1a   ! When opening existing file with size 0, it will be saved in UNIX
+             format.
+           ! Automatic outdent with C/Java files was incorrect when "Allow
+             caret after EOL" is unchecked.
+           ! Execute keys: If "Use short DOS names" is checked and file name
+             is already short, execution error will ocure.
+           ! Wordwrap button stays down if word wrapping active.
+
+v0.95.1    + Translation to Hungarian (thanks to Akos Keresztes)
+           + Translation to Galician (thanks to Antón Méixome)
+           + Translation to French (thanks to adrahon@ifrance.com)
+           + Translation to Estonian (thanks to Ain Vagula)
+           + File explorer with favorites list
+           + Wordwrap toolbar button and menu option
+           + "Trim trailing spaces" option
+           + "Use short DOS names" option for execute keys.
+           * Removed "Right edge visible" option
+           * Added '$', '#', '{' and '}' to separators
+           * Execute keys: Quotes automatically added in parameters %n %f %p
+             when using long file names.
+           * Execute keys: when "Start in" left blank, default directory is
+             directory where editing file is located.
+           * Replace button in Find/Replace dialog finds next string occurence
+             after replacing.
+           * Export to HTML now sets default font size instead size 3.
+           ! Minor undo/redo issues.
+           ! File size wasn't displayed if file is read only.
+           ! File types list associated to ConTEXT wasn't complete.
+           ! Fixed tabs->spaces and space->tabs conversion issues.
+           ! Extra junk character in comments added when unix-style (#)
+             comments are defined in custom highlighter.
+           ! ConTEXT instance was unable to open files containing relative path.
+           ! When opening files, checking whether file is opened or not is now
+             case insensitive.
+           ! "Backup file on save" remains checked when unchecked and current
+             directory is used.
+
+v0.95.0b   + Custom highlighter: NumConstBegChars which defines with which
+             character numerical constant can begin.
+           + Custom highlighter: NumConstChars which defines numerical constant
+             characters.
+           ! Custom highlighter: CurrLineHighlighted now works.
+
+v0.95.0a   + Translation to Spanish.
+           * C/Java-style blocking now supporting "other" indentation style.
+
+v0.95.0    + Custom syntax highlighter (beta version, not fully featured yet).
+           + Tcl/Tk highlighter.
+           + C/Java-style block { .. } autoindent/unindent option.
+           ! Fixed some translations.
+
+v0.94.3    + "Manage macros" dialog where user can rename, remap to other key
+             or enable/disable macros.
+           + ConTEXT has now icon in "Send To" shell menu.
+           + PHP highlighter.
+           + "Default SQL dialect" option (Options/Misc) to select between:
+             Standard, Interbase6, MSSQL7, Oracle and Sybase SQL highlighting.
+           + Highlighters combo in toolbar.
+           + Toolbar icons are now enabled/disabled, depending of their
+             availability.
+           * Find dialog now remember last search string.
+           * Removed dialog to select macros to save.
+           * Changed default background colors of all highlighters to clWindow.
+           * Changing text format (DOS/UNIX/MAC) sets modified flag.
+           ! Bug in search engine: string not found if columnar selection mode
+             is active.
+           ! Macro shortcut deleted when called from "Play macro" dialog.
+           ! Hexadecimal numbers were incorrectly highlighted in assembler
+             highlighter.
+           ! SQL highlighter crashes ConTEXT if '\' is typed.
+
+v0.94.2    + "Go To Line" menu command.
+           + "Save macros at exit" option.
+           + "Hide mouse cursor when typing" option.
+           * Save As dialog sets current extension as default.
+           ! ConEXEC.exe was damaged and it wasn't valid executable file, so
+             error was reported when executing external programs.
+           ! Bug in C/C++ highlighter engine: in some cases commented block
+             wasn't highlighted properly.
+           ! Incorrect console output font setting when opening ConTEXT.
+
+v0.94.1    ! Fixed bug in extension recognition engine.
+
+v0.94.0    + Export to HTML and RTF.
+           + Python syntax highlighter.
+           + Backup directory option.
+           + Files can be dragged from Explorer to ConTEXT when no file is
+             open.
+           + Remove trailing spaces menu command.
+           + ReadOnly indicator.
+           + Translation to Brazilian Portuguese (thanks to Fabio Band).
+           + Create new file when ConTEXT opens without file name option.
+           + Notepad.exe has some icon now.
+           * Max number of characters per line increased to 4096.
+           * Recent files count increased to 12.
+           * There's no need to have Edres.dll anymore - you can freely delete
+             it if it's present from previous installation.
+           ! Status bar wasn't cleared when last file is closed.
+           ! Incorrect syntax highlighting text attributes handling in options
+             dialog.
+           ! Access violation error when file opened in ConTEXT is deleted from
+             disk.
+           ! Access violation error when using find in multiple files.
+           ! Removed some flicker when starting ConTEXT.
+           ! Removed language change flicker when starting ConTEXT.
+
+v0.93.3    * Updated translation to Russian.
+           ! Serious bug when saving files containing tabs.
+
+v0.93.2    + Setting output console font.
+           ! Better handling file names when calling ConTEXT from command line.
+           ! If file from command line doesn't exist, it will be created.
+           ! Messed up cursor shapes strings in options dialog.
+           ! Removed window border when maximize ConTEXT.
+
+v0.93.1    ! Finally fixed runtime error when exiting ConTEXT.
+           ! C++ highlighter: character '\\' caused the rest of line to be
+             highlighted as string.
+
+v0.93.0    + Hard-tabs support when saving files. Spaces will be converted to
+             tabs if source file has tabs and Tabs save mode is Automatic or
+             Tabs save mode is Force tabs, otherwise, tabs will be expanded to
+             spaces.
+           + Translation to Czech (thanks to Milan Kosina).
+           + Translation to Italian (thanks to Paolo Rossi).
+           + Added .frm to default extensions for Visual Basic highlighter If
+             you already have ConTEXT installed, configuration will not be
+             modified and you'll have to define it manually.
+             (Tools/Set highlighter/Customize types).
+           + Fill selected block command (works only with columnar selection
+             mode).
+           + "Minimize ConTEXT if no files open" option.
+           * Message "Finished." when finished user exec command console
+             capture.
+           * When converting tabs to spaces, ConTEXT uses "Tab width" setting,
+             not default width (8).
+           ! Optimized loading functions resulting in faster files opening.
+           ! C++ highlighter: string "\\" caused the rest of line to be
+             highlighted as string.
+           ! Update user definable button hints after leaving Options dialog.
+           ! When ConTEXT is started and some of dialogs are open, it wasn't
+             able to open other file doubleclicked in Explorer.
+           ! When print preview used system "Message Box" font color as default
+             color. Now this color is overriden and set black as default.
+           ! Changing text case in columnar selected block messed up text.
+           ! Minor cosmetical changes.
+
+v0.92.8    + Translation to Russian (thanks to Ervins Strauhmanis).
+           ! Freezing in C++ highlighter when after directive definition
+             stands '//' comment.
+           ! Some controls resized to correctly display non-english
+             translations.
+           ! Selection mode status panel update.
+
+v0.92.7    + Shortcut for ConTEXT exit (Alt-X).
+           + Translation to Croatian.
+           + Translation to German (thanks to Armin Hoppe).
+           ! Some multilanguage support changes.
+           ! Minor cosmetical changes.
+
+v0.92.6    + Multilanguage support. Now i'm waiting for some translations to be
+             done.
+           + Added .vbs to default extensions for Visual Basic highlighter and
+             .asp to default extensions for HTML highlighter. If you already
+             have ConTEXT installed, configuration will not be modified and
+             you'll have to define it manually (Tools/Set highlighter/Customize
+             types).
+           ! Wrong ConTEXT position remembering when taskbar is on the top of
+             the screen and autohide taskbar option is off.
+           ! Removed long delay when Environment options dialog is about to
+             show caused by registry scanning for file associations.
+           ! Fixed problems with regional settings.
+
+v0.92.5    + "Scroll after end of line" option to enable or disable caret
+             wrapping at the end of line.
+           + "Enhance HomeKey positioning" options to enable or disable caret
+             positioning at first non-blank character in line (Visual Studio
+             alike).
+           * When executing user defined command and "Save editing file before
+             execution" is checked, file is now saved only if it's modified.
+           * More logical file tabs behaivour.
+           ! Problem with showing forms on multiple monitor systems. Now all
+             forms are shown on the monitor where ConTEXT is placed.
+           ! Fixed F12 shortcut conflict (Save as and user command).
+           ! Fixed block indent/outdent behaivour when playing recorded macro.
+
+v0.92.4    + Saving recorded macros to disk and additional macro management in
+             Tools menu.
+           * Increased maximal macro size to 2048 keystrokes.
+
+v0.92.3    * Current line is not highlighted with special color if selection
+             is available.
+           ! When ConTEXT is minimized, opening another file in explorer will
+             only restore ConTEXT, not open selected file.
+           ! Removed default extension ".txt".
+           ! When canceling "Save As" dialog, file is marked as unchanged.
+           ! Changing highlighter for current file doesn't change all properties.
+
+v0.92.2    * Console output window appears only if there is some output.
+           ! User exec commands are now extension case insensitive.
+
+v0.92.1    + "Automatically update changed files" option.
+           ! Access violation error when opening SQL files from command line.
+           ! Preventing multiple 'File is modified by other application'
+             dialogs.
+           ! Strange behaviour when having @@ chars at the beginning of the line
+             of the SQL file.
+           ! "Contol has no parent window." error message when shutting Windows
+             down with ConTEXT open.
+
+v0.92.0    + Show find/replace dialog information option.
+           + Replace in all open files.
+           + Origin setting when in Find/Replace dialog.
+           + Console output window - capturing user executed commands in
+             console mode.
+           ! Large fonts settings problems.
+           ! Troubles displaying file tabs when width exceeds editor width.
+           ! Enabling windows animation after ConTEXT started if it's disabled
+             by default.
+           ! More flicker removed when creating new file and switching between
+             files.
+
+v0.91.5    + Setting temporal syntax highlighter for currently editing file.
+           + Customizing highlighters for specific file types.
+           + 80x86 assembler highlighter.
+           + Current line color setting for every highlighter separately.
+           ! Close All haven't work properly.
+
+v0.91.4    + Macro recorder: added commands Find Next, Find Previous.
+           + Columnar sorting.
+
+v0.91.3    * Blinking indicator when macro is recording.
+           * Overwrite warning in Save As dialog.
+           * Save As dialog has now as default file name currently editing
+             file name.
+           * Default file extension in Save As dialog is "txt".
+           ! Save All button did not save all files.
+           ! When canceling Save As dialog, error message appears.
+
+v0.91.2    + Support for DOS, UNIX and MAC text formats, as well as conversion
+             between formats.
+           + Added icon to Notepad.exe replacement.
+           ! Removed ugly flicker when switching windows.
+           ! Runtime error when trying to printing when no printer driver is
+             installed.
+           ! Printing / page setup / changing measuring units wasn't affect
+             to margin sizes immediately.
+           ! Help was compiled with wrong international settings.
+           ! Rare runtime error when installing ConTEXT.
+
+v0.91.1    + Defining start directory when performing user defined commands.
+           + Macro recorder (beta release, not fully featured).
+           ! Few undo engine bugs.
+
+v0.91.0    + Text printing and print preview capability.
+           + ConTEXT registrates itself in "Application path" registry key when
+             installed.
+           + Original Windows Notepad.exe replacement (more about this can be
+             found in ReadMe.txt).
+           ! ConTEXT freezing in rare situation when one file in editor is
+             changed by other application and other file is opening to edit
+             from explorer.
+           ! Few missing word delimiters added.
+           ! Mouse wheel doesn't scroll editor file anymore if cursor is out of
+             editing area.
+
+v0.90.6    ! Syntax highlighting problem with FoxPro, SQL, CGI and Perl files.
+
+v0.90.5    + FoxPro syntax highlighter.
+           + User exec keys hints to toolbar icons.
+           + When block selected, Tab and Shift+Tab indents and unindents
+             selected block just as Ctrl+I/U.
+           + Selection mode status panel indicator (Normal/Column).
+           * Redesigned color selection and added color picker in Options dialog.
+           * Options dialog renamed to Environment Options.
+           * Default colors for SQL syntax highlighter.
+           * Shift+Backspace acts as Backspace.
+           ! Assigning more than one text style attribute to highlighting item
+             caused copying styles to other items.
+           ! Added "[]'" as delimiters when passing word under cursor to find
+             dialog.
+           ! Clicking on email label in About dialog now opens only default
+             mail program.
+           ! Ugly fonts in status panels when using other than small system
+             fonts.
+
+v0.90.4    + 'Detect File Changes by external application' option.
+           + 'Save file before execution' user exec keys option.
+           + Inserting file feature.
+           ! Main menu shortcut conflict (Format, Tools).
+
+v0.90.3    + Added '?' userexec parameter.
+           + Added '%F' userexec parameter.
+           + Enabling and disabling menu items, regarding of their enabled
+             functionality.
+           * Replace All button now replaces all occurences of searched string,
+             from the beginning of file, regardless of current cursor position.
+           ! Bug not allowing font and font size change.
+
+v0.90.2    + New option: word wrap while typing.
+           + Reformat paragraph from cursor position.
+           ! Nasty bug on Win9x systems while remembering last main window
+             position.
+           ! Help file finally included.
+
+v0.90.1    + Setting file associations in Options dialog.
+           + Insert/overwrite status bar indicator.
+           + Modified status bar indicator.
+           + File tabs popup menu.
+           + Line numbers.
+           + Undo after save option.
+           + Gutter settings.
+           * Now every opened file has it's own status bar.
+           * Optimized registry writting resulting in faster ConTEXT quitting.
+           ! Toolbar help icon now shows some help.
+
+v0.90        Initial release
+

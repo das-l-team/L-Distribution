@@ -1,0 +1,56 @@
+option ccbas
+
+define wert    word
+define index   word
+
+PRINT "TABTEST.ocb"
+PRINT
+
+PRINT "'768-73_A.TAB',"; : PrintSollwerte
+PRINT
+
+FOR index=0 TO 5
+ LOOKTAB T_768_73_A,index,wert
+ PRINT wert
+NEXT
+GOSUB Warte
+
+PRINT "'768-73_B.TAB',"; : PrintSollwerte
+PRINT
+
+FOR index=0 TO 5
+ LOOKTAB T_768_73_B,index,wert
+ PRINT wert
+NEXT
+GOSUB Warte
+
+
+END
+
+Procedure PrintSollwerte
+ PRINT " (Soll: 768, 769, 770, 771, 772, 773):"
+RETURN
+end
+
+Procedure Warte
+PRINT "-TASTE-"
+GET wert : IF wert = 1 THEN PRINT "CCTRL-BASIC TABTEST"; : PUT 13 : END 'Programmieranforderung von IDE empfangen?
+PRINT
+RETURN
+
+PRINT "RETURN-Fehler?"
+END
+
+
+TABLE T_768_73_A     "768-73_A.tab"
+TABLE T_768_73_B     "768-73_B.tab"
+
+'TABLE T_0to1       "0-1.TAB"
+'TABLE T_0to3       "0-3.TAB"
+'TABLE T_0to7       "0-7.TAB"
+'TABLE T_0to15      "0-15.TAB"
+'TABLE T_0to31      "0-31.TAB"
+'TABLE T_0to63      "0-63.TAB"
+'TABLE T_0to127     "0-127.TAB"
+'TABLE T_0to255     "0-255.TAB"
+

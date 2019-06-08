@@ -1,0 +1,264 @@
+
+' Schneller Disassembler in CCBASIC fuer Open-Micro und Open-Mini
+' (c) Dietmar Harlos am 14. Juli 2005
+' Umsetzung auf OCBAS am 27. Juli 2005
+
+' Leider unterstuetzt die Open-Micro/Mini kein 16-Bit-Stackhandling,
+' weshalb der Zugriff auf Word-Adresszeiger etwas umstaendlich ist.
+
+
+include "om.def"
+
+define code byte
+define b byte
+define o byte
+define ah byte
+define al byte
+
+define h byte
+define l byte
+define t1 byte
+define t2 byte
+
+
+goto overdistbl
+
+
+' Die nachfolgende Tabelle wurde aus "distbl.s19" generiert
+' und enthaelt die komprimierte Mnemonic
+
+TABLE distbl
+  &he272 &h7365 &h7423 &h302c &h412c &h42e2 &h7263 &h6c72
+  &h2330 &h2c41 &h2c42 &he272 &h7365 &h7423 &h312c &h412c
+  &h42e2 &h7263 &h6c72 &h2331 &h2c41 &h2c42 &he272 &h7365
+  &h7423 &h322c &h412c &h42e2 &h7263 &h6c72 &h2332 &h2c41
+  &h2c42 &he272 &h7365 &h7423 &h332c &h412c &h42e2 &h7263
+  &h6c72 &h2333 &h2c41 &h2c42 &he272 &h7365 &h7423 &h342c
+  &h412c &h42e2 &h7263 &h6c72 &h2334 &h2c41 &h2c42 &he272
+  &h7365 &h7423 &h352c &h412c &h42e2 &h7263 &h6c72 &h2335
+  &h2c41 &h2c42 &he272 &h7365 &h7423 &h362c &h412c &h42e2
+  &h7263 &h6c72 &h2336 &h2c41 &h2c42 &he272 &h7365 &h7423
+  &h372c &h412c &h42e2 &h7263 &h6c72 &h2337 &h2c41 &h2c42
+  &he273 &h6574 &h2330 &h2c41 &he263 &h6c72 &h2330 &h2c41
+  &he273 &h6574 &h2331 &h2c41 &he263 &h6c72 &h2331 &h2c41
+  &he273 &h6574 &h2332 &h2c41 &he263 &h6c72 &h2332 &h2c41
+  &he273 &h6574 &h2333 &h2c41 &he263 &h6c72 &h2333 &h2c41
+  &he273 &h6574 &h2334 &h2c41 &he263 &h6c72 &h2334 &h2c41
+  &he273 &h6574 &h2335 &h2c41 &he263 &h6c72 &h2335 &h2c41
+  &he273 &h6574 &h2336 &h2c41 &he263 &h6c72 &h2336 &h2c41
+  &he273 &h6574 &h2337 &h2c41 &he263 &h6c72 &h2337 &h2c41
+  &he272 &h6142 &he272 &h6e42 &he268 &h6942 &he26c &h7342
+  &he268 &h7342 &he26c &h6f42 &he26e &h6542 &he265 &h7142
+  &he268 &h6363 &h42e2 &h6863 &h7342 &he270 &h6c42 &he26d
+  &h6942 &he26d &h6342 &he26d &h7342 &he269 &h6c42 &he269
+  &h6842 &hee65 &h6741 &he362 &h6571 &h412c &h42e4 &h6224
+  &h3332 &he36f &h6d41 &hec73 &h7241 &hf374 &h6878 &h41f2
+  &h6f72 &h41e1 &h7372 &h41ec &h736c &h41f2 &h6f6c &h41e4
+  &h6563 &h41e4 &h626e &h7a41 &h2c42 &he96e &h6341 &hf473
+  &h7441 &he462 &h2433 &h65e3 &h6c72 &h41ee &h6567 &h61e3
+  &h6265 &h7161 &h2341 &h2c42 &hed75 &h6ce3 &h6f6d &h61ec
+  &h7372 &h61ec &h6468 &h7823 &h43f2 &h6f72 &h61e1 &h7372
+  &h61ec &h736c &h61f2 &h6f6c &h61e4 &h6563 &h61e4 &h626e
+  &h7a61 &h42e9 &h6e63 &h61f4 &h7374 &h61ed &h6f76 &h412c
+  &h41e3 &h6c72 &h61ee &h6567 &h78e3 &h6265 &h7178 &h2341
+  &h2c42 &he469 &h76e3 &h6f6d &h78ec &h7372 &h78ec &h6468
+  &h7841 &hf26f &h7278 &he173 &h7278 &hec73 &h6c78 &hf26f
+  &h6c78 &he465 &h6378 &he462 &h6e7a &h7842 &he96e &h6378
+  &hf473 &h7478 &hed6f &h7641 &h582b &he36c &h7278 &hee65
+  &h6741 &h58e3 &h6265 &h7141 &h582b &h2c42 &hee73 &h61e3
+  &h6f6d &h4158 &hec73 &h7241 &h58e3 &h6d70 &h6878 &h2343
+  &hf26f &h7241 &h58e1 &h7372 &h4158 &hec73 &h6c41 &h58f2
+  &h6f6c &h4158 &he465 &h6341 &h58e4 &h626e &h7a41 &h582c
+  &h42e9 &h6e63 &h4158 &hf473 &h7441 &h58ed &h6f76 &h2341
+  &h2c41 &he36c &h7241 &h58ee &h6567 &h58e3 &h6265 &h7158
+  &h2b2c &h42e4 &h6161 &he36f &h6d58 &hec73 &h7258 &he36d
+  &h7068 &h7841 &hf26f &h7258 &he173 &h7258 &hec73 &h6c58
+  &hf26f &h6c58 &he465 &h6358 &he462 &h6e7a &h582c &h42e9
+  &h6e63 &h58f4 &h7374 &h58ed &h6f76 &h2078 &h2b2c &h41e3
+  &h6c72 &h58f2 &h7469 &hf274 &h73e4 &h6224 &h3832 &hf377
+  &h69f4 &h6170 &hf470 &h61f0 &h6f70 &h61f0 &h7573 &h6861
+  &hf06f &h7078 &hf075 &h7368 &h78f0 &h6f70 &h68f0 &h7573
+  &h6868 &he36c &h7268 &he462 &h2438 &h64f3 &h746f &h70f7
+  &h6169 &h74e2 &h6765 &h42e2 &h6c74 &h42e2 &h6774 &h42e2
+  &h6c65 &h42f4 &h7873 &hf473 &h78e4 &h6224 &h3936 &hf461
+  &h78e3 &h6c63 &hf365 &h63e3 &h6c69 &hf365 &h69f2 &h7370
+  &hee6f &h70e4 &h6224 &h3965 &hf478 &h61f3 &h7562 &h2341
+  &he36d &h7023 &h41f3 &h6263 &h2341 &he36d &h7078 &h2341
+  &he16e &h6423 &h41e2 &h6974 &h2341 &hec64 &h6123 &h41e1
+  &h6973 &h2341 &he56f &h7223 &h41e1 &h6463 &h2341 &hef72
+  &h6123 &h41e1 &h6464 &h2341 &he462 &h2461 &h63e2 &h7372
+  &h42ec &h6478 &h2341 &he169 &h7823 &h41f3 &h7562 &h41e3
+  &h6d70 &h41f3 &h6263 &h41e3 &h6d70 &h7841 &he16e &h6441
+  &he269 &h7441 &hec64 &h6141 &hf374 &h6141 &he56f &h7241
+  &he164 &h6341 &hef72 &h6141 &he164 &h6441 &hea6d &h7041
+  &hea73 &h7241 &hec64 &h7841 &hf374 &h7841 &hf375 &h6243
+  &he36d &h7043 &hf362 &h6343 &he36d &h7078 &h43e1 &h6e64
+  &h43e2 &h6974 &h43ec &h6461 &h43f3 &h7461 &h43e5 &h6f72
+  &h43e1 &h6463 &h43ef &h7261 &h43e1 &h6464 &h43ea &h6d70
+  &h43ea &h7372 &h43ec &h6478 &h43f3 &h7478 &h43f3 &h7562
+  &h4358 &he36d &h7043 &h58f3 &h6263 &h4358 &he36d &h7078
+  &h4358 &he16e &h6443 &h58e2 &h6974 &h4358 &hec64 &h6143
+  &h58f3 &h7461 &h4358 &he56f &h7243 &h58e1 &h6463 &h4358
+  &hef72 &h6143 &h58e1 &h6464 &h4358 &hea6d &h7043 &h58ea
+  &h7372 &h4358 &hec64 &h7843 &h58f3 &h7478 &h4358 &hf375
+  &h6241 &h58e3 &h6d70 &h4158 &hf362 &h6341 &h58e3 &h6d70
+  &h7841 &h58e1 &h6e64 &h4158 &he269 &h7441 &h58ec &h6461
+  &h4158 &hf374 &h6141 &h58e5 &h6f72 &h4158 &he164 &h6341
+  &h58ef &h7261 &h4158 &he164 &h6441 &h58ea &h6d70 &h4158
+  &hea73 &h7241 &h58ec &h6478 &h4158 &hf374 &h7841 &h58f3
+  &h7562 &h58e3 &h6d70 &h58f3 &h6263 &h58e3 &h6d70 &h7858
+  &he16e &h6458 &he269 &h7458 &hec64 &h6158 &hf374 &h6158
+  &he56f &h7258 &he164 &h6358 &hef72 &h6158 &he164 &h6458
+  &hea6d &h7058 &hea73 &h7258 &hec64 &h7858 &hf374 &h7858
+  &hffff
+TABEND
+
+#overdistbl
+
+
+'Index anlegen, falls er nicht existiert
+
+open# for read
+if eof then
+  print "Index anlegen...";
+  open# for write
+
+  h=dFILEPOSh
+  l=dFILEPOSl
+
+  dFILEPOSh=&hf4               'Adresse der Mnemonic-Tabelle
+  dFILEPOSl=&h85
+
+  for code=0 to 255  
+    b=0
+    while not(sgn(b))
+      t1=dFILEPOSh
+      t2=dFILEPOSl
+      input# b
+    wend
+
+    dFILEPOSh=h
+    dFILEPOSl=l
+    print# t1
+    print# t2    
+    h=dFILEPOSh
+    l=dFILEPOSl
+    
+    dFILEPOSh=t1
+    dFILEPOSl=t2
+    input# b
+  next code
+
+  dFILEPOSh=h
+  dFILEPOSl=l
+  
+  print "ok."
+end if
+close#
+
+
+
+dFILEPOSh=&hee                 'Startadresse vom Betriebssystem-Code
+dFILEPOSl=&h56
+
+PrintHex=on
+
+
+' die Hauptschleife
+
+WHILE TRUE
+
+  print dFILEPOSh;dFILEPOSl;": ";
+
+  input# code
+  print code;" ";
+
+  h=dFILEPOSh                  'Zeiger auf Code retten
+  l=dFILEPOSl
+
+  open# for read
+  t2=code shl 1                '16-Bit-SHL
+  t1=Carry and 1
+  dFILEPOSl=dFILEPOSl+t2       '16-Bit-Addition
+  dFILEPOSh=(Carry and 1)+dFILEPOSh+t1
+  input# t1                    'aus dem Index lesen
+  input# dFILEPOSl
+  dFILEPOSh=t1
+  
+  input# b                     'aus der Tabelle lesen
+  repeat
+    if b="#" then put " "
+    if b="$" then put " "
+    if b="A" then gosub printa
+    if b="B" then gosub printb
+    if b="C" then gosub printc
+    if b="X" then gosub printx
+
+    b=b and 127
+    if b then put b
+    o=b
+    input# b
+  until sgn(b)
+  
+  print
+
+  dFILEPOSh=h                  'Zeiger auf Code restaurieren
+  dFILEPOSl=l
+
+WEND
+
+
+' ein paar Subroutinen
+
+#printa
+  gosub switchtocode  
+  if o<>"#" and o<>"," then put " "
+  put "$"
+  input# code
+  print code;
+  b=0
+goto switchtotbl
+
+#printb
+  gosub switchtocode
+  if o<>"," then put " "
+  put "$"
+  input# code
+  ah=dFILEPOSh
+  if sgn(code) then ah=ah-1
+  al=dFILEPOSl+code
+  ah=(Carry and 1)+ah
+  print ah;al;
+  b=0
+goto switchtotbl
+
+#printc
+  gosub switchtocode  
+  if o<>"#" then put " "
+  put "$"
+  input# code
+  print code;
+  input# code
+  print code;
+  b=0
+goto switchtotbl
+
+PROC printx
+  if o<>"#" and o<>0 then put " "
+  print ",x";
+  b=0
+RETURN
+
+PROC switchtocode
+  t1=dFILEPOSh
+  t2=dFILEPOSl  
+  dFILEPOSh=h
+  dFILEPOSl=l
+RETURN
+
+PROC switchtotbl
+  h=dFILEPOSh
+  l=dFILEPOSl
+  dFILEPOSh=t1
+  dFILEPOSl=t2
+RETURN

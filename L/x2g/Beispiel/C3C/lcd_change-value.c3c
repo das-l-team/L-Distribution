@@ -1,0 +1,80 @@
+/*   lcd_change-value.c   (Dieses Programm stammt von www.blafusel.de/misc/ccontrol2.html
+ *                         siehe auch  www.blafusel.de/misc/ccontrol.html [das |_ Team] )
+ *   1-Taster-Bedienung
+ *
+ *   Mit Taster an Port 1 können Werte im EEPROM geändert werden. 
+ *   Standard-LCD an Port 9-16
+ *   1 Sekunde drücken für Initialisierung, dann warten, bis gewünschte Pos blinkt
+ *   und Taster kurz drücken bis gewünschter Wert erscheint.
+ *
+ *   02/2005 Florian Schäffer, http://www.blafusel.de
+ */
+
+#include "lcd_driver.c"
+
+void change_value (int *pos)
+{
+  int i, delay;
+  char zeichen;
+
+  lcd_gotopos (1, 1);
+  lcd_write(0x0D,0);      // Cursor aus, blinken an
+
+  while (!InBit(0)) {};   // warten bis Taste losgelassen wurde
+
+  for (i=0; i<=2; i++)
+  {
+    lcd_gotopos (1, i+1);
+    delay = 0;
+    while (delay <= 500)    // 500 Durchläufe = ca. 5 Sekunden, dann nächste Pos. anwählen
+    {
+      if (!InBit (0))  // wenn Taste gedrückt
+      {
+        if (pos[i]>89 || pos[i]<65)
+          pos[i]=65      // wenn "Z", dann "A"
+        else
+          pos[i]++;
+        zeichen = pos[i];  
+        lcd_writechar (zeichen);
+        lcd_gotopos (1, i+1);
+        delay = 0;    // an der Pos. kann weiter eingestellt werden
+        while (!InBit(0)) {};   // warten bis Taste losgelassen wurde
+      }
+      delay++;
+    }
+  } 
+  lcd_write(0x0C,0);      // Cursor aus, blinken aus
+}
+
+// Hauptprogramm
+void main()
+{
+  int i;
+  char zeichen;
+  static int pos[3];      // dauerhaft im EEPROM speichern, keine Initialisierung!
+
+  lcd_init();
+  
+  for (i=0; i<=2; i++)    // ggf. vorhandene (EEPROM) Werte anzeigen
+  {
+    lcd_gotopos (1, i+1);
+    zeichen = pos[i];
+    lcd_writechar (zeichen);
+  }
+
+  while (1)
+  {
+     if (!InBit (0))  // wenn Taste gedrückt
+     {
+      i=0;
+      while (!InBit(0) && i<100)    // bis Taste losgelassen oder 100 Durchläufe (ca. 1 Sekunde Taste gedrückt)
+      {
+        if (!InBit(0))
+          i++;
+      } 
+      if (i == 100)   // wenn eine Sekunde Taste gedrückt wurde
+        change_value (pos);
+     }
+  }
+} 
+

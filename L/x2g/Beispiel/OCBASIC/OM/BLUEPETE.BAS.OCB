@@ -1,0 +1,338 @@
+
+' Das Lied 'Blue Peter' ueber einen Piezo-Schallwandler abspielen.
+' Erstellt in OCBASIC 0.8 fuer die Open-Micro und Open-Mini 1.0
+' Konvertiert auf Open-Maxi am 26. Juni 2012
+
+' ton = 312500 / f                   'auf der Open-Maxi
+' f   = 3.2E6 / (3*a^2+17*a+116)     'auf den bisherigen OM-Controllern
+' ton = 312500 / (3.2E6 / (3*a^2+17*a+116))
+'
+'        75  2   425     725
+' ton = --- a  + --- a + ---
+'       256      256      64
+'
+' ton = 75*a/256*a+83*a/50+11        'Umrechnung fuer Open-Maxi
+
+INCLUDE "omax.def"
+
+DIM i,z BYTE
+DIM a,b BYTE
+DIM ton WORD
+
+DEFINE PAU 3  'Pause
+
+WHILE TRUE
+
+  IF z=0 THEN
+    a=LOOKTABBYTE(teil1,i)
+    b=LOOKTABBYTE(teil1,i+1)
+  ELSE IF z=1 OR z=3 THEN
+    a=LOOKTABBYTE(teil2,i)
+    b=LOOKTABBYTE(teil2,i+1)
+  ELSE IF z=2 THEN
+    a=LOOKTABBYTE(teil2schluss1,i)
+    b=LOOKTABBYTE(teil2schluss1,i+1)
+  ELSE IF z=4 THEN
+    a=LOOKTABBYTE(teil2schluss2,i)
+    b=LOOKTABBYTE(teil2schluss2,i+1)
+  END IF
+
+  ADD i,2
+
+  IF a THEN
+    PRINT a;" ";
+    ton=75*a/256*a+83*a/33+11 'mit /33 statt /50 hier kleinerer Fehler
+    PRINT ton
+    BEEP ton, b, PAU
+  ELSEIF b THEN
+    PAUSE b
+  ELSE
+    IF z=4 THEN
+      z=0
+      PAUSE 100
+    ELSE
+      ADD z,1
+    END IF
+    i=0
+  END IF
+
+WEND
+
+
+DEFINE C4 61  '262 Hz        Noten der vierten Oktave
+DEFINE C4_ 59 '277 Hz
+DEFINE D4 57  '294 Hz
+DEFINE D4_ 55 '311 Hz
+DEFINE E4 54  '330 Hz
+DEFINE F4 52  '349 Hz
+DEFINE F4_ 51 '370 Hz
+DEFINE G4 49  '392 Hz
+DEFINE A4 46  '440 Hz
+DEFINE A4_ 45 '466 Hz
+DEFINE B4 43  '494 Hz
+
+DEFINE C5 42  '523 Hz        Noten der fuenften Oktave
+DEFINE C5_ 41 '554 Hz
+DEFINE D5 39  '587 Hz
+DEFINE E5 37  '659 Hz
+DEFINE F5 36  '698 Hz
+DEFINE G5 34  '784 Hz
+DEFINE A5 32  '880 Hz
+DEFINE B5 30  '988 Hz
+
+DEFINE L1 60  'Ganze Note    Zeitdauer der Noten
+DEFINE L2 30  'Halbe Note
+DEFINE L4 15  'Viertelnote
+DEFINE L6 10
+DEFINE L8  8  'Achtelnote
+DEFINE L10 7
+DEFINE L12 6
+DEFINE L16 4  'Sechzehntel Note
+DEFINE L20 3
+
+
+TABLE teil1 BYTE
+
+  C5, L16
+  B4, L16
+  C5, L16
+  0,L12
+  C4, L12
+  0,L16
+  C4, L6
+
+  G4, L16
+  F4, L16
+  E4, L16
+  G4, L16
+  C5, L16
+  B4, L16
+  C5, L12
+  0,L12
+
+  B4, L16
+  C5, L16
+  D5, L16
+  0,L12
+  D4, L12
+  0,L16
+  D4, L6
+
+  A4, L16
+  G4, L16
+  F4_, L16
+  A4, L16
+  D5, L16
+  C5_, L16
+  D5, L12
+  0,L12
+
+  E5, L16
+  F5, L16
+  G5, L16
+  F5, L16
+  E5, L16
+  D5, L16
+  F5, L16
+  E5, L16
+  D5, L16
+  C5, L16
+  E5, L16
+  D5, L16
+  C5, L16
+  A4_, L16
+  D5, L16
+  C5, L16
+  A4_, L16
+  A4, L16
+  C5, L16
+  A4_, L16
+  A4, L16
+  G4, L16
+  A4_, L16
+  A4, L16
+  G4, L16
+  F4, L16
+  E4, L16
+  D4_, L16
+  D4, L16
+  C4_, L16
+  C4, L16
+  0,L10
+
+  0,0
+END TABLE
+
+
+TABLE teil2 BYTE
+
+  C4, L16
+  D4, L16
+  F4, L16
+  0,L12
+  F4, L10
+  0,L16
+  F4, L16
+  G4, L16
+  A4, L16
+  A4_, L16
+  C5, L16
+  0,L12
+  C5, L12
+  0,L16
+  C5,L10
+  0,L16
+
+  D5, L16
+  E5, L16
+  F5, L16
+  G5, L16
+  F5, L16
+  D5, L16
+  C5, L16
+  D5, L16
+  C5, L16
+  A4, L16
+  G4, L16
+  F4, L16
+  D4, L16
+  F4, L16
+  G4, L8
+  0,L12
+
+  C4, L16
+  D4, L16
+  F4, L16
+  0,L12
+  F4, L10
+  0,L16
+  F4, L16
+  G4, L16
+  A4, L16
+  A4_, L16
+  C5, L16
+  0,L12
+  C5, L12
+  0,L16
+  C5, L10
+  0,L16
+
+  F5, L16
+  D5, L16
+  E5, L16
+  G5, L16
+  E5, L16
+  C5, L16
+  A4, L16
+  D5, L16
+  B4, L16   'H lt. Able
+  G4, L16
+  C5, L16
+  B4, L16
+  C5, L16
+  B4, L16
+  C5, L8
+  0,L10
+
+  C4, L16
+  D4, L16
+  F4, L16
+  0,L12
+  F4, L10
+  0,L16
+  F4, L16
+  G4, L16
+  A4, L16
+  A4_, L16  'B lt. Able
+  C5, L16
+  0,L12
+  C5, L12
+  0,L16
+  C5,L10
+  0,L16
+
+  D5, L16
+  E5, L16
+  F5, L16
+  G5, L16
+  F5, L16
+  D5, L16
+  C5, L16
+  D5, L16
+  C5, L16
+  A4, L16
+  G4, L16
+  F4, L16
+  D4, L16
+  F4, L16
+  G4, L8
+  0,L16
+
+  C4, L16
+  D4, L16
+  F4, L16
+  G4, L16
+  F4, L16
+  G4, L16
+  F4, L16
+  D5, L16
+  C5, L16
+  A4, L16
+  A4, L16
+  G4, L16
+  G4, L16
+  A4, L16
+  F4, L8
+  0,L20
+
+  0,0
+END TABLE
+
+
+TABLE teil2schluss1 BYTE
+
+  D5, L8
+  0,L20
+  C5, L16
+  D5, L16
+  C5, L16
+  A4, L16
+  F4, L16
+  G4, L16
+  A4, L16
+  A4_, L16
+  C5, L8
+  0,L20
+  A4, L8
+  0,L20
+  F4, L8
+  0,L20
+
+  0,0
+END TABLE
+
+
+TABLE teil2schluss2 BYTE
+
+  D5, L8
+  0,L20
+  C5, L16
+  D5, L16
+  C5, L16
+  A4, L16
+  F4, L16
+  G4, L16
+  A4, L16
+  A4_, L16
+  C5, L8
+  0,L20
+  E5, L8
+  0,L20
+  F5, L4
+  0,L20
+
+  0,0
+END TABLE
+
+
+

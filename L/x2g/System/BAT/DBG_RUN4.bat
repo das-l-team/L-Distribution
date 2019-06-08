@@ -1,0 +1,1 @@
+start L:\x2g\3rdparty\OM_DEBUGGER\L4_DEBUG.EXE com4 %1

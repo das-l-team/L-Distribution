@@ -1,0 +1,306 @@
+
+' ===========================================================================
+' DTMF-Signale mittels PWM mit 25 kHz Taktfrequenz und 7 Bit Werteaufloesung
+' lauffaehig auf der Open-Micro, Open-Mini und Open-Midi
+' ===========================================================================
+
+' 14.4.4.2 Buffered PWM Signal Generation
+
+' Channels 0 and 1 can be linked to form a buffered PWM channel whose output
+' appears on the TCH0 pin. The TIM channel registers of the linked pair
+' alternately (abwechselnd) control the pulse width of the output.
+
+' Setting the MS0B bit in TIM channel 0 status and control register (TSC0)
+' links channel 0 and channel 1. The TIM channel 0 registers initially
+' control the pulse width on the TCH0 pin. Writing to the TIM channel 1
+' registers enables the TIM channel 1 registers to synchronously control
+' the pulse width at the beginning of the next PWM period. At each subsequent
+' overflow, the TIM channel registers (0 or 1) that control the pulse width
+' are the ones written to last. TSC0 controls and monitors the buffered PWM
+' function, and TIM channel 1 status and control register (TSC1) is unused.
+' While the MS0B bit is set, the channel 1 pin, TCH1, is available as a
+' general-purpose I/O pin.
+
+' NOTE: In buffered PWM signal generation, do not write new pulse width
+' values to the currently active channel registers. User software should
+' track the currently active channel to prevent writing a new value to the
+' active channel. Writing to the active channel registers is the same as
+' generating unbuffered PWM signals.
+
+
+INCLUDE "om.def"
+
+DEFINE led PORT[4]        'diese LED wird im Hauptprogramm in BASIC getoggelt
+DEFINE taste PORT[6]
+
+DEFINE a,b,c BYTE         'temporaere Variablen
+
+DEFINE char BYTE
+
+DEFINE z1h BYTE           'zum Datenaustausch mit Assembler-Interruptroutinen
+DEFINE z1l BYTE
+DEFINE i1h BYTE
+DEFINE i1l BYTE
+DEFINE z2h BYTE
+DEFINE z2l BYTE
+DEFINE i2h BYTE
+DEFINE i2l BYTE
+DEFINE track BYTE
+
+
+' ---------------------------------------------------------------------------
+
+
+' Das Schluesselwort INLASM kennzeichnet die folgende PROCEDURE als
+' Assemblerroutine ("IAR"). Dadurch, und dass sie unmittelbar am Anfang
+' des Programms steht, wird sie zu einer IIAR, also zu einer Assembler-
+' Interruptroutine, die bei einem aktivierten User-Interrupt gestartet wird.
+
+PROC iiar_tofl INLASM
+
+! ldx z1h
+! lda sin,x     '-63..63
+! ldx z2h
+! add sin,x     '-126..126
+! asra          '-63..63
+! adc #63       '0..126
+
+! inc track     '"User software should track the currently active channel"
+! brset #0,track,tofl_1
+! sta TCH0L
+! bra tofl_2
+#tofl_1
+! sta TCH1L
+#tofl_2
+
+! lda z1l       'die beiden Zeiger inkrementieren
+! add i1l       '(fuer bessere Frequenzaufloesung muss mit 16 Bit gearbeitet
+! sta z1l       ' werden, aber nur das Highbyte wird als Zeiger verwendet)
+! lda z1h
+! adc i1h
+! sta z1h
+
+! lda z2l
+! add i2l
+! sta z2l
+! lda z2h
+! adc i2h
+! sta z2h
+
+! sec           'OS die Benutzung des TOFL-Interrupts untersagen
+! rts
+
+END PROC
+
+
+' Tabelle mit den Werten einer Sinusschwingung - 7 Bit Aufloesung
+
+TABLE sin BYTE
+
+  0 2 3 5 6 8 9 11 12 14 15 17 18 20 21 23 24 26 27 28 30 31 32 34 35 36 38
+  39 40 41 42 43 45 46 47 48 49 50 51 52 52 53 54 55 56 56 57 58 58 59 59 60
+  60 61 61 61 62 62 62 63 63 63 63 63 63 63 63 63 63 63 62 62 62 61 61 61 60
+  60 59 59 58 58 57 56 56 55 54 53 52 52 51 50 49 48 47 46 45 43 42 41 40 39
+  38 36 35 34 32 31 30 28 27 26 24 23 21 20 18 17 15 14 12 11 9 8 6 5 3 2 0
+  -2 -3 -5 -6 -8 -9 -11 -12 -14 -15 -17 -18 -20 -21 -23 -24 -26 -27 -28 -30
+  -31 -32 -34 -35 -36 -38 -39 -40 -41 -42 -43 -45 -46 -47 -48 -49 -50 -51
+  -52 -52 -53 -54 -55 -56 -56 -57 -58 -58 -59 -59 -60 -60 -61 -61 -61 -62
+  -62 -62 -63 -63 -63 -63 -63 -63 -63 -63 -63 -63 -63 -62 -62 -62 -61 -61
+  -61 -60 -60 -59 -59 -58 -58 -57 -56 -56 -55 -54 -53 -52 -52 -51 -50 -49
+  -48 -47 -46 -45 -43 -42 -41 -40 -39 -38 -36 -35 -34 -32 -31 -30 -28 -27
+  -26 -24 -23 -21 -20 -18 -17 -15 -14 -12 -11 -9 -8 -6 -5 -3 -2
+  
+END TABLE
+
+
+' Mit der folgenden Assemblerroutine wird das Timer Interface Module (TIM)
+' passend umkonfiguriert.
+
+PROC init_tim1 INLASM
+
+'"Before changing a channel function by writing to the MSxB or MSxA bit,
+' set the TSTOP and TRST bits in the TIM status and control register (TSC)."
+
+! mov #&b00110000,TSC     'TSC: TOF TOIE TSTOP TRST 0 PS2 PS1 PS0
+! ldhx #127
+! sthx TMODH              'Modulo-Register
+! clr TCH0H
+! mov #100,TCH0L
+! clr TCH1H
+! mov #100,TCH1L
+
+' Setting MS0B links channels 0 and 1 and configures them for buffered PWM
+' operation. The TIM channel 0 registers (TCH0H:TCH0L) initially control the
+' buffered PWM output. TIM status control register 0 (TSCR0) controls and
+' monitors the PWM signal from the linked channels. MS0B takes priority
+' over MS0A.
+
+! mov #&b00101010,TSC0    'TSC1: CH1F CH1IE 0 MS1A ELS1B ELS1A TOV1 CH1MAX
+! clr TSC1
+
+! mov #&b01000000,TSC     'Timer wieder starten
+! rts
+
+END PROC
+
+
+' Timer Interface Module (TIM) wieder so setzen, wie vom OS erwartet
+
+PROC reset_tim1 INLASM
+
+! mov #&b00110000,TSC     'TSC: TOF TOIE TSTOP TRST 0 PS2 PS1 PS0
+! clr TSC0
+! clr TSC1
+! ldhx #999               'Modulo-Register zurueck auf OS-Wert
+! sthx TMODH
+! mov #&b01000110,TSC     'Timer wieder starten
+! rts
+
+END PROC
+
+
+' Tabelle mit den Konstanten zur Erzeugung von DTMF-Signalen
+
+TABLE dtmf_tab WORD
+
+  2467, 3502  ' "0"  
+  1827, 3169  ' "1"       ' Hz 1209 1336 1477 1633
+  1827, 3502  ' "2"       '697   1    2    3    A
+  1827, 3872  ' "3"       '770   4    5    6    B  
+  2019, 3169  ' "4"       '852   7    8    9    C
+  2019, 3502  ' "5"       '941   *    0    #    D
+  2019, 3872  ' "6"  
+  2233, 3169  ' "7"       'f[Hz] = 25000*N/65536
+  2233, 3502  ' "8"       'N     = 65536*f/25000
+  2233, 3872  ' "9"
+  2467, 3169  ' "*"
+  2467, 3872  ' "#"
+  1827, 4281  ' "A"
+  2019, 4281  ' "B"
+  2233, 4281  ' "C"
+  2467, 4281  ' "D"  
+     1,    1  ' unbekannt
+'  2621, 2621  ' 1 kHz zum Kalibrieren von FREQ2/OSCTRIM
+  
+END TABLE
+
+
+' IIAR-Variablen passend laden, um DTMF-Signal zu einem Zeichen zu erzeugen
+' benutzte Variablen: char, a, i1h, i1l, i2h, i2l, z1h, z1l, z2h, z2l, track
+
+PROC dtmf(char)
+
+  ' Offset in der Tabelle berechnen
+  
+  IF char>="0" AND char<="9" THEN
+    a=char-"0"
+  ELSEIF char="*" THEN
+    a=10
+  ELSEIF char="#" THEN
+    a=11
+  ELSEIF char>="A" AND char<="D" THEN
+    a=char-"A"+12
+  ELSE
+    a=16
+  END IF  
+  a=a*4
+
+  ' Variablen fuer Interruptroutine laden
+    
+  i1h=LOOKTAB(dtmf_tab,a)
+  i1l=LOOKTAB(dtmf_tab,a+1)
+  i2h=LOOKTAB(dtmf_tab,a+2)
+  i2l=LOOKTAB(dtmf_tab,a+3)
+  z1h=0 : z1l=0
+  z2h=0 : z2h=0
+  track=0
+
+  ' IIAR-Assemblerroutine in den TOFL-Interrupt haengen und aktivieren
+
+  UIRTofl=ON
+  init_tim1
+  
+  ' Die Toene werden jetzt generiert. Das Programm laeuft normal weiter.
+
+  FOR a=0 TO 51
+  NEXT a
+
+  ' alles wieder rueckgaengig machen
+  
+  reset_tim1
+  UIRTofl=OFF
+
+  ' 100 ms Break-Time  
+  
+  PAUSE 5
+
+RETURN
+
+
+' ---------------------------------------------------------------------------
+' Das Hauptprogramm
+' ---------------------------------------------------------------------------
+
+#main        'durch die IIAR am Programmbeginn wird ein "GOTO main" erzeugt
+
+' Subroutine zum Erzeugen von DTMF-Signalen aufrufen
+
+dtmf "0"
+dtmf "1"
+dtmf "2"
+dtmf "3"
+dtmf "4"
+dtmf "5"
+dtmf "6"
+dtmf "7"
+dtmf "8"
+dtmf "9"
+dtmf "*"
+dtmf "#"
+dtmf "A"
+dtmf "B"
+dtmf "C"
+dtmf "D"
+PAUSE 50
+
+' Lied: "Merrily We Go Along"
+
+dtmf "9" : dtmf "5" : dtmf "1" : dtmf "5" : PAUSE 2
+dtmf "9" : dtmf "9" : dtmf "9" : PAUSE 5
+dtmf "5" : dtmf "5" : dtmf "5" : PAUSE 5
+dtmf "9" : dtmf "9" : dtmf "9" : PAUSE 5
+
+dtmf "9" : dtmf "5" : dtmf "1" : dtmf "5" : PAUSE 2
+dtmf "9" : dtmf "9" : dtmf "9" : PAUSE 5
+dtmf "9" : dtmf "5" : dtmf "5" : PAUSE 5
+dtmf "9" : dtmf "5" : dtmf "1" : PAUSE 5
+
+' Nun folgt noch etwas Blinken, um zu demonstrieren, dass der Timer-
+' Interrupt wieder korrekt arbeitet.
+
+led=ON
+WHILE taste=ON
+  TOG led
+  PAUSE 25
+WEND
+
+End2Host=ON
+END
+
+' ---------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

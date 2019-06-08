@@ -1,0 +1,21 @@
+' [ Fehlermeldung ]
+'
+' Es konnte kein im Zielsystem befindliches Programm ausgelesen
+' und/oder in C-Control/Bytekode-Mnemonics umgewandelt werden.
+'
+' Häufige Ursachen:
+'
+'- die Serielle Schnittstelle ist nicht gewählt, oder noch in Benutzung
+'- das Zielsystem ist nicht im Hostmodus, oder ist noch nicht eingeschaltet
+'- das Zielsystem sendet einen unbekannten ID-String. Der ID-String muss lauten:
+'
+'                     CCTRL-BASIC Version 1.1 (20.12.96)
+'
+'  Der ID-String muss mit einem Carriage Return (ASCII 13) abgeschlossen werden!
+'
+'
+'- Das Zielsystem unterstützt Auslesen des gespeicherten Bytekodes nicht.
+'
+'  Möglicherweise befinden sich weitere Hinweise in folgender Datei:
+'
+'  L:\x2g\3rdparty\ccupload\ccupload.bax

@@ -1,0 +1,72 @@
+
+' ===========================================================================
+' Beispiel zum Zwischenspeichern von Variableninhalten auf einem RAM-Stack
+' lauffaehig auf der Open-Micro, Open-Mini und Open-Midi
+' ===========================================================================
+
+
+INCLUDE "om.def"
+
+DEFINE a,b,c BYTE         'drei normale Variablen definieren
+
+PrintSpc=ON
+
+a=1 : b=2 : c=3           'Variablen auf einen Wert setzen
+pushabc                   'und den Inhalt der Variablen zwischenspeichern
+
+a=4 : b=5 : c=6           'Variablen auf einen anderen Wert setzen
+pushabc                   'und den Inhalt der Variablen zwischenspeichern
+
+a=0 : b=0 : c=0           'Variablen auf einen dritten Wert setzen
+PRINT a;b;c               'und ueber RS232 ausgeben
+
+popabc                    'anschliessend den zweiten Wert zurueckholen
+PRINT a;b;c               'und ueber RS232 ausgeben
+
+popabc                    'und schliesslich den ersten Wert zurueckholen
+PRINT a;b;c               'und ueber RS232 ausgeben
+
+ramdump                   'Hex-Dump vom RAM-Speicher ueber RS232 ausgeben
+
+End2Host=on
+END                       'Programm beenden und in den Hostmode wechseln
+
+' ---------------------------------------------------------------------------
+
+DEFINE ^p BYTE [64]       'Zeiger auf ein Byte im USER-RAM definieren
+
+PROC pushabc              'Die drei Variablen a, b und c auf einem eigenen
+  IF p=0 THEN p=63        'Stack am Ende des User-RAMs speichern.
+  SUB p,1
+  @p=a                    'Vorsicht: Beim Aufruf von BASIC-IRQ-Routinen
+  SUB p,1                 'werden die obersten 8 Byte des User-RAMs verwendet.
+  @p=b
+  SUB p,1                 'RAM-Speicherplatzbedarf: Der eigene Stack braucht
+  @p=c                    'ein Byte fuer den Zeiger und drei Bytes je PUSH.
+RETURN
+
+PROC popabc               'Die drei Variablen a, b und c vom Stack holen.
+  c=@p
+  ADD p,1                 'Durch jedes POP werden drei Bytes RAM drei.
+  b=@p
+  ADD p,1
+  a=@p
+  ADD p,1
+RETURN
+
+' ---------------------------------------------------------------------------
+
+PROC ramdump              'den gesamten RAM-Speicher, beginnend mit
+  PrintHex=ON             '  dem USER-RAM, ausgeben
+  FOR a=0 TO 127           
+    IF a MOD 16=0 THEN     
+      PRINT
+      PRINT "$00";$80+a;" :";
+    END IF
+    p=a
+    PRINT " ";@p;
+  NEXT a
+  PRINT
+  PrintHex=OFF
+RETURN
+

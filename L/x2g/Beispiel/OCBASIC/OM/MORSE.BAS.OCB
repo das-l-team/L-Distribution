@@ -1,0 +1,122 @@
+
+' Morsealphabet fuer Open-Micro/Mini
+
+' Dieses Beispiel demonstriert die Benutzung von Tabellen im
+' Byteformat in Open-Control/BASIC.
+
+
+include "om.def"
+
+dim zei byte
+dim len byte
+dim mor byte
+
+dim p byte
+dim i byte
+
+dim beeper port[6]
+
+dim Carry    ivar[73]   'Hier meldet der Compiler eine ueberfluessige
+dim End2Host ivar[88]   'Definition, da diese beiden Bezeichner schon
+                        'in der INCLUDE-Datei definiert wurden.
+
+End2Host=on
+
+put 12
+print
+print "Morsealphabet"
+print
+pause 50
+
+p=0
+
+while looktab(morse,p)
+
+  zei=looktab(morse,p)
+  len=looktab(morse,p+1)
+  mor=looktab(morse,p+2)
+
+  put zei
+  put " "
+  pause 9  '9 '50
+
+  mor=mor shl (8-len)
+
+  for i=1 to len
+    mor=mor shl 1
+    if Carry
+      put "-"
+      beep 24,9,beeper
+    else
+      put "."
+      beep 24,3,beeper
+    end if
+    pause 3
+  next i
+  print
+
+  p=p+3
+wend
+
+print
+print "Das war's!"
+end
+
+
+
+table morse byte
+  "a" 2 &b01
+  "b" 4 &b1000               ' Der Morsecode ist ohne Gewaehr!
+  "c" 4 &b1010
+  "d" 3 &b100
+  "e" 1 &b0
+  "f" 4 &b0010
+  "g" 3 &b110
+  "h" 4 &b0000
+  "i" 2 &b00
+  "j" 4 &b0111
+  "k" 3 &b101
+  "l" 4 &b0100
+  "m" 2 &b11
+  "n" 2 &b10
+  "o" 3 &b111
+  "p" 4 &b0110
+  "q" 4 &b1101
+  "r" 3 &b010
+  "s" 3 &b000
+  "t" 1 &b1
+  "u" 3 &b001
+  "v" 4 &b0001
+  "w" 3 &b011
+  "x" 4 &b1001
+  "y" 4 &b1011
+  "z" 4 &b1100
+  
+  "Ñ" 4 &b0101
+  "î" 4 &b1110
+  "Å" 4 &b0011
+  
+  "." 6 &b010101
+  "," 5 &b11011
+  "?" 6 &b001100
+  ":" 6 &b111000
+  "'" 6 &b011110
+  34  6 &b010010
+  "-" 5 &b10001
+  "(" 6 &b101101
+  ")" 6 &b101101
+  
+  "1" 5 &b01111
+  "2" 5 &b00111
+  "3" 5 &b00011
+  "4" 5 &b00001
+  "5" 5 &b00000
+  "6" 5 &b10000
+  "7" 5 &b11000
+  "8" 5 &b11100
+  "9" 5 &b11110
+  "0" 5 &b11111
+  
+  0
+end table
+

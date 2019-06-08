@@ -1,0 +1,1 @@
+[ Nachfolgende Programme werden in einem separaten Fenster durch den Emulator 'DOSBox' ausgefuehrt - Zum Pausieren auf DOSBox-Titelleiste klicken und halten ]

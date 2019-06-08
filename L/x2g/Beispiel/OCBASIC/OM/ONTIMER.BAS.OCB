@@ -1,0 +1,89 @@
+
+' ===========================================================================
+' Die BASIC-Interruptroutine jede Sekunde einmal starten
+' lauffaehig auf der Open-Micro, Open-Mini und Open-Midi
+' ===========================================================================
+
+
+INCLUDE "om.def"
+
+DEFINE a,b,c BYTE         'drei normale Variablen definieren
+
+
+' Die folgende Assemblerroutine steht am Programmbeginn und es ist das
+' Schluesselwort INLASM angegeben. Es handelt sich daher um eine IIAR.
+' Also um eine Assembler-Interruptroutine, die bei einem aktivierten
+' Interrupt gestartet wird.
+
+' Sinnvollerweise sollten die Befehle zwischen den DEFINEs und dem Label
+' "main" in einer zweiten Sourcecodedatei stehen und per INCLUDE in diesen
+' Sourcecode eingebunden werden. Dadurch erhoeht sich die Lesbarkeit dieses
+' Programms.
+
+DEFINE mIrqReq &b00000010 'Maske zum Starten der BASIC-IRQ-Routine
+
+PROC iiar_tofl INLASM
+
+! inc ,x                  'in x steht die Adresse von FREERAM
+! lda ,x
+! cmp #50
+! blo over
+! clr ,x
+! lda -3,x
+! ora #mIrqReq
+! sta -3,x
+#over
+! clc
+! rts
+
+END PROC
+
+#main
+
+' Temporaeren Zwischenspeicher (FREERAM1) fuer die Assemblerroutine loeschen
+
+FREERAM=0
+
+' Wir haengen unsere eigene Assemblerroutine in den 20-ms-TIMER-Interrupt
+
+UIRTofl=ON
+
+' Die Assemblerroutine im Interrupt wird nun 50 mal pro Sekunde aufgerufen
+' und setzt nun alle 50 Interrupts den Marker fuer den BASIC-Interrupt,
+' wodurch die BASIC-Interruptroutine jede Sekunde startet
+
+INTERRUPT irqrou
+
+PrintSpc=ON
+
+REPEAT            ' Zur Demonstration nur ein einfaches Hauptprogramm.
+  PRINT HOUR;MINUTE;SECOND;TIMER
+  FOR a=0 to 24
+    PAUSE 1       ' Ein PAUSE 25 wuerde den Start der BASIC-Interruptroutine
+  NEXT a          ' um bis zu eine halbe Sekunde verzoegern.
+UNTIL SECOND>=30
+
+INTERRUPT OFF
+
+PRINT
+PRINT "Programmende."
+
+End2Host=ON
+END
+
+' ---------------------------------------------------------------------------
+
+' Bei jedem Start der BASIC-Interruptroutine wird der sogenannte Rechenstack
+' in den letzten 8 Bytes des User-RAMs gespeichert. Sie stehen somit unter
+' anderem nicht zur Variablenspeicherung zur Verfuegung. Ausserdem wird durch
+' das Starten der BASIC-Interruptroutine ein GOSUB-Stackeintrag belegt. Es
+' stehen somit wie auf der C-Control 1.1 nur noch 4 Eintraege zur Verfuegung.
+
+PROC irqrou
+  PRINT
+  PRINT "Hier ist die BASIC-Interrupt-Routine. TIMER ist";TIMER;"."
+RETURN INTERRUPT
+
+
+
+

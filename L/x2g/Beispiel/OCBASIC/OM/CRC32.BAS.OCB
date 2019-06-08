@@ -1,0 +1,150 @@
+
+' ===========================================================================
+' Berechnung der CRC (Cyclic Redundancy Check) mit 32 Bit Aufloesung
+' lauffaehig auf der Open-Micro und Open-Mini
+' ===========================================================================
+
+' Die CRC ist eine Methode zur Fehlererkennung in groesseren Datenmengen
+' mittels Pruefsumme. Das hier gezeigte Verfahren ist kompatibel zur CRC-
+' Berechnung, die von Programmen wie WinZIP, RAR, ARJ, etc. benutzt wird.
+
+' In diesem Demoprogramm wird die CRC-Pruefsumme ueber alle Bytes des
+' Betriebssystems berechnet. Falls an irgendeiner Stelle irgendein Byte
+' oder Bit in diesem Speicherbereich fehlerhaft sein sollte, liefert die
+' CRC einen von der korrekten Pruefsumme abweichenden Wert zurueck.
+
+' Der groesste Nachteil dieses Verfahrens ist der relativ hohe Zeitbedarf
+' fuer die Berechnung der CRC32-Pruefsumme. Dieses Demo-Programm braucht
+' 810 ms fuer die CRC32-Berechnung der 1664 Bytes vom Betriebssystem. Davon
+' entfallen allerdings schon 500 ms auf das Lesen der Bytes aus dem Speicher
+' mittels Dateifunktion und auf die Kontrolle, ob das Ende des zu pruefenden
+' Speicherbereichs erreicht wurde. Nur 160 ms werden fuer die eigentliche
+' CRC32-Berechnung benoetigt, wobei nocheinmal rund 150 ms fuer den Aufruf
+' der Berechnungsroutine per GOSUB hinzukommt. Der Aufruf mit SYS wuerde nur
+' rund 50 ms benoetigen. Unten steht eine Routine, mit der die gesamte
+' Berechnung in Assembler durchgefuehrt werden kann. Sie braucht insgesamt
+' 200 ms und ist damit viermal schneller als der Mix aus BASIC und Assembler.
+
+INCLUDE "om.def"
+
+DEFINE c1 FREERAM1         'Alternative Namen fuer die FREERAM-Variablen
+DEFINE c2 FREERAM2         '  definieren. Die OM stellt fuenf FREERAM-Bytes
+DEFINE c3 FREERAM3         '  zur Verfuegung, die sich gut zur Nutzung in
+DEFINE c4 FREERAM4         '  Assemblerprogrammen eignen.
+
+' ---------------------------------------------------------------------------
+
+PRINT "CRC32 vom OS: $";
+
+dFILEPOSh=&hee             'Dateizeiger auf OS-Start setzen
+dFILEPOSl=&h00
+
+c1=0 : c2=0 : c3=0 : c4=0  'Speicher fuer CRC initialisieren
+
+REPEAT                     'Byte aus OS lesen und CRC berechnen,
+  crc32 INPUT#             '  bis OS-Ende erreicht
+UNTIL dFILEPOSh=&hf4 AND dFILEPOSl=&h80
+
+PrintHex=ON                'CRC hexadezimal ausgeben 
+PRINT c1;c2;c3;c4
+
+PRINT "Das OS steht fehler";
+IF c1=&h26 AND c2=&h08 AND c3=&hcd AND c4=&h6d THEN
+  PRINT "frei in der 5-Volt-Version";
+ELSEIF c1=&h88 AND c2=&h99 AND c3=&he9 AND c4=&hb8 THEN
+  PRINT "frei in der 3-Volt-Version";
+ELSE
+  PRINT "haft";
+END IF
+PRINT " im Flash!"
+
+End2Host=ON                'Beenden und in den Hostmodus gehen
+END
+
+' ---------------------------------------------------------------------------
+' Subroutine zur CRC32-Berechnung auf der Open-Micro, Open-Mini und Open-Midi
+' Zur Initialisierung muessen FREERAM1 bis FREERAM4 auf Null gesetzt werden.
+' Die Berechnung wird Byte-fuer-Byte durchgefuehrt.
+' ---------------------------------------------------------------------------
+
+PROC crc32(databyte) INLASM
+! eor FREERAM4             'CRC=CRC XOR DATABYTE
+! sta FREERAM4
+! ldx #8                   'FOR x=8 DOWNTO 1
+#crc32_1
+! sec                      '  CARRY=CRC AND 1
+! ror FREERAM1
+! ror FREERAM2             '  CRC=(CRC SHR 1) OR &h080000000
+! ror FREERAM3
+! ror FREERAM4
+! bcs crc32_2              '  IF CARRY=0 THEN
+! lda #&hed
+! eor FREERAM1             '    CRC=CRC XOR &h0edb88320
+! sta FREERAM1
+! lda #&hb8
+! eor FREERAM2
+! sta FREERAM2
+! lda #&h83
+! eor FREERAM3
+! sta FREERAM3
+! lda #&h20
+! eor FREERAM4
+! sta FREERAM4
+#crc32_2                   '  END IF
+! dbnzx crc32_1            'NEXT x
+! rts
+END PROC
+
+' ---------------------------------------------------------------------------
+' Die folgende Assemblerroutine ruft die CRC32-Berechnungsroutine wie der
+' BASIC-Code auf. Sie benoetigt insgesamt aber nur 200 ms Ausfuehrungszeit.
+' ---------------------------------------------------------------------------
+
+PROC calcos INLASM
+! clr FREERAM1
+! clr FREERAM2
+! clr FREERAM3
+! clr FREERAM4
+! ldhx #$ee00
+#calcos_1
+! lda ,x
+! pushx
+! bsr crc32
+! popx
+! aix #1
+! cmphx #$f480
+! bne calcos_1
+! rts
+END PROC
+
+' ---------------------------------------------------------------------------
+' Und zur Abschreckung hier eine CRC32-Berechnungsroutine in Good-Old-BASIC.
+' Damit dauert die Berechnung 22 Sekunden. Das ist 110 mal langsamer als
+' die Loesung in reinem Assembler.
+' ---------------------------------------------------------------------------
+
+' DEFINE e,f,g,h,t1 BYTE
+
+' PROC crc32bas
+'   h=h XOR POP
+'   DBNZCTR=8
+'   #crc32bas_1
+'     e=e SHR 1
+'     t1=Carry AND 128
+'     e=e OR 128
+'     f=f SHR 1
+'     ADD f,t1
+'     t1=Carry AND 128
+'     g=g SHR 1
+'     ADD g,t1
+'     t1=Carry AND 128
+'     h=h SHR 1
+'     ADD h,t1
+'     IF Carry=0 THEN
+'       e=e XOR &hed
+'       f=f XOR &hb8
+'       g=g XOR &h83
+'       h=h XOR &h20
+'     END IF
+'   DBNZ crc32bas_1
+' RETURN

@@ -1,0 +1,69 @@
+
+' ===========================================================================
+' Beispiel zur Verwendung von lokalen Variablen innerhalb von Subroutinen
+' lauffaehig auf der Open-Micro, Open-Mini und Open-Midi
+' ===========================================================================
+
+
+INCLUDE "om.def"
+
+DEFINE a,b,c BYTE         'drei normale Variablen definieren
+
+PrintSpc=ON
+
+a=1 : b=2 : c=3           'Variablen a, b und c im Hauptprogramm benutzen
+
+unter1                    'Unterprogramm aufrufen
+
+PRINT "im Hauptprogramm haben a, b und c die Werte:";a;b;c
+
+End2Host=ON
+END                       'Programm beenden und in den Hostmode wechseln
+
+' ---------------------------------------------------------------------------
+
+PROCEDURE unter1          'Das erste Unterprogramm benutzt die Variable a,
+  pushabc                 'deshalb die Variablen a, b und c zwischenspeichern.
+  
+  FOR a=0 TO 2
+    PRINT "in unter1 hat a den Wert:";a
+    unter2
+  NEXT a
+  
+  popabc                  'Und die Variableninhalte wieder restaurieren.
+RETURN
+
+PROCEDURE unter2          'Auch das zweite Unterprogramm benutzt die Variable,
+  pushabc                 'deshalb die Variablen wieder zwischenspeichern.
+  
+  a=78
+  PRINT "in unter2 hat a den Wert:";a
+  
+  popabc                  'Und die Variableninhalte wieder restaurieren.
+RETURN
+
+' ---------------------------------------------------------------------------
+
+DEFINE ^p BYTE [64]       'Zeiger auf ein Byte im USER-RAM definieren
+
+PROC pushabc              'Die drei Variablen a, b und c auf einem eigenen
+  IF p=0 THEN p=63        'Stack am Ende des User-RAMs speichern.
+  SUB p,1
+  @p=a                    'Vorsicht: Beim Aufruf von BASIC-IRQ-Routinen
+  SUB p,1                 'werden die obersten 8 Byte des User-RAMs verwendet.
+  @p=b
+  SUB p,1                 'RAM-Speicherplatzbedarf: Der eigene Stack braucht
+  @p=c                    'ein Byte fuer den Zeiger und drei Bytes je PUSH.
+RETURN
+
+PROC popabc               'Die drei Variablen a, b und c vom Stack holen.
+  c=@p
+  ADD p,1                 'Durch jedes POP werden drei Bytes RAM drei.
+  b=@p
+  ADD p,1
+  a=@p
+  ADD p,1
+RETURN
+
+' ---------------------------------------------------------------------------
+

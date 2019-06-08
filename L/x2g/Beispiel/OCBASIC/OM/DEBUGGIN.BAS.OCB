@@ -1,0 +1,90 @@
+
+' ===========================================================================
+' Debugging-Hilfe: Daten-Breakpoint mittels Assemblerroutine realisieren
+' lauffaehig auf der Open-Micro, Open-Mini und Open-Midi
+' ===========================================================================
+
+' Die OM-Kontroller unterstuetzen das Einbinden einer Assemblerroutine in
+' den Interpreter des Systems. Die Routine wird jedesmal gestartet, nachdem
+' ein neuer Tokenbefehl aus dem Speicher geholt wurde. Das ist unmittelbar
+' bevor der Tokenbefehl vom Interpreter ausgefuehrt wird. Mit Hilfe der
+' Routine laesst sich zum Beispiel ein In-System-Debugger realisieren. Oder
+' man koennte - wie hier gezeigt - die Programmausfuehrung unterbrechen oder
+' andere Massnahmen ergreifen, sobald Variablen oder Ports bestimmte Werte
+' annehmen.
+
+' Der Assemblerroutine wird im Akkumulator der Wert #$80 und im X-Register
+' die Adresse von FREERAM uebergeben. Auf FREERAM steht das aus dem Speicher
+' geholte Token. Die Routine sollte mit "RTS" beendet werden. Falls mit
+' geloeschtem Carry-Bit ("CLC") beendet wird, fuehrt der Interpreter das im
+' Akkumulator stehende Token aus. Wird dagegen mit gesetztem Carry-Bit
+' ("STC") beendet, faehrt das System mit dem naechsten Tokenbefehl fort.
+
+' Hier in diesem Beispiel wird die BASIC-IRQ-Routine aufgerufen, sobald
+' die Variable mit den Namen VAR den Wert 24 annimmt. Dadurch, dass nun
+' vor der Ausfuehrung jedes Tokenbefehls zunaechst die Assemblerroutine
+' aufgerufen wird, ergibt sich natuerlich eine geringere Ausfuehrungs-
+' geschwindigkeit von BASIC-Programmen. Der Interpreter arbeitet rund
+' 30% langsamer, was dem Geschwindigkeitsniveau der Conrad-Micro V2.00
+' entspricht.
+
+
+INCLUDE "om.def"
+
+DEFINE var BYTE           'eine normale Variable definieren
+
+' ---------------------------------------------------------------------------
+
+' Die folgende Assemblerroutine steht am Programmbeginn und es ist das
+' Schluesselwort INLASM angegeben. Es handelt sich daher um eine IIAR.
+' Also um eine Assembler-Interruptroutine, die bei einem aktivierten
+' Interrupt gestartet wird.
+
+DEFINE mIrqReq &b00000010 'Maske zum Starten der BASIC-IRQ-Routine
+
+PROC iiar_tok INLASM
+
+! lda var                 'Inhalt von VAR in den Akku laden
+! cmpa #24                'Akkuinhalt mit der Zahl 24 vergleichen
+! bne iiar_tok_end        'falls ungleich, dann zum Label springen
+
+! lda -3,x                'Falls gleich, dann das Bit "IrqReq" im
+! ora #mIrqReq            'OSSTAT-Register setzen. Bei der naechsten
+! sta -3,x                'Gelegenheit startet die BASIC-IRQ-Routine.
+
+#iiar_tok_end
+! lda ,x                  'Diese Assemblerroutine uebergibt nun wieder an
+! clc                     'den Interpreter. Dazu muss im Akku das auszu-
+! rts                     'fuehrende Token stehen und Carry geloescht sein.
+
+END PROC
+
+' ---------------------------------------------------------------------------
+
+#main
+
+'BASIC-IRQ-Routine definieren
+INTERRUPT irqrou
+
+'wir haengen unsere Assemblerroutine in den Interpreter
+URTok=ON
+
+'Nun folgt das zu ueberwachende Hauptprogramm
+FOR var=0 to 49
+  PRINT var
+NEXT var
+
+END
+
+' ---------------------------------------------------------------------------
+
+'Die folgende BASIC-IRQ-Routine wird gestartet, wenn VAR den Wert 24 annimmt
+PROC irqrou
+  PRINT
+  PRINT "Hier ist die BASIC-Interrupt-Routine. VAR ist ";var;"."
+  END
+RETURN INTERRUPT
+
+
+
+

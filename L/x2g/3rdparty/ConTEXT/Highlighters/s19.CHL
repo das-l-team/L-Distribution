@@ -1,0 +1,119 @@
+
+
+    // s19 highlighter adaptiert von  das |_ Team
+
+
+    Language: --> s19 Datei
+
+    Description: Assembler generated file
+
+    
+
+    CaseSensitive: 0
+
+    LineComment: ;
+    BlockCommentBeg:
+    BlockCommentEnd:
+
+    IdentifierBegChars: s S _%@
+    IdentifierChars: a..z A..Z _ 0..9 ?
+
+    NumConstBegChars: # //als Label mißbraucht
+
+
+    NumConstChars: a..z A..Z _ 0..9
+
+    EscapeChar:
+
+    KeyWords1:
+
+    // Hier bitte weitere Kategorien von Schlüsselwörtern eintragen, z.B.
+    // eigene feste Funktionen. Detaileinstellungen können in ConTEXT
+    // geändert werden.
+
+
+
+
+
+	// Reservierte Variablennamen des Open-Micro Betriebssystems
+    KeyWords2:
+
+
+	// Schleifen- und Tabellen-Befehle
+    KeyWords3:
+    0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
+
+
+
+
+
+
+    KeyWords4:
+
+   //Elementare Funktionen (|_)
+
+
+   //Symbolische Konstanten (|_)
+
+
+	// neue OC-Befehle
+    KeyWords5:
+
+
+
+
+    StringBegChar: "
+    StringEndChar: "
+    MultilineStrings: 0
+
+    UsePreprocessor: 0
+
+
+    CurrLineHighlighted: 1
+
+    SpaceCol: clWindowText clWindow
+    Keyword1Col: $00C00000 clWindow
+    Keyword2Col: clPurple clWindow
+    Keyword3Col: clBlue clWindow
+    Keyword4Col: clBlue clWindow
+    Keyword5Col: clBlue clWindow
+    IdentifierCol: clWindowText clWindow
+    CommentCol: clGreen clWindow
+    NumberCol: $000000C0 clWindow
+    StringCol: clMaroon clWindow
+    SymbolCol: clPurple clWindow
+    PreprocessorCol: clBlue clWindow
+    SelectionCol: clWhite clNavy
+    CurrentLineCol: clBlack clYellow
+
+    OverrideTxtFgColor: 0
+    BlockAutoindent: 0
+    BlockBegStr:
+    BlockEndStr:
+    MatchedBracesCol: clWindowText clWindow
+
+
+
+
+CurrLineHighlighted:    1
+OverrideTxtFgColor:     0
+BlockAutoindent:        0
+BlockBegStr:
+BlockEndStr:
+SpaceCol:               clWindowText clWindow
+Keyword1Col:            clNavy clWindow B
+Keyword2Col:            $00C000C0 clWindow
+Keyword3Col:            $00FF4040 clWindow B
+Keyword4Col:            $00C000C0 clWindow B
+Keyword5Col:            clOlive clWindow B
+IdentifierCol:          clWindowText clWindow
+CommentCol:             $0000C000 clWindow
+NumberCol:              clRed clWindow
+StringCol:              clMaroon clWindow
+SymbolCol:              $000000C0 clWindow
+PreprocessorCol:        clBlue clWindow
+SelectionCol:           $00FF4040 $00202020
+CurrentLineCol:         clBlack $0080FFFF
+MatchedBracesCol:       clWindowText clWindow
+Filter:                 --> s19 Dateien (*.s19) | *.s19
+HelpFile:               L:\x2g\3rdparty\DASMx\dasmx130\DASMx.txt

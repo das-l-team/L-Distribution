@@ -1,0 +1,24 @@
+
+Downloadtool für die OM-Controllern unter Windows 8 - Version 1.0
+von Michael Hoyer <hoyer.michael@gmail.com> ab 24. August 2013
+
+
+In diesem ZIP-Archiv befinden sich ein von Michael Hoyer entwickeltes
+Downloadtool für die OM-Controllern speziell für Windows 8.
+
+Das Programm kann mit den selben Parametern wie OMDLWIN.exe gestartet
+werden (OMDT [Dateiname] [COM-PORT Baudrate|AUTOBAUD] [AUTOSTART]).
+Das Programm kann aber auch ohne Parameter ausgeführt werden und die
+Datei und der Port manuell gewählt werden.
+
+
+Falls Probleme auftreten, bitte per E-Mail bei Michael melden.
+
+
+Allgemeine Fragen werden im Forum zur C-Control-1 beantwortet:
+http://ccintern.dharlos.de/forum
+
+Viel Spaß mit den OM-Controllern!
+
+Dietmar Harlos
+http://om.dharlos.de

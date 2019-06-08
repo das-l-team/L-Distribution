@@ -1,0 +1,645 @@
+
+
+    // CCbasic(++) highlighter adapted by Henrik Reimers
+    // umgestellt und erweitert auf Open-Control/BASIC by Gerhard Fischer
+    // weitere Anpassungen von Dietmar Harlos am 3. September 2005
+    // weitere Anpassungen von  das |_ Team u.a. fuer Open-Maxi 
+
+
+    Language:    --> Open-Control/BASIC
+
+    Description: Open-Control/BASIC-Compiler von Dietmar Harlos
+
+
+
+
+    CaseSensitive: 0
+
+    LineComment: '
+    BlockCommentBeg:
+    BlockCommentEnd:
+
+    IdentifierBegChars: a..z A..Z _%@
+    IdentifierChars: a..z A..Z _ 0..9 ?
+
+    NumConstBegChars: # //als Label mißbraucht
+
+
+    NumConstChars: a..z A..Z _ 0..9
+
+    EscapeChar:
+
+    KeyWords1: ABS AD APPEND AND BAUD BEEP BIT BYTE BYTEPORT
+    CLOSE DA DAY DEACT DEFINE DOW ELSE END EOF FILEFREE FREQ
+    GET GOTO GOSUB HOUR IF INPUT LOOKTAB MAX MIN MINUTE MOD MONTH
+    NAND NOR NOT ON OFF OPEN OR PAUSE PORT PULSE PUT PRINT
+	RANDOMIZE RAND RETURN RXD R1200 R2400 R4800 R9600 READ
+	SECOND SGN SHL SHR SLOWMODE SQR SYSEND SYS SYSCODE THEN
+	TIMER TOG WAIT WORD WORDPORT WRITE XOR YEAR
+        LOOKTABWORD LOOKTABBYTE
+
+
+    // Hier bitte weitere Kategorien von Schlüsselwörtern eintragen, z.B.
+    // eigene feste Funktionen. Detaileinstellungen können in ConTEXT
+    // geändert werden.
+
+
+
+       // Open-Control                               // |_
+
+
+
+
+	// Reservierte Variablennamen zur Konf. der Open-Control Betriebssysteme
+
+    KeyWords2: OPTION CCbas OpenMicro OpenMini OpenMidi OpenMacro OpenMaxi
+        End2Host UseEsci PrintHex PrintSpc URIllTok FileByte
+	ClockDis RealPop RunOnErr Carry IrqReq IrqSet IrqAct FileChg IiarFnd
+	EsciErr UIRIrq UIRSwi UIRTim0 UIRTim1 UIRTovl UIRKyb UIRAdc URTok
+	config1 config2 dERR dERRADRh dERRADRl dFILEPOSh dFILEPOSl
+	dDBNZCTR dCSTKPTR dGSTKPTR dPCADRh dPCADRl dFREERAM1
+	INTERRUPT PULLUPA PULLUPB       ConOnErr INCLUDE UIRTofl
+	UIRSpiR UIRSpiT UIRTim2 UIRTim3 UIREsciR UIREsciT UIREsciE
+	OSTEMP OSTEMP1 OSTEMP2 RTCTIMER URAMBASE UPROGBASE
+	ESCIBUF ESCIPTR
+	iIRQ iSWI iTIM0 iTIM1 iTOFL iKYB iADC iTOK iSPIr iSPIt
+	iTIM2 iTIM3 iESCIr iESCIt iESCIe
+        CLASSIC OCBAS OPENBASIC OM
+
+
+       bAWUL PTAPUE bOSC2EN bPTAPUE5 bPTAPUE4 bPTAPUE3 bPTAPUE2 bPTAPUE1 bPTAPUE0 PTBPUE
+       bPTBPUE7 bPTBPUE6 bPTBPUE5 bPTBPUE4 bPTBPUE3 bPTBPUE2 bPTBPUE1 bPTBPUE0 KBSCR bKEYF
+       bACKK bIMASK bMODEK KBIER bAWUIE bKBIE5 bKBIE4 bKBIE3 bKBIE2 bKBIE1 bKBIE0 INTSCR
+       bACK bIMASK bMODE bIRQPUD bIRQEN bOSCOPT1 bOSCOPT0 bRSTEN bCOPRS bLVISTOP bLVIRSTD
+       bLVIPWRD bLVI5OR3 bSSREC bSTOP bCOPD TSC bTSTOP bTRST TCNTH TCNTL TMODH TMODL TSC0
+       bTOV0 bCH0MAX TCH0H TCH0L TSC1 bTOV1 bCH1MAX TCH1H TCH1L OSCSTAT bECGON bECGST
+       OSCTRIM ADSCR ADCH4 ADCH3 ADCH2 ADCH1 ADCH0 ADR ADICLK bADIV2 BSR bSBSW SRSR bILAD
+       bMODRST bLVI BRKAR bBDCOP BFCR bBCFE INT1 bIF5 bIF4 bIF3 bIF1 INT2 bIF14 INT3 bIF15
+       FLCR bHVEN bMASS bERASE bPGM BRKH BRKL BRKSCR bBRKE bBRKA LVISR bLVIOUT FLBPR
+       IOSCTV COPCTL 
+       
+       bIMASKK
+
+       
+       
+       
+       
+       
+       
+
+
+
+
+
+
+
+
+
+      // Open-Control
+
+       Dcf77Dis HwHsEnab LcdLight LcdEn2 SciErr FileErr DcfPar DcfEdge DcfSZtmp DcfSZ
+       DcfOk DcfClkSt LcdErr LcdRs PNum2Lcd UIRSpi UIRSci1r UIRSci1t UIRSci1e UIRLvd
+       UIRIcg UIRTim4 UIRTim5 UIRTpm2C0 UIRTpm2C1 UIRTpm2Of UIRSci2e UIRSci2r UIRSci2t
+       UIRIic1 UIRRti HwStack i2cdelay i2ceepadr i2clcdadr extp_om sci2buf sci2ptr
+       sci2anz gstk dcfilen dcficnt dcfyear dcfmonth dcfday dcfdow dcfhour dcfmin
+       freq1tmp freq2tmp ufileend iSPI iSCI1r iSCI1t iSCI1e iLVD iICG iTIM4 iTIM5
+       iTPM2C0 iTPM2C1 iTPM2OFL iSCI2e iSCI2r iSCI2t iIIC1
+       iRTI
+       
+       PTAD bPTAD7 bPTAD6 bPTAD5 bPTAD4 bPTAD3 bPTAD2 bPTAD1 bPTAD0 PTA bPTA7 bPTA6
+       bPTA5 bPTA4 bPTA3 bPTA2 bPTA1 bPTA0 PTADD bPTADD7 bPTADD6 bPTADD5 bPTADD4 bPTADD3
+       bPTADD2 bPTADD1 bPTADD0 DDRA bDDRA7 bDDRA6 bDDRA5 bDDRA4 bDDRA3 bDDRA2 bDDRA1 bDDRA0
+
+       PTBD bPTBD7 bPTBD6 bPTBD5 bPTBD4 bPTBD3 bPTBD2 bPTBD1 bPTBD0 PTB bPTB7 bPTB6
+       bPTB5 bPTB4 bPTB3 bPTB2 bPTB1 bPTB0 PTBDD bPTBDD7 bPTBDD6 bPTBDD5 bPTBDD4 bPTBDD3
+       bPTBDD2 bPTBDD1 bPTBDD0 DDRB bDDRB7 bDDRB6 bDDRB5 bDDRB4 bDDRB3 bDDRB2 bDDRB1 bDDRB0
+
+       PTCD        bPTCD6 bPTCD5 bPTCD4 bPTCD3 bPTCD2 bPTCD1 bPTCD0 PTC bPTC6 bPTC5
+       bPTC4       bPTC3 bPTC2 bPTC1 bPTC0 PTCDD         bPTCDD6 bPTCDD5 bPTCDD4 bPTCDD3
+       bPTCDD2 bPTCDD1 bPTCDD0 DDRC        bDDRC6 bDDRC5 bDDRC4 bDDRC3 bDDRC2 bDDRC1 bDDRC0
+
+       PTDD bPTDD7 bPTDD6 bPTDD5 bPTDD4 bPTDD3 bPTDD2 bPTDD1 bPTDD0 PTD bPTD7 bPTD6
+       bPTD5 bPTD4 bPTD3 bPTD2 bPTD1 bPTD0 PTDDD bPTDDD7 bPTDDD6 bPTDDD5 bPTDDD4 bPTDDD3
+       bPTDDD2 bPTDDD1 bPTDDD0 DDRD bDDRD7 bDDRD6 bDDRD5 bDDRD4 bDDRD3 bDDRD2 bDDRD1 bDDRD0
+
+       PTED bPTED7 bPTED6 bPTED5 bPTED4 bPTED3 bPTED2 bPTED1 bPTED0 PTE bPTE7 bPTE6
+       bPTE5 bPTE4 bPTE3 bPTE2 bPTE1 bPTE0 PTEDD bPTEDD7 bPTEDD6 bPTEDD5 bPTEDD4 bPTEDD3
+       bPTEDD2 bPTEDD1 bPTEDD0 DDRE bDDRE7 bDDRE6 bDDRE5 bDDRE4 bDDRE3 bDDRE2 bDDRE1 bDDRE0
+
+       PTFD bPTFD7 bPTFD6 bPTFD5 bPTFD4 bPTFD3 bPTFD2 bPTFD1 bPTFD0 PTF bPTF7 bPTF6
+       bPTF5 bPTF4 bPTF3 bPTF2 bPTF1 bPTF0 PTFDD bPTFDD7 bPTFDD6 bPTFDD5 bPTFDD4 bPTFDD3
+       bPTFDD2 bPTFDD1 bPTFDD0 DDRF bDDRF7 bDDRF6 bDDRF5 bDDRF4 bDDRF3 bDDRF2 bDDRF1 bDDRF0
+
+       PTGD        bPTGD6 bPTGD5 bPTGD4 bPTGD3 bPTGD2 bPTGD1 bPTGD0 PTG       bPTG6
+       bPTG5 bPTG4 bPTG3 bPTG2 bPTG1 bPTG0 PTGDD         bPTGDD6 bPTGDD5 bPTGDD4 bPTGDD3
+       bPTGDD2 bPTGDD1 bPTGDD0 DDRG        bDDRG6 bDDRG5 bDDRG4 bDDRG3 bDDRG2 bDDRG1 bDDRG0
+
+       
+
+       // Status and Control Registers
+
+       ADC1SC1 bCOCO bAIEN bADCO bADCH4 bADCH3 bADCH2 bADCH1 bADCH0 ADC1SC2 bADACT bADTRG
+       bACFE bACFGT ADC1RH ADC1RL ADC1CVH ADC1CVL ADC1CFG bADLPC bADIV1 bADIV0 bADLSMP
+       bMODE1 bMODE0 bADICLK1 bADICLK0 APCTL1 bADPC7 bADPC6 bADPC5 bADPC4 bADPC3 bADPC2
+       bADPC1 bADPC0 APCTL2 bADPC15 bADPC14 bADPC13 bADPC12 bADPC11 bADPC10 bADPC9 bADPC8
+       APCTL3 bADPC23 bADPC22 bADPC21 bADPC20 bADPC19 bADPC18 bADPC17 bADPC16 IRQSC bIRQEDG
+       bIRQPE bIRQF bIRQACK bIRQIE bIRQMOD KBI1SC bKBEDG7 bKBEDG6 bKBEDG5 bKBEDG4 bKBF bKBACK
+       bKBIE bKBIMOD KBI1PE bKBIPE7 bKBIPE6 bKBIPE5 bKBIPE4 bKBIPE3 bKBIPE2 bKBIPE1 bKBIPE0
+
+
+       TPM1SC bTOF bTOIE bCPWMS bCLKSB bCLKSA bPS2 bPS1 bPS0 TPM1CNTH TPM1CNTL TPM1MODH TPM1MODL
+       TPM1C0SC bCH0F bCH0IE bMS0B bMS0A bELS0B bELS0A TPM1C0VH TPM1C0VL TPM1C1SC bCH1F bCH1IE
+       bMS1B bMS1A bELS1B bELS1A TPM1C1VH TPM1C1VL TPM1C2SC bCH2F bCH2IE bMS2B bMS2A bELS2B
+       bELS2A TPM1C2VH TPM1C2VL TPM1C3SC bCH3F bCH3IE bMS3B bMS3A bELS3B bELS3A TPM1C3VH TPM1C3VL
+       TPM1C4SC bCH4F bCH4IE bMS4B bMS4A bELS4B bELS4A TPM1C4VH TPM1C4VL TPM1C5SC bCH5F bCH5IE
+       bMS5B bMS5A bELS5B bELS5A TPM1C5VH TPM1C5VL
+
+       SCI1BDH SCI1BDL SCI1C1 bLOOPS bSCISWAI bRSRC bM bWAKE bILT bPE bPT SCI1C2 bTIE bTCIE bRIE
+       bILIE bTE bRE bRWU bSBK SCI1S1 bTDRE bTC bRDRF bIDLE bOR bNF bFE bPF SCI1S2 bBRK13 bRAF
+       SCI1C3 bR8 bT8 bTXDIR bTXINV bORIE bNEIE bFEIE bPEIE SCI1D SCI2BDH SCI2BDL SCI2C1 bLOOPS
+       bSCISWAI bRSRC bM bWAKE bILT bPE bPT SCI2C2 bTIE bTCIE bRIE bILIE bTE bRE bRWU bSBK SCI2S1
+       bTDRE bTC bRDRF bIDLE bOR bNF bFE bPF SCI2S2 bBRK13 bRAF SCI2C3 bR8 bT8 bTXDIR bTXINV bORIE
+       bNEIE bFEIE bPEIE SCI2D
+
+       ICGC1 bHGO bRANGE bREFS bCLKS1 bCLKS0 bOSCSTEN bLOCD ICGC2 bLOLRE bMFD2 bMFD1 bMFD0 bLOCRE
+       bRFD2 bRFD1 bRFD0 ICGS1 bCLKST1 bCLKST0 bREFST bLOLS bLOCK bLOCS bERCS bICGIF ICGS2 bDCOS
+       ICGFLTU ICGFLTL ICGTRM SPI1C1 bSPIE bSPE bSPTIE bMSTR bCPOL bCPHA bSSOE bLSBFE SPI1C2 bMODFEN
+       bBIDIROE bSPISWAI bSPC0 SPI1BR bSPPR2 bSPPR1 bSPPR0 bSPR2 bSPR1 bSPR0 SPI1S bSPRF bSPTEF bMODF
+       SPI1D IIC1A IIC1F bMULT1 bMULT0 bICR5 bICR4 bICR3 bICR2 bICR1 bICR0 IIC1C bIICEN bIICIE bMST
+       bTX bTXAK bRSTA IIC1S bTCF bIAAS bBUSY bARBL bSRW bIICIF bRXAK IIC1D
+
+       TPM2SC bTOF bTOIE bCPWMS bCLKSB bCLKSA bPS2 bPS1 bPS0 TPM2CNTH TPM2CNTL TPM2MODH TPM2MODL
+       TPM2C0SC bCH0F bCH0IE bMS0B bMS0A bELS0B bELS0A TPM2C0VH TPM2C0VL TPM2C1SC bCH1F bCH1IE bMS1B
+       bMS1A bELS1B bELS1A TPM2C1VH TPM2C1VL
+
+       SRS bPOR bPIN bCOP bILOP bICG bLVD SBDFR bBDFR SOPT bCOPE bCOPT bSTOPE SMCLK bMPE bMCSEL2
+       bMCSEL1 bMCSEL0 SDIDH SDIDL SRTISC bRTIF bRTIACK bRTICLKS bRTIE bRTIS2 bRTIS1 bRTIS0 SPMSC1
+       bLVDF bLVDACK bLVDIE bLVDRE bLVDSE bLVDE bBGBE SPMSC2 bLVWF bLVWACK bLVDV bLVWV bPPDF bPPDACK
+       bPPDC
+
+
+       // Debug Comparator Register
+
+       DBGCAH DBGCAL DBGCBH DBGCBL DBGFH DBGFL DBGC bDBGEN bARM bTAG bBRKEN bRWA bRWAEN bRWB bRWBEN DBGT
+       bTRGSEL bBEGIN bTRG3 bTRG2 bTRG1 bTRG0 DBGS bAF bBF bARMF bCNT3 bCNT2 bCNT1 bCNT0
+
+
+
+       FCDIV bDIVLD bPRDIV8 bDIV5 bDIV4 bDIV3 bDIV2 bDIV1 bDIV0 FOPT bKEYEN bFNORED bSEC01 bSEC00 FCNFG
+       bKEYACC FPROT bFPS7 bFPS6 bFPS5 bFPS4 bFPS3 bFPS2 bFPS1 bFPDIS FSTAT bFCBEF bFCCF bFPVIOL bFACCERR bFBLANK FCMD PTAPE bPTAPE7 bPTAPE6 bPTAPE5 bPTAPE4 bPTAPE3 bPTAPE2
+       bPTAPE1 bPTAPE0 PTASE bPTASE7 bPTASE6 bPTASE5 bPTASE4 bPTASE3 bPTASE2 bPTASE1 bPTASE0 PTADS bPTADS7
+       bPTADS6 bPTADS5 bPTADS4 bPTADS3 bPTADS2 bPTADS1 bPTADS0 PTBPE bPTBPE7 bPTBPE6 bPTBPE5 bPTBPE4      bPTBPE3
+       bPTBPE2 bPTBPE1 bPTBPE0 PTBSE bPTBSE7 bPTBSE6 bPTBSE5 bPTBSE4 bPTBSE3 bPTBSE2 bPTBSE1 bPTBSE0      PTBDS
+       bPTBDS7 bPTBDS6 bPTBDS5 bPTBDS4 bPTBDS3 bPTBDS2 bPTBDS1 bPTBDS0 PTCPE bPTCPE6 bPTCPE5 bPTCPE4
+       bPTCPE3 bPTCPE2 bPTCPE1 bPTCPE0 PTCSE bPTCSE6 bPTCSE5 bPTCSE4 bPTCSE3 bPTCSE2 bPTCSE1 bPTCSE0
+       PTCDS bPTCDS6 bPTCDS5 bPTCDS4 bPTCDS3 bPTCDS2 bPTCDS1 bPTCDS0 PTDPE bPTDPE7 bPTDPE6 bPTDPE5
+       bPTDPE4 bPTDPE3 bPTDPE2 bPTDPE1 bPTDPE0 PTDSE bPTDSE7 bPTDSE6 bPTDSE5 bPTDSE4 bPTDSE3 bPTDSE2
+       bPTDSE1 bPTDSE0 PTDDS bPTDDS7 bPTDDS6 bPTDDS5 bPTDDS4 bPTDDS3 bPTDDS2 bPTDDS1 bPTDDS0 PTEPE
+       bPTEPE7 bPTEPE6 bPTEPE5 bPTEPE4 bPTEPE3 bPTEPE2 bPTEPE1 bPTEPE0 PTESE bPTESE7 bPTESE6 bPTESE5
+       bPTESE4 bPTESE3 bPTESE2 bPTESE1 bPTESE0 PTEDS bPTEDS7 bPTEDS6 bPTEDS5 bPTEDS4 bPTEDS3 bPTEDS2
+       bPTEDS1 bPTEDS0 PTFPE bPTFPE7 bPTFPE6 bPTFPE5 bPTFPE4 bPTFPE3 bPTFPE2 bPTFPE1 bPTFPE0 PTFSE
+       bPTFSE7 bPTFSE6 bPTFSE5 bPTFSE4 bPTFSE3 bPTFSE2 bPTFSE1 bPTFSE0 PTFDS bPTFDS7 bPTFDS6 bPTFDS5
+       bPTFDS4 bPTFDS3 bPTFDS2 bPTFDS1 bPTFDS0 PTGPE bPTGPE6 bPTGPE5 bPTGPE4 bPTGPE3 bPTGPE2 bPTGPE1
+       bPTGPE0 PTGSE bPTGSE6 bPTGSE5 bPTGSE4 bPTGSE3 bPTGSE2 bPTGSE1 bPTGSE0 PTGDS bPTGDS6 bPTGDS5
+       bPTGDS4 bPTGDS3 bPTGDS2 bPTGDS1 bPTGDS0
+
+
+
+       NVBACKKEY0 NVBACKKEY1 NVBACKKEY2 NVBACKKEY3 NVBACKKEY4 NVBACKKEY5 NVBACKKEY6 NVBACKKEY7 NVPROT
+       bFPS7 bFPS6 bFPS5 bFPS4 bFPS3 bFPS2 bFPS1 bFPDIS NVICGTRM NVOPT bKEYEN bFNORED bSEC01 bSEC00
+
+       Vrti Viic1 Vadc1 Vkeyboard1 Vsci2tx Vsci2rx Vsci2err Vsci1tx Vsci1rx Vsci1err Vspi1 Vtpm2ovf
+       Vtpm2ch1 Vtpm2ch0 Vtpm1ovf Vtpm1ch5 Vtpm1ch4 Vtpm1ch3 Vtpm1ch2 Vtpm1ch1 Vtpm1ch0 Vicg Vlvd
+       Virq Vswi Vreset
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+       
+       DA1 DA2 DA3 AD1 AD2 AD3 AD4 AD5 AD6 AD7 AD8   // |_
+
+        // Open-Control                               // |_
+       da0 ad0 ad9 ad10 ad11 ad12 ad13 ad14 ad15 ad34 ad35 ad37 ad38
+       porta  pta0 pta1 pta2 pta3 pta4 pta5 pta6 pta7
+       portb  ptb0 ptb1 ptb2 ptb3 ptb4 ptb5 ptb6 ptb7
+       portc  CTS1 RXD1 RTS1 TXD1 MCLK SDA SCL
+
+       portd
+
+       porte  pte0 pte1 pte2 pte3 pte4 pte5 pte6 pte7
+
+       portf
+       portg
+
+       extport1 extport2 extport3 extport4 extport5 extport6 extport7 extport8
+
+
+
+
+	// Schleifen- und Tabellen-Befehle
+    KeyWords3: FOR TO NEXT STEP DOWNTO
+    WHILE WEND REPEAT UNTIL
+    TABLE TABEND  LXGET_EUIVECT
+    ENDTAB FUNC PROC INLASM
+
+
+
+
+
+    KeyWords4:
+
+   //
+   Function Procedure
+
+
+   // post C-Control I 1.1 hosts
+
+     version
+
+   // some basic function names ( |_ System )
+
+     Call C L Success
+
+
+   //symbolic constants |_
+
+     Dieses_Programm_wurde_entworfen_fuer_L_Modul
+     Dieses_Programm_wurde_entworfen_fuer_L_Basis
+
+
+     //Byte- und Integervariablen
+
+     b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 b13 b14 b15 b16 b17 b18 b19 b20 b21 b22 b23 b24
+     b1_b2 b3_b4 b5_b6 b7_b8 b9_b10 b11_b12 b13_b14 b15_b16 b17_b18 b19_b20 b21_b22 b23_b24
+       w1    w2    w3    w4    w5      w6      w7      w8      w9      w10     w11     w12
+
+     //Open-Control
+
+
+
+          byte0   byte1   byte2   byte3   byte4   byte5   byte6   byte7   byte8   byte9
+         byte10  byte11  byte12  byte13  byte14  byte15  byte16  byte17  byte18  byte19
+         byte20  byte21  byte22  byte23  byte24  byte25  byte26  byte27  byte28  byte29
+         byte30  byte31  byte32  byte33  byte34  byte35  byte36  byte37  byte38  byte39
+         byte40  byte41  byte42  byte43  byte44  byte45  byte46  byte47  byte48  byte49
+         byte50  byte51  byte52  byte53  byte54  byte55  byte56  byte57  byte58  byte59
+         byte60  byte61  byte62  byte63  byte64  byte65  byte66  byte67  byte68  byte69
+         byte70  byte71  byte72  byte73  byte74  byte75  byte76  byte77  byte78  byte79
+         byte80  byte81  byte82  byte83  byte84  byte85  byte86  byte87  byte88  byte89
+         byte90  byte91  byte92  byte93  byte94  byte95  byte96  byte97  byte98  byte99
+        byte100 byte101 byte102 byte103 byte104 byte105 byte106 byte107 byte108 byte109
+        byte110 byte111 byte112 byte113 byte114 byte115 byte116 byte117 byte118 byte119
+        byte120 byte121 byte122 byte123 byte124 byte125 byte126 byte127 byte128 byte129
+        byte130 byte131 byte132 byte133 byte134 byte135 byte136 byte137 byte138 byte139
+        byte140 byte141 byte142 byte143 byte144 byte145 byte146 byte147 byte148 byte149
+        byte150 byte151 byte152 byte153 byte154 byte155 byte156 byte157 byte158 byte159
+        byte160 byte161 byte162 byte163 byte164 byte165 byte166 byte167 byte168 byte169
+        byte170 byte171 byte172 byte173 byte174 byte175 byte176 byte177 byte178 byte179
+        byte180 byte181 byte182 byte183 byte184 byte185 byte186 byte187 byte188 byte189
+        byte190 byte191 byte192 byte193 byte194 byte195 byte196 byte197 byte198 byte199
+        byte200 byte201 byte202 byte203 byte204 byte205 byte206 byte207 byte208 byte209
+        byte210 byte211 byte212 byte213 byte214 byte215 byte216 byte217 byte218 byte219
+        byte220 byte221 byte222 byte223 byte224 byte225 byte226 byte227 byte228 byte229
+        byte230 byte231 byte232 byte233 byte234 byte235 byte236 byte237 byte238 byte239
+        byte240 byte241 byte242 byte243 byte244 byte245 byte246 byte247 byte248 byte249
+        byte250 byte251 byte252 byte253 byte254 byte255
+
+         word0   word1   word2   word3   word4   word5   word6   word7   word8   word9
+        word10  word11  word12  word13  word14  word15  word16  word17  word18  word19
+        word20  word21  word22  word23  word24  word25  word26  word27  word28  word29
+        word30  word31  word32  word33  word34  word35  word36  word37  word38  word39
+        word40  word41  word42  word43  word44  word45  word46  word47  word48  word49
+        word50  word51  word52  word53  word54  word55  word56  word57  word58  word59
+        word60  word61  word62  word63  word64  word65  word66  word67  word68  word69
+        word70  word71  word72  word73  word74  word75  word76  word77  word78  word79
+        word80  word81  word82  word83  word84  word85  word86  word87  word88  word89
+        word90  word91  word92  word93  word94  word95  word96  word97  word98  word99
+       word100 word101 word102 word103 word104 word105 word106 word107 word108 word109
+       word110 word111 word112 word113 word114 word115 word116 word117 word118 word119
+       word120 word121 word122 word123 word124 word125 word126 word127 word128 word129
+       word130 word131 word132 word133 word134 word135 word136 word137 word138 word139
+       word140 word141 word142 word143 word144 word145 word146 word147 word148 word149
+       word150 word151 word152 word153 word154 word155 word156 word157 word158 word159
+       word160 word161 word162 word163 word164 word165 word166 word167 word168 word169
+       word170 word171 word172 word173 word174 word175 word176 word177 word178 word179
+       word180 word181 word182 word183 word184 word185 word186 word187 word188 word189
+       word190 word191 word192 word193 word194 word195 word196 word197 word198 word199
+       word200 word201 word202 word203 word204 word205 word206 word207 word208 word209
+       word210 word211 word212 word213 word214 word215 word216 word217 word218 word219
+       word220 word221 word222 word223 word224 word225 word226 word227 word228 word229
+       word230 word231 word232 word233 word234 word235 word236 word237 word238 word239
+       word240 word241 word242 word243 word244 word245 word246 word247 word248 word249
+       word250 word251 word252 word253 word254 word255
+
+
+  ' Open-Control/BASIC-INLINE-Assembler
+
+    adc add ais aix and asr asra asrx bclr beq bge bgnd bgt bhcc
+    bhcs bhi bhs bih bil bit ble blo bls blt bmc bmi bms bne bpl bra brclr
+    brn brset bset bsr cbeq cbeqa cbeqx clc cli clr clra clrh clrx cmp cmphx
+    cmpx com coma comx cphx daa dbnz dbnza dbnzx dec deca decx div eor inc
+    inca incx jmp jsr lda ldhx ldx lsl lsla lslx lsr lsra lsrx mov mul neg
+    nega negx nop nsa ora popa poph popx pusha pushh pushx rol rola rolx
+    ror rora rorx rsp rti rts sbc sec sei sta sthx stop stx sub swi tap
+    tax tpa tst tsta tstx tsx txa txs wait
+    asl asla aslx
+    sei stc sti cpx cphx or
+    db fcb fcc dw fcw fdb
+    psha pshx pshh pula pulx pulh
+    bcc bcs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Lx
+     PrintDEC //PrintDEC(integer)
+     LGet  // Syntax: LGet(integer)
+     LReg  // Syntax: LReg(integer)
+     LSlot // Syntax: LSlot(CALL) LSlot(RUN) LSlot(WAIT) LSlot(END) LSlot(KILL)
+     LPrg  // Syntax: LPrg(END)
+     LFile // Syntax: LFile(NEW) LFile(GETDATA)
+
+
+
+LGet_freemem_rem
+LGet_MAXBAUD
+LGet_SLTOFFST
+LGet_NOM
+LGet_POC
+LGet_ERC
+LGet_WRC
+LGet_SRC
+LGet_EEC
+LGet_IEC
+LHst_DeepReset
+LHst_FullReset
+LHst_Warmstart
+LGet_baudreg
+LGet_nextADDR
+LGet_filelen
+LGet_freemem
+LGet_hostIDS
+LReg_hostIDS
+LReg_busclock
+LGet_ASJSLOT
+LPrg_END
+LGet_MEMSIZE
+LGet_busclock
+LPrg_ClearRAM
+LGet_filefree
+LGet_HOSTTYPE
+LGet_LastErr
+LGet_RxBufSze
+LGet_LCDSlot
+LGet_LCDVctr
+LReg_LCDSlot
+LReg_LCDVctr
+LGet_UIPSlot
+LGet_UIPVctr
+LReg_UIPSlot
+LReg_UIPVctr
+LRun_Slot
+LRun_SlotKeepRam
+LCall_UIP
+LCall_Slot
+LSync_MTicks
+Lget_BaudAvail
+Lget_DA3
+Lget_DA2
+Lget_DA1
+Lpoke8
+Lpeek8
+Lpoke16
+Lpeek16
+Lreg_TmpBaud
+PrintLZ
+PrintDEC
+BmVers
+BmVersOK
+BmVersBelow
+Lbit_Version
+Unknown_Cmd
+
+WAIT_KEY
+WAIT_PORT
+WAIT_TIME
+WAIT_DATE
+WAIT_EVENT
+WAIT_PWRON
+
+GET_DA1PRCT
+GET_DA2PRCT
+
+GET_SLOT4CMD
+GET_NEXTADDR
+
+
+ RSBAUD_110
+ RSBAUD_300
+ RSBAUD_600
+ RSBAUD_1200
+ RSBAUD_2400
+ RSBAUD_4800
+ RSBAUD_7200
+ RSBAUD_9600
+ RSBAUD_14400
+ RSBAUD_28800
+ RSBAUD_MIDI
+ RSBAUD_31250
+ RSBAUD_38400
+ RSBAUD_57600
+ RSBAUD_115200
+ RSBAUD_125000
+ RSBAUD_128000
+ RSBAUD_230400
+ RSBAUD_DMX512
+ RSBAUD_250000
+ RSBAUD_375000
+ RSBAUD_460800
+ RSBAUD_468750
+ RSBAUD_500000
+ RSBAUD_921600
+
+
+
+
+     //Aufrufe anderer Module im Speicher des |_ Systems:
+     LPrg_RunSlot LPrg_xGOSUB_SLOT
+     LxJUMP_SLOT LxSTART_SLOT
+     LxCALL_ADDR LxGOSUB_ADDR
+     LxJUMP_ADDR LxSTART_ADDR
+     
+     UIP_CLEAR
+     xUIP_GETHANDLE
+     UIP_CALL Call_UIP
+     UIP_CFG
+     UIP_SENDMSG
+
+     REG_UIPVECT REG_UIPvctr GET_UIPVECT GET_UIPvctr
+     GET_UIPSLOT REG_UIPSLOT GET_UIPADDR REG_UIPADDR
+     GET_EUISLOT REG_EUISLOT GET_EUIADDR REG_EUIADDR GET_HOSTIDS
+     REG_HOSTIDS GET_MEMSIZE REG_MEMSIZE GET_BUSCLCK REG_BUSCLCK
+     GET_FREEMEM PRG_RUNSNGL GET_FILEFRE GET_FILELEN SYN_NEXTSEC
+     GET_CALLBSE GET_LXBMLEN GET_ASJSLOT
+
+     GET_BMVERS GET_E2SIZEPNTR GET_HOSTTYPE ERR GET_SLTOFFST
+     GET_BMSIZE GET_BMDATE BmVersOK
+     GET_IEC GET_EEC GET_POC GET_NOM GET_BMVERSION GET_E2SIZEPNTR
+
+     REG_BAUDREG_0 REG_BAUDREG_1 REG_BAUDREG_2
+     REG_BAUDREG_3 REG_BAUDREG_4 Lreg_TmpBaud
+     Lget_BaudAvail
+     GET_BAUDTX1 GET_BAUDRX1 REG_BAUDTX1 REG_BAUDRX1
+     GET_BAUDREG   REG_BAUDRATES
+     GET_DA1 GET_DA2 GET_DA3
+
+     LNK_RECEIVEDATA LNK_RECEIVEPROG LNK_FIND1STSTRG LNK_DUMP1STSTRG
+     LNK_REALLOCATE
+
+     EUI_CLEAR EUI_GETHANDLE EUI_CALL EUI_CFG EUI_SENDMSG
+
+     INF_NOEUI MSG_STARTSLOT INF_HELPSCREEN INF_MAXMOD INF_NONE
+     INF_MODDISCARD INF_MODREMAINING INF_MODRUNNING INF_ASJUMPER_DONE
+     INF_PRGINFO INF_MODCOUNT INF_EXPIRED INF_PRGNAME
+     INF_ASJUMPERCLOSE INF_BASUPLDOK INF_NEXTOFFSET INF_BYTESFREE
+     INF_BASICLEN INF_FILELEN INF_VERSTRING INF_LIST_TOP INF_LIST_BTM
+     MSG_OUTPROMPT MSG_IDLELOOP
+
+     CMD_CLRSCR CMD_PLUGVASJ CMD_DUMPFILE CMD_MODDISCARD CMD_MORE
+     CMD_IDLELOOP CMD_CLEARRAM CMD_RETURN
+
+     WPEEK WPOKE MSG_KEEPBAUD TRIGGER_ADR CMD_ECHOINPUT INF_TIMEOUT
+     MSG_SLOTRUN MSG_SLOTFAIL
+
+     HST_HIBERNATE HST_RESET HST_COLDRESET HST_WARMSTART PRG_CALLERR
+     PRG_DEBUGMON  PRG_NEWTHREAD PRG_CALL PRG_RUNKEEPRAM PRG_RUN
+     PRG_PAUSEMSEC PRG_SYN2TICKS PRG_SYN2EVENT PRG_EXIT  PRG_END
+
+     HST_HIBERNATE HST_RESET HST_COLDRESET HST_WARMSTART PRG_CALLERR
+     PRG_DEBUGMON  PRG_NEWTHREAD PRG_CALL PRG_RUNKEEPRAM PRG_RUN
+     PRG_PAUSEMSEC PRG_SYN2TICKS PRG_SYN2EVENT PRG_EXIT  PRG_END
+                   PRG_SYNCTICKS
+     MSG_UNKNOWNCMD PRGEND_NOLIST PRGEND_NOPROMPT ERR_RETURN
+
+     OPT_WARMSTART OPT_COLDSTART ERR_NOREGEUI TRUE FALSE _TESTONLY ERR_UPLOAD
+     ERR_UPLDTOK ERR_UPLDS19 ERR_RETURN_1 ERR_RETURN_2 ERR_RETURN_3
+     ERR_RETURN_4 ERR_RETURN_5 ERR_RETURN_6 ERR_RETURN_7 ERR_RETURN_8
+     ERR_RETURN_PP ERR_SLOTNOTFOUND ERR_DUMPFILE GET_LASTERROR
+     ERR_EEWRITEFAIL ERR_PRGLEN ERR_NOSPACE ERR_UPLDTOKEN ERR_NONE
+     ERR_SLOT_CREATE ERR_SLOT_APPEND ERR_SLOT_SETFREE ERR_SLOT_CLOSE
+     ERR_EXCD_BMHIGHVEC REG_EUIVECT GET_EUIVECT UNKNOWN_CMD
+
+     NO_INTERFACE INPUT_EMPTY INPUT_OUTOFRANGE INPUT_SPACEBAR INPUT_TIMEDOUT
+     GET_MAXVAR GET_MAXITR
+'
+
+
+
+
+ // neue Open-Control/BASIC Befehle
+    KeyWords5: ADD AS CTS CSTKPTR DIM DBNZ DBNZCTR ELSEIF ENDIF ERR ERRADR
+    FALSE FILEPOS FILELEN FREERAM FREERAM1 FREERAM2 FREERAM3 FREERAM4 FREERAM5
+    FREQ1 FREQ2 GSTKPTR HANDSHAKE INT IVAR LONG PCADR PUSH POP R600 R300 R150
+    R75 REMOVETOS RTS SUB SYSADR TICKS TRUE
+    R38400 R19200 INLINE ASC ASCII PEEK POKE PEEKW POKEW LCDINIT LCDCLS LCDLOCATE
+    LCDCMD LCDPUT LCDPRINT CVBYT CVI CVWRD
+
+
+    StringBegChar: "
+    StringEndChar: "
+    MultilineStrings: 0
+
+    UsePreprocessor: 0
+
+
+    CurrLineHighlighted: 1
+
+    SpaceCol: clWindowText clWindow
+    Keyword1Col: $00C00000 clWindow
+    Keyword2Col: clPurple clWindow
+    Keyword3Col: clBlue clWindow
+    Keyword4Col: clBlue clWindow
+    Keyword5Col: clBlue clWindow
+    IdentifierCol: clWindowText clWindow
+    CommentCol: clGreen clWindow
+    NumberCol: $000000C0 clWindow
+    StringCol: clMaroon clWindow
+    SymbolCol: clPurple clWindow
+    PreprocessorCol: clBlue clWindow
+    SelectionCol: clWhite clNavy
+    CurrentLineCol: clBlack clYellow
+
+    OverrideTxtFgColor: 0
+    BlockAutoindent: 0
+    BlockBegStr:
+    BlockEndStr:
+    MatchedBracesCol: clWindowText clWindow
+
+
+
+
+CurrLineHighlighted:    1
+OverrideTxtFgColor:     0
+BlockAutoindent:        0
+BlockBegStr:
+BlockEndStr:
+SpaceCol:               clWindowText clWindow
+Keyword1Col:            clNavy clWindow B
+Keyword2Col:            $00C000C0 clWindow
+Keyword3Col:            $00FF4040 clWindow B
+Keyword4Col:            $00C000C0 clWindow B
+Keyword5Col:            clOlive clWindow B
+IdentifierCol:          clWindowText clWindow
+CommentCol:             $0000C000 clWhite
+NumberCol:              clRed clWindow
+StringCol:              clMaroon clWindow
+SymbolCol:              $000000C0 clWindow
+PreprocessorCol:        clBlue clWindow
+SelectionCol:           $00FF4040 $00202020
+CurrentLineCol:         clBlack $0080FFFF
+MatchedBracesCol:       clWindowText clWindow
+Filter:                 --> Open-Control/BASIC (*.ocb, *.pro, *.def, *.iar, *.iia, *.ocbasr) | *.ocb; *.pro; *.def; *.iar; *.iia; *.ocbasr
+HelpFile:               L:\x2g\Hilfe.L
+
+
+
+

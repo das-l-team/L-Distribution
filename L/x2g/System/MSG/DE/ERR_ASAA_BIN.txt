@@ -1,0 +1,20 @@
+ [ Hinweis zu dieser Version ]
+
+ Aufgabe: "Assemblerausgabe in Form einer "raw"- Datei (*.BIN)
+           
+ Ist derzeit auf Taste F12 noch nicht implementiert, denn
+ leider haben wir das noch nicht hinbekommen.
+
+ Bitte hilf uns  die |_ Distribution  verbessern und steuere eine
+ Loesung fuer diese Aufgabe bei.
+
+
+
+ Vorlaeufige Abhilfe (Workaround):
+
+ Den Assemblerquelltext mit Taste F9 erneut assemblieren (wechselt
+ zu Frank's Assembler). Dieser erzeugt dann die gewuenschte "raw"-Datei.
+
+
+
+das |_ Team

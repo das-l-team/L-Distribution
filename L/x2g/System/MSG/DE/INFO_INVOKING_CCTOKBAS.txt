@@ -1,0 +1,1 @@
+[ INFO: Mit dem CCONTROL-Decompiler kann eine .DAT Datei in C-Control/BASIC Quelltext umgewandelt werden ]

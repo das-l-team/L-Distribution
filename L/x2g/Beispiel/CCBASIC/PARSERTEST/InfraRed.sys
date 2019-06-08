@@ -1,0 +1,211 @@
+syscode
+               '; _asm_FileVersion: $0010
+               '
+               '
+               'PortA		.equ $00		; Ports und Directions
+               'PortB		.equ $01
+               'PortC		.equ $02
+               'PAdir		.equ $04
+               'PBdir		.equ $05
+               'PCdir		.equ $06
+               '
+               'VAR01		.equ $A1 		; Anfang der 24 Userbytes im RAM
+               'VAR02		.equ $A2
+               'VAR03		.equ $A3
+               'VAR04		.equ $A4
+               'VAR05		.equ $A5
+               'VAR06		.equ $A6
+               'VAR07		.equ $A7
+               'VAR08		.equ $A8
+               'VAR09		.equ $A9
+               'VAR10		.equ $AA
+               'VAR11		.equ $AB
+               'VAR12		.equ $AC
+               'VAR13		.equ $AD
+               'VAR14		.equ $AE
+               'VAR15		.equ $AF
+               'VAR16		.equ $B0
+               'VAR17		.equ $B1
+               'VAR18		.equ $B2
+               'VAR19		.equ $B3
+               'VAR20		.equ $B4
+               'VAR21		.equ $B5
+               'VAR22		.equ $B6
+               'VAR23		.equ $B7
+               'VAR24		.equ $B8
+               '
+               'SysFlgs		.equ $7B		; Betriebssystem-FlagRegister
+               'SYNC		.equ 0			; BitIndex des  -Flags
+               'ACTIVE		.equ 1			; BitIndex des  -Flags
+               'RUN		.equ 2			; BitIndex des  -Flags
+               'DEBUG		.equ 3			; BitIndex des  -Flags
+               'DCFVALID	.equ 4			; BitIndex des  -Flags
+               'SLOWMODE	.equ 5			; BitIndex des  -Flags
+               'UINT		.equ 6			; BitIndex des  -Flags
+               'RTSCTS		.equ 7			; BitIndex des  -Flags
+               '
+               '_A		.equ $91 		; StackTop
+               '_A_lo		.equ $92
+               '_B		.equ $93
+               '_B_lo		.equ $94
+               '_C		.equ $95
+               '_C_lo		.equ $96
+               '_D		.equ $97
+               '_D_lo		.equ $98
+               '_E		.equ $99
+               '_E_lo		.equ $9A
+               '_F		.equ $9B
+               '_F_lo		.equ $9C
+               '_G		.equ $9D
+               '_G_lo		.equ $9E
+               '
+               'brate		.equ $0D		; RS232 SCR-Baudrate
+               'sccr1		.equ $0E		; RS232 Controlregister 1
+               'sccr2		.equ $0F		; RS232 Controlregister 2
+               'scsr		.equ $10		; RS232 Status-Register
+               'scdat		.equ $11		; RS232 Datenregister
+               '
+               'TCR		.equ $12		; Timer Registers ...
+               'TSR		.equ $13
+               'CAP1LO		.equ $15
+               'CAP2LO		.equ $1D
+               'CMP1HI		.equ $16
+               'CMP1LO		.equ $17
+               'CMP2HI		.equ $1E
+               'CMP2LO		.equ $1F
+               'CNTLO		.equ $19
+               '
+               'Misc		.equ $0C
+               'INTE		.equ 4			; BitIndex des InterruptEnable-Flags
+               '
+               '_IRQPTR 	.equ $50		; User-Interrupt-Routinen-Pointer
+               '_CAPPTR		.equ $51
+               '_CMPPTR 	.equ $52
+               '_OFLPTR 	.equ $53
+               '
+               'FrameLo		.equ VAR01
+               'FrameHi		.equ VAR02
+               'DrvFlgs		.equ VAR03
+               'BitsCnt		.equ VAR04
+               '
+               'F_LEN		.equ 13			; FrameLength
+               'F_OFFSET	.equ 0			; = 8 * UserVarNr(FrameLo) - 8
+               '
+               'WDOG_EN		.equ 7			; BitIndex des WatchDog-Enable Flags
+               'F_VALID		.equ 6			; Bitindex des Frame_Valid Flags
+               '
+               'WDOG_TO		.equ 7			; Timerticks, bis WatchDog Frame löscht
+               'DELAY_CNT	.equ $80		; Delays, untill RefTime
+               '
+               'RS232_WriteByte	.equ $0C77		; SubR. Senden des xRegs
+               'Store_Bit	.equ $1273		; SubR. Bit nr xReg of UserBytes := _A
+               '
+               '	.org $101
+               '
+               '; ((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
+               'Inizialize: Address &H0101
+&HA6 &H12      '	lda #IRQ - $100			; load Offset of IRQ to Akku
+&HB7 &H50      '	sta _IRQPTR			; store Akku to _IRQPTR
+&HA6 &H4D      '	lda #CMP_Common - $100		; load Offset of TCMP_Common to Akku
+&HB7 &H52      '	sta _CMPPTR			; store Akku to _CMPPTR
+&H11 &H05      '	bclr 0,PBdir			; PortB.Bit0 is InPort
+&H81           '	rts
+               '; ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+               '
+               '
+               '; ((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
+               'Drv_On: Address &H010C
+&H18 &H0C      '	bset INTE,Misc
+&H81           '	rts
+               '; ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+               '
+               '
+               '; ((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
+               'Drv_Off: Address &H010F
+&H19 &H0C      '	bclr INTE,Misc
+&H81           '	rts
+               '; ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+               '
+               '
+               '; ((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
+               'IRQ: Address &H0112
+&HB6 &HA4      '	lda BitsCnt			; load BitsCnt to Akku
+&H4C           '	inca				; inc BitsCnt
+&HB7 &HA4      '	sta BitsCnt			; store Akku to BitsCnt
+&H1E &HA3      '	bset WDOG_EN,DrvFlgs		; set WatchDog enabled
+&HB6 &H16      '	lda CMP1HI
+&HAB &H07      '	add #WDOG_TO			; set next WatchDog
+&HB7 &H16      '	sta CMP1HI
+&HB6 &H17      '	lda CMP1LO
+&HB7 &H17      '	sta CMP1LO
+               '; Begin of Delayer ***
+&HA6 &H80      '	lda #DELAY_CNT
+               'DELAY1: Address &H0125
+&H4A           '	deca
+&H26 &HFD      '	bne DELAY1
+&HA6 &H80      '	lda #DELAY_CNT
+               'DELAY2: Address &H012A
+&H4A           '	deca
+&H26 &HFD      '	bne DELAY2
+               '; End of Delayer ***
+               'TTL_Test: Address &H012D
+&HB6 &H01      '	lda PortB			; load PortB to Akku
+&H43           '	coma				; invert Akku
+&HA4 &H01      '	and #$01			; Leave only Bit 0
+&HB7 &H91      '	sta _A				; store Akku to _A
+&H4F           '	clra				; clear Akku
+&HB7 &H92      '	sta _A_lo			; store Akku to _A_lo
+               '	;ldx _A				; DEBUG  ONLY !!! ***
+               '	;jsr RS232_WriteByte		; DEBUG  ONLY !!! ***
+               '	;ldx BitsCnt			; DEBUG  ONLY !!! ***
+               '	;jsr RS232_WriteByte		; DEBUG  ONLY !!! ***
+&HBE &HA4      '	ldx BitsCnt			; load BitsCnt to Index
+&HCD &H12 &H73 '	jsr Store_Bit			; call SubRoutine
+&HB6 &HA4      '	lda BitsCnt			; load BitsCnt to Akku
+&HA1 &H0D      '	cmp #F_LEN			; compare Akku, F_LEN
+&H27 &H02      '	beq FrameReady			; if Akku = FLen goto FrameReady
+               'InFrame: Address &H0142
+               '	;bclr F_VALID,DrvFlgs		; mark frame as not ready
+&H20 &H07      '	bra IRQ_Exit0
+               'FrameReady: Address &H0144
+&H1F &HA3      '	bclr WDOG_EN,DrvFlgs		; set WatchDog disabled
+&H4F           '	clra				; clear Akku
+&HB7 &HA4      '	sta BitsCnt			; BitsCnt := 0
+&H1C &H7B      '	bset UINT,SysFlgs		; raise ccBasic-Interrupt
+               '	;ldx FrameHi			; DEBUG  ONLY !!! ***
+               '	;jsr RS232_WriteByte		; DEBUG  ONLY !!! ***
+               '	;ldx FrameLo			; DEBUG  ONLY !!! ***
+               '	;jsr RS232_WriteByte		; DEBUG  ONLY !!! ***
+               '	;ldx #$AA			; DEBUG  ONLY !!! ***
+               '	;jsr RS232_WriteByte		; DEBUG  ONLY !!! ***
+               'IRQ_Exit0: Address &H014B
+&H4F           '	clra				; Akku := 0: std.handler inactive
+&H81           '	rts
+               '; ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+               '
+               '; ((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
+               'CMP_Common: Address &H014D
+&H0D &H13 &H09 '	brclr 6,TSR,CMP_SysTimer	; if SysTimer then Exit_1
+&H0F &HA3 &H05 '	brclr WDOG_EN,DrvFlgs,CMP_Exit0 ; if WatchDog off then Exit_0
+               'CMP_UserTimer: Address &H0153
+&H1F &HA3      '	bclr WDOG_EN,DrvFlgs		; set WatchDog disabled
+&H4F           '	clra				; clear Akku
+&HB7 &HA4      '	sta BitsCnt			; BitsCnt := 0
+               '	;sta FrameHi			; FrameHi := 0
+               '	;sta FrameLo			; FrameLo := 0
+               '	;ldx #$FF			; DEBUG  ONLY !!! ***
+               '	;jsr RS232_WriteByte		; DEBUG  ONLY !!! ***
+               'CMP_Exit0: Address &H0158
+               '	;clra				; Akku := 0: std.handler inactive
+&H81           '	rts
+               'CMP_SysTimer: Address &H0159
+               'CMP_Exit1: Address &H0159
+&HA6 &H01      '	lda #$01			; Aku := 1: std.handler active
+&H81           '	rts
+               '; ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+               '
+               '
+               '
+               '	.end
+sysend
+' 91 Byte(s) of SysCode in asm_FileVersion $000F

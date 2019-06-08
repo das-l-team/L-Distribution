@@ -1,0 +1,11 @@
+
+
+[ PROBLEM ]
+
+--> Please select the interface to be used out of COM1, COM2, COM3 or COM4. Then switch target system into host mode.
+--> Additionally, a utility program may be required in order to read programs off the target system.
+
+
+
+
+

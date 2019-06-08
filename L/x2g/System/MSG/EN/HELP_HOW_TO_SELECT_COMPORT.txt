@@ -1,0 +1,24 @@
+[ Helpfile |_ Distribution ]
+
+
+  While viewing any file of the build-in Help system
+  you can switch between the active auswählen.
+
+
+     _____       _____       _____       _____
+    ||F9 ||     ||F10||     ||F11||     ||F12||
+    ||___||     ||___||     ||___||     ||___||
+    |/___\|     |/___\|     |/___\|     |/___\|
+
+
+     COM:1       COM:2       COM:3       COM:4
+
+
+  The selection made here will stay active until next selection.
+
+Known issues:
+
+- Only serial communication ports 1,2,3,4 are supported in this version.
+ 
+- read-back functionality (available via the F9 key, when viewing any '.DAT' file)
+  still always uses serial #1.

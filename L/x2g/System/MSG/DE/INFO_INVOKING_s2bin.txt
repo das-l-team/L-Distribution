@@ -1,0 +1,1 @@
+[ Starte S2BIN.EXE zur Umwandlung einer .s19 Datei in einen Assembler-Quelltext. ]

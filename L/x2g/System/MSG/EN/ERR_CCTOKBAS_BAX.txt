@@ -1,0 +1,15 @@
+  [ Error message ]
+
+  No program could be extracted out of the existing .DAT file and/or could be converted into C-Control/BASIC source code. 
+
+  Frequent causes:
+ 
+ - There might be a drive letter 'X:' already assigned to another application.
+   Currently we do A mess with drive letters in "L:\x2g\System\BAT\dbTokBAS.bat"
+   to accomplish the mapping for input files on the DOSBOX session. We are working on it
+   though. Meanwhile temporarely disconnecting any other drive 'X:' while using this
+   function should do the job.
+ 
+ - The input .DAT file has an incorrect format.  It might be that this .DAT file was generated for another type of application, e.g. a Mediaplayer (The .DAT name extension is not exclusive to C Control applications).  
+ 
+ - However, If you are sure this is the correct .DAT file it might have been accidentially altered, for example, through insertion of keystrokes while the file was opened in an editor or sent as an attachment of an e-mail. 

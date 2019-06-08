@@ -1,0 +1,58 @@
+
+' ===========================================================================
+' BIT-Variablen und komfortabler Zugriff auf jedes Bit einer User-Variable
+' lauffaehig auf der Open-Micro, Open-Mini, Open-Midi und C-Control 1.1
+' ===========================================================================
+
+' Da in der bisherigen CCBASIC-Syntax bei der Definition von Bitvariablen
+' immer ein Index, also eine Position im User-RAM, angegeben werden musste,
+' kam es oft zu ungewollten Ueberschneidungen von Variablen. Die Folge davon
+' war, dass viele Anwender sicherheitshalber bei allen Variablendefinitionen
+' einen Index angaben, was aber eine exakte Planung des Variablenspeichers
+' erforderlich machte.
+
+' Der OCBASIC-Compiler bietet nun eine neue Syntax an, mit der BIT-Variablen
+' nicht mehr auf einer festen Position im User-RAM gespeichert werden muessen.
+' Stattdessen wird eine BYTE- oder WORD-Variable ohne Index angelegt, in der
+' die BIT-Variablen abgelegt werden. Im Prinzip kann man nun, sofern keine
+' Variablenueberschneidungen gewuenscht, sogar vollkommen ohne explizite
+' Speicherplatzzuweisung arbeiten.
+
+
+INCLUDE "L:\x2g\include\ocbasic\defs\om.def" '<- In dieser Datei steht ein 'option OPENMICRO' *
+
+              '* Ergaenzung von  das |_ Team:
+option ccbas   ' Manche Include Dateien enthalten eine 'option' Direktive, die man
+               ' evt. uebersieht. Um sicher zu gehen kann das 'richtige' option hinter
+               ' den INCLUDEs geschrieben werden. In diesem Fall 'option ccbas', damit
+               ' Bytekode fuer die C-Control I 1.1 erzeugt wird. Bitte nicht die Inhalte
+               ' der 'offiziellen' Include Dateien veraendern, da diese auch von anderen
+               ' Programmen genutzt werden, die sonst evt. nicht mehr laufen.
+               ' Der nachfolgende Quelltext vom Autor des Open-Control/BASIC Kompilers,
+               ' Dietmar Harlos, wurde aus 'BITARRAY.BAS' 1:1 uebernommen.
+
+DEFINE a,b,c BYTE
+
+DEFINE bitarray BYTE             ' Eine normale Bytevariable im User-RAM.
+
+DEFINE b0 BIT[1] OF bitarray     ' Durch diese Anweisungen koennen alle
+DEFINE b1 BIT[2] OF bitarray     ' Bits der Bytevariable bitarray einzeln
+DEFINE b2 BIT[3] OF bitarray     ' angesprochen werden. Falls sich die
+DEFINE b3 BIT[4] OF bitarray     ' Lage der Bytevariable durch Hinzufuegen
+DEFINE b4 BIT[5] OF bitarray     ' weiterer Variablen verschieben sollte,
+DEFINE b5 BIT[6] OF bitarray     ' passt der Compiler automatisch die Lage
+DEFINE b6 BIT[7] OF bitarray     ' der Bitvariablen an. Der Anwender muss
+DEFINE b7 BIT[8] OF bitarray     ' sich darum also nicht kuemmern.
+
+
+PRINT bitarray                   ' Die einzelnen Bits koennen nun ueber
+b7=ON                            ' ihre Bezeichner angesprochen werden.
+PRINT bitarray
+b0=ON                            ' Uebrigens lassen sich mit dem "OF"-
+PRINT bitarray                   ' Verfahren auch WORD-Variablen in ihre
+b5=ON                            ' zwei BYTEs und in 16 BITs zerlegen.
+PRINT bitarray                   ' Wer 32 BITs benoetigt, kann als Bit-
+                                 ' array den Typ LONG verwenden.
+End2Host=ON
+END
+

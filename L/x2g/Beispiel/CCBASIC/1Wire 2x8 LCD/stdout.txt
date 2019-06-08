@@ -1,0 +1,24 @@
+DOSBox version 0.73
+Copyright 2002-2009 DOSBox Team, published under GNU GPL.
+---
+CONFIG:Loading primary settings from config file L:\x2g\SYSTEM\BAT\dosbox_L.conf
+MIXER:No Sound Mode Selected.
+MIDI:Opened device:none
+Serial1: Opening COM1
+Serial2: Opening COM2
+Serial2: Serial Port "COM2" could not be opened.
+The specified port does not exist.
+Serial3: Opening COM3
+Serial3: Serial Port "COM3" could not be opened.
+The specified port does not exist.
+Serial4: Opening COM4
+Serial4: Serial Port "COM4" could not be opened.
+The specified port does not exist.
+DOS keyboard layout loaded with main language code GR for layout gr
+SHELL:Redirect output to NUL
+SHELL:Redirect output to NUL
+SHELL:Redirect output to L:\x2g\out1.txt
+SHELL:Redirect output to NUL
+SHELL:Redirect output to NUL
+SHELL:Redirect output to NUL
+SHELL:Redirect output to L:\x2g\system\tmp\ccbasbig.out

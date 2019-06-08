@@ -1,0 +1,22 @@
+ [ Regarding this version ]
+
+ Not yet implemented functionality: "Generate assembly output into "raw" file (*.BIN)
+
+ We haven't arrived at a solution for this, yet.
+
+ If you know of a working solution, please help us to improve
+ this toolchain by submitting your idea.
+
+
+The good news:
+==============
+ 
+ There is a simple workaround!
+
+ Please click on the tab with the assembly source code again, then
+ press the F9 key. This will invoke Frank A. Kingswood's Assembler
+ which will then generate the *.BIN file in question.
+ 
+Thanks for your support
+
+The |_ Team

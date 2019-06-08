@@ -1,0 +1,104 @@
+
+'
+' *** Beispielprogramm Funktionsaufruf mit Rueckgabe fuer die 'Lbit' Firmware:  ***
+'------------------------------------------------------------------------------
+
+ 'INFO' >  Programmbeschreibung        |  Tipps und weitere Info zu 'Lbit', siehe
+ 'INIT' >  Initialisierung             |
+ 'MAIN' >  Hauptschleife               |  http://visit.ghn-sensorik.de/L-Team/Lvm
+ 'SUBS' >  Subroutinen                 |
+ 'DATA' >  Tabellen                    |              das |_ Team
+
+
+' |_ Programm ->>
+'----------------------------------------------------------------------------
+
+' |_ ->>
+'----------------------------------------------------------------------------                                       -
+' Programmbeschreibung Anfang ->>                                  I----------
+'                                                                      N-------
+  'Der augenblickliche Ausgabewert des D/A-Wandlers der C-Control I 1.1
+  'kann in BASIC-Programmen normalerweise nicht ausgelesen werden.
+
+  'Mit den Exportfunktionen "LGet_DA1" bzw. "LGet_DA2" der 'Lbit'-Firmware
+  'ist es aber moeglich. Dies demonstriert das vorliegende Programm.
+
+
+'                                                                      F-------
+' <<- Programmbeschreibung Ende                                    O----------
+'----------------------------------------------------------------------------
+ INCLUDE "L:\X2G\INCLUDE\OCBASIC\L-INIT.PRO"'<<- Anweisungen Anfang
+'----------------------------------------------------------------------------
+' Anweisungen fuer (#INIT) beginnen in ^^^^^^^^^^                  I----------
+'                                                                      N-------
+ ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+ ' Zur Laufzeit kann der #INIT-Bereich per Direktvektor uebersprungen ''
+ ' werden. Selbst registrierende Erweiterungsmodule (z.B. UIP) koennen '''
+ ' dadurch Zeitverhalten und Bedienungsfreundlichkeit optimieren.      '''
+ ' WICHTIG: Hier bitte keine Datentabellen einfuegen. (s.u.)           ''
+ ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'Erste Print Sring Anweisung als Label in Slotuebersicht ausgeben: (geplant)
+' PRINT "D/A-Wandler auslesen..." : PRINT
+'                                                                      I-------
+' <<- Initialisierung Ende                                         T----------
+'----------------------------------------------------------------------------
+
+'----------------------------------------------------------------------------
+#MAIN 'Hauptschleife Anfang ->>                                     M---------
+'                                                                      A-------
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Dieser Programmteil wird nach Verlassen von #INIT ausgefuehrt,   ''
+  ' oder durch Direktvektor-Funktionen unmittelbar gestartet.        '''
+  ' WICHTIG: Hier bitte keine Datentabellen einfuegen. (s.u.)        ''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  DA1=0
+
+ 'define Lget_DA1 65517' &hffed 'Lbit-Exportfunktion Nr.10
+ 'define Lget_DA2 65516' &hffec 'Lbit-Exportfunktion Nr.11
+
+ PRINT " LGet_DA.ocb"
+ REPEAT
+
+   DA1=LGet_DA1+1
+   DA2=LGet_DA2-second
+
+   PRINT " D/A_1="; LGet_DA1,
+   PRINT " D/A_2="; LGet_DA2
+
+ UNTIL LGet_DA1=5
+
+ END                                             '              I-------
+' <<- Hauptschleife  Ende                                          N----------
+'----------------------------------------------------------------------------
+
+'----------------------------------------------------------------------------
+#SUBS'Subroutinen Anfang ->>                                       S----------
+'                                                                      U-------
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Dieser Programmteil enthaelt die Unterroutinen des Programms,    ''
+  ' (Funktionen oder Prozeduren).                                    '''
+  ' WICHTIG: Hier bitte keine Datentabellen einfuegen. (s.u.)        ''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'                                                                      B-------
+' <<- Subroutinen Ende                                             S----------
+'----------------------------------------------------------------------------
+ INCLUDE "L:\X2G\INCLUDE\OCBASIC\L-EXIT.PRO"'<<- Anweisungen Ende
+'----------------------------------------------------------------------------
+#DATA 'Datenbereich Anfang ->>                                     D----------
+ TABLE Dieses_Programm_wurde_entworfen_fuer_L_Modul 0853 TABEND'      A--------
+
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' Dieser Bereich ist fuer Datentabellen reserviert.  BASIC-Pro-    ''
+  ' grammanweisungen muessen immer oberhalb aller Datentabellen      '''
+  ' stehen, da es ansonsten zu Fehlfunktionen kommen kann.           ''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'                                                                     T--------
+' <<- Datenbereich Ende                                            A----------
+'----------------------------------------------------------------------------
+#LEND'<<- Ende dieses Quelltextes (BASIC-Programm und Datentabellen).
+
+'Maschinenspracheprogramme fuer das interne EEPROM werden wie gewohnt
+'hinter das Ende des Quelltextes platziert (Auch wenn Datentabellen im BASIC-
+'Programm enthalten sind). Beispiel:
+
+'syscode "fastbas.s19"

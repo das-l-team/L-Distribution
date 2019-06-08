@@ -1,0 +1,31 @@
+
+   Hiermit kann ein Maschinenprogramm (kein BASIC- oder CCPLUS-Programm !)
+   dauerhaft in den Mikrochip 'eingebrannt' und nicht mehr entfernt werden.
+   Vergleichbar ist dies dem 'Brennen' einer CD-ROM: (nur 1x moeglich).
+
+    ______________________________ WARNUNG: ____________________________
+
+    Unsachgemaesse Anwendung dieses Werkzeugs koennte im Extremfall eine
+    herstellerseitig 'gebrannte' C-Control dauerhaft unbrauchbar machen!
+    ____________________________________________________________________
+    
+     >>>  Falls Sie jetzt ein BASIC- oder CCPLUS-Programm in Ihren  <<<
+     >>>  Kontroller uebertragen wollen, DANN SIND SIE HIER FALSCH. <<<
+      
+  
+       ( Schliessen Sie bitte ggfs. dieses Fenster:
+        <Alt+x> und anschliessend "exit" + <RETURN> eingeben. )
+
+  Das |_ Team kann fuer evt. entstehende Schaeden keine Haftung leisten.
+    
+  Glossar:    
+
+  OTP Kontroller = One Time Programmable Controller = 1x programmierbarer
+  Mikrokontroller. Im Gegensatz zur Maskenprogrammierung des ROM waehrend der
+  Herstellung bestimmter Kontrollertypen, kann OTP-ROM eines OTP nachtraeglich
+  mit einem beliebigen Programm versehen werden ( allerdings nur ein einziges
+  Mal je OTP ) . Im Fall der 68HC705Bx OTP Kontrollertypen ist eine spezielle
+  Programierschaltung erforderlich, z.B. "Motorola "M68HC705B Programmerboard".
+
+  Weitere Informationen zum "M68HC705B Programmerboard" im Verzeichnis:
+  L:\x2g\3rdparty\ToolsMot\68HC705B\

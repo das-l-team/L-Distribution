@@ -1,0 +1,22 @@
+' [ Fehlermeldung ]
+'
+' Es konnte kein Programm aus der vorliegenden .DAT Datei extrahiert
+' und/oder in C-Control/BASIC Quelltext umgewandelt werden.
+'
+' Häufige Ursachen:
+'
+'- Es ist bereits ein Laufwerksbuchstabe 'X:' auf dem Computer vorhanden, oder
+'  für eine andere Anwendung reserviert. Leider benötigt unsere Datei '  "L:\x2g\System\BAT\dbTokBAS.bat" derzeitnoch den LW Buchstaben X: für diesen
+'  Vorgang benötigt. Das gefällt uns selbst nicht so toll und wir arbeiten daran.
+'  Als schnelle Zwischenlösung kann das andere Laufwerk X: vorübergehend
+'  deaktiviert werden.
+'  
+'
+'- Die .DAT Datei besitzt ein falsches Format. Auch andere Anwendungen
+'  erzeugen Dateien mit der Namenserweiterung ".DAT" - Diese Erweiterung
+'  ist nicht exklusiv für C-Control Anwendungen reserviert. 
+'
+'
+'- Die .DAT Datei enthält zwar C-Control Bytekode, jedoch wurde dieser verändert,
+'  z.B. durch versehentliches Einfügen von Zeichen während die Datei im Editor
+'  geöffnet war, oder wenn der Bytekode als Anhang einer E-Mail erhalten wurde.

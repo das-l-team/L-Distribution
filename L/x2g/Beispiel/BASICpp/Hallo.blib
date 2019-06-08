@@ -1,0 +1,24 @@
+    'Kommentarzeile
+PRINT "Tipp:"
+PRINT
+PRINT "Die IDE Workbench++ von Dierk Schmid's CSSlabs ist speziell fuer"
+PRINT "die Verwendung mit BASIC++ optimiert."
+PRINT
+PRINT "Es sind dort viele nach Themen sortierte BASIC++ Programmbeispiele"
+PRINT "enthalten die per Navigation aehnlich einem Webbrowser bequem ausgewaehlt"
+PRINT "und kompiliert werden koennen. Auch Assemblerprogramme koennen innerhalb"
+PRINT "der Workbench++ bearbeitet und zum Zielsystem uebertragen werden."
+PRINT
+PRINT "Tipp: Du kannst jetzt diesen BASIC++ Quelltext durch Druecken auf"
+PRINT "die F9-Taste innerhalb der |_ Distribution  kompilieren - oder"
+PRINT "durch Druecken der F12-Taste an die Workbench++ weiterleiten und dort"
+PRINT "bearbeiten und kompilieren. Voraussetzung ist lediglich dass das"
+PRINT "Workbench++ Programmpaket von Dierk Schmid mit den Default-Einstellungen"
+PRINT "bereits auf diesem Computer installiert ist."
+PRINT
+PRINT "Das von der |_ Distribution auch verwendete Uebertragungstool CCTrans32"
+PRINT "stammt ebenfalls von Dierk Schmid. Einen Download-Link zur Workbench++"
+PRINT "Installation findest du unter  http://www.csslabs.de/ccontrol"
+PRINT
+PRINT
+

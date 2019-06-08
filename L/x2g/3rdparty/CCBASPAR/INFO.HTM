@@ -1,0 +1,363 @@
+<html>
+<head>
+   <title>mehr Variablen in CCBASIC-Programmen</title>
+</head>
+
+<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+
+<center><h1>Extra-Variablen f&uuml;r BASIC-Programme</h1></center>
+
+<p><br>Mit dem beiliegenden CCBASIC-Compiler f&uuml;r DOS (CCBAS.EXE) ist
+es m&ouml;glich, mehr als die &uuml;blichen 24 Byte- oder 12 Wordvariablen
+in BASIC-Programmen zu verwenden. Bei der CCBAS.EXE-Datei handelt es sich
+um den Original-Compiler von Conrad Electronic, der allerdings an einer
+Stelle etwas ver&auml;ndert ("gepatcht") worden ist. Bitte diese HTML-Seite
+erst komplett durchlesen, bevor die neuen Extra-Variablen verwendet werden!!
+<br>&nbsp;
+
+<h3>Einf&uuml;hrung</h3>
+
+Die Standard-Variablen stehen bei der C-Control bekanntlich im User-RAM
+(ab Adresse $a1 bis $b8). Wenn der CCBASIC-Compiler f&uuml;r DOS (CCBAS.EXE)
+oder Windows (CCBAS32.DLL) wie unten beschrieben gepatcht wird, dann kann
+auch der Speicher hinter dem User-RAM ganz normal &uuml;ber Variablen angesprochen
+werden. Allerdings wird der Speicherbereich meist auch vom Betriebssystem
+benutzt und es gibt deshalb bestimmte Dinge zu beachten, wenn die Extra-Variablen
+verwendet werden. Es ist aber in (fast) jedem Anwendungsfall m&ouml;glich,
+rund 12 Byte- oder 6 Wordvariablen zus&auml;tzlich "herauszuholen".
+<br>&nbsp;
+
+<h3>Hintergrund</h3>
+
+In der Programmdatei CCBAS.EXE steht ab Offset $1fba7 eine Tabelle,
+die die h&ouml;chstm&ouml;gliche Anzahl von Bit-, Byte- und Wordvariablen festlegt,
+die mit Hilfe des DEFINE-Befehls definiert werden k&ouml;nnen. Allerdings
+werden diese Werte nur dann beachtet, wenn ein DEFINE-Befehl mit Index
+verwendet wird (also z.B. "DEFINE var BYTE [1]"), mit dem ja bekanntlich
+der Programmierer selbst die Stelle festlegen kann, an der eine Variable
+im Speicher abgelegt wird.
+
+<p>Wenn kein Index angegeben wird, werden die Variablen vom Compiler
+automatisch positioniert. Beim automatischen Positionieren z&auml;hlt der
+Compiler aber unverst&auml;ndlicherweise nicht die Anzahl der
+definierten Variablen, und so k&ouml;nnen beliebig viele Variablen
+angelegt werden, ohne da&szlig; der Compiler eine Warnung ausgibt.
+Das ist ein schwerer Bug im Compiler, der schon
+vielen Anwendern schlaflose N&auml;chte beschert hat, denn alle Variablen,
+die nicht mehr in das User-RAM passen, k&ouml;nnen unter Umst&auml;nden
+wichtige Systemdaten hinter dem User-RAM &uuml;berschreiben.
+
+<p>Man könnte sich diesen Bug zunutze machen, um auf diese
+Weise einige Variablen im Datenbereich hinter dem User-RAM anzusiedeln. Allerdings
+m&uuml;&szlig;te der Programmierer dabei genau mitz&auml;hlen, wie viele
+(und welche) Variablen bisher definiert wurden und wo diese vom Compiler
+im Speicher abgelegt werden, denn sie k&ouml;nnen ja nur mit Hilfe der
+"automatischen Methode" definiert werden. Bei DEFINE plus Index macht der
+Compiler einen Strich durch die Rechnung, da er nur einen maximalen Index
+erlaubt. Die erste Methode ist aber sehr m&uuml;hselig und fehleranf&auml;llig.
+Die Angabe eines Indexes ist in jedem Fall sicherer.
+
+<p>In der beiliegenden CCBAS.EXE wurden deshalb zwei Werte in der Tabelle
+ab Offset $1fba7 abge&auml;ndert. Dadurch k&ouml;nnen bis zu 256 Byte- und 128 Wordvariablen
+auch mit Hilfe eines Indexes definiert und so an exakter Stelle im Bereich
+hinter dem User-RAM plaziert werden. Von diesen neuen Variablen darf der
+Programmierer aber - wie bereits oben erl&auml;utert - nicht alle benutzen!
+<br>&nbsp;
+
+<h3>Die benutzbaren Variablen</h3>
+
+In der folgenden Tabelle ist aufgef&uuml;hrt, unter welchen Umst&auml;nden
+die diversen neuen Byte- und Wordvariablen benutzt werden d&uuml;rfen. Hierbei
+gibt BYTE- und WORDINDEX die Zahl an, die beim DEFINE-Befehl als Index
+angegeben wurde (z.B. "DEFINE var BYTE [60]" oder "DEFINE var WORD [35]").
+<br>&nbsp;
+
+<table BORDER=1 CELLPADDING=2 CELLSPACING=2 WIDTH="100%" BGCOLOR="#CCCCCC" >
+<tr>
+<td BGCOLOR="#C0C0C0"><b>BYTEINDEX</b></td>
+
+<td BGCOLOR="#C0C0C0"><b>WORDINDEX</b></td>
+
+<td BGCOLOR="#C0C0C0"><b>ZU BEACHTEN</b></td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>1 bis 24</td>
+
+<td ALIGN=CENTER>1 bis 12</td>
+
+<td>diese Variablen stehen im ganz normalen User-RAM; <b>es gibt nichts
+zu beachten</b></td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>25 bis 28</td>
+
+<td ALIGN=CENTER>13 bis 14</td>
+
+<td>es kann keine IRQ-BASIC-Interruptroutine benutzt werden; der IRQ-Pin
+des Prozessors darf nicht verwendet werden, sondern mu&szlig; immer auf festem
+Potential liegen!; die
+Variablen sind <b>gut verwendbar</b>, denn eine Interruptroutine ist
+ohnehin nur bei der M-Unit benutzbar - und auch dort nur mit Tricks</td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>29 bis 31</td>
+
+<td ALIGN=CENTER>15&nbsp;</td>
+
+<td>es darf <b>kein SYS-Befehl</b> benutzt werden - bzw. wenn BYTE [29]
+nicht ver&auml;ndert wird, dann &uuml;berschreibt ein SYS die Variablen auf BYTE
+[30] und BYTE [31]</td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>32 bis 39</td>
+
+<td ALIGN=CENTER>17 bis 19</td>
+
+<td>diese Variablen liegen im GOSUB-Stack und sind deshalb <b>nicht verwendbar</b></td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>40 bis 45</td>
+
+<td ALIGN=CENTER>21 bis 22</td>
+
+<td>die <b>Datendatei</b> im seriellen EEPROM darf nicht benutzt werden</td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>46 bis 52</td>
+
+<td ALIGN=CENTER>24 bis 26</td>
+
+<td>viele Betriebssystemroutinen benutzen diesen Speicherbereich zur tempor&auml;ren
+Datenspeicherung; <b>siehe ROM-Listing</b></td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>53 bis 54</td>
+
+<td ALIGN=CENTER>27&nbsp;</td>
+
+<td>es darf nicht in die <b>Datendatei </b>(mittels PRINT#) geschrieben
+werden&nbsp;</td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>55 bis 56</td>
+
+<td ALIGN=CENTER>28&nbsp;</td>
+
+<td>wird von der <b>RS232</b> &uuml;berschrieben; darf nur benutzt werden,
+wenn RXD auf&nbsp; festem Potential liegt</td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>57 bis 58</td>
+
+<td ALIGN=CENTER>29&nbsp;</td>
+
+<td>viele Betriebssystemroutinen benutzen diesen Speicherbereich zur tempor&auml;ren
+Datenspeicherung; <b>siehe ROM-Listing</b></td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>59&nbsp;</td>
+
+<td ALIGN=CENTER>-&nbsp;</td>
+
+<td>wird von der <b>SQR</b>-Funktion benutzt</td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>60&nbsp;</td>
+
+<td ALIGN=CENTER>-&nbsp;</td>
+
+<td>dieses Byte wird offenbar <b>nicht vom Betriebssystem benutzt</b>!&nbsp;</td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>61 bis 64&nbsp;</td>
+
+<td ALIGN=CENTER>31 bis 32</td>
+
+<td>Code zur Erweiterung der Adressmodi (Pseudo-Adressierungsmodi); <b>nicht
+verwendbar</b></td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>65</td>
+
+<td ALIGN=CENTER>-&nbsp;</td>
+
+<td>letztes ueber den I2C-Bus uebertragenes Byte; <b>nicht verwendbar</b></td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>66 bis 68&nbsp;</td>
+
+<td ALIGN=CENTER>34</td>
+
+<td>wird f&uuml;r Zeitberechnungen benutzt; <b>nicht verwendbar</b></td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>69 bis 76</td>
+
+<td ALIGN=CENTER>35 bis 38</td>
+
+<td>hier liegt der Hardwarestack; <b>sehr gut verwendbar</b> wenn keine
+Assemblerprogramme mittels SYS aufgerufen werden; nur teilweise verwendbar,
+wenn im Assemblerprogramm mehr als zwei Unterprogrammverschachtelungen
+auftauchen</td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>77 bis 95&nbsp;</td>
+
+<td ALIGN=CENTER>39 bis 47&nbsp;</td>
+
+<td>dieser Teil des Hardwarestacks wird vom Betriebssystem auf jeden Fall
+ben&ouml;tigt, es sei denn, man schaltet einige Interrupts aus; <b>nicht
+verwendbar</b></td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>96</td>
+
+<td ALIGN=CENTER>-</td>
+
+<td>Options register (OPTR); <b>nicht verwendbar</b></td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER>97 bis 256</td>
+
+<td ALIGN=CENTER>49 bis 128</td>
+
+<td>Teil des internen EEPROMs (Adresse $101 bis $1a0); <b>kann nur ausgelesen
+werden</b>; evt. k&ouml;nnte man hier Parameter speichern, die ein BASIC-Programm
+nur lesen mu&szlig; oder die nur selten ge&auml;ndert werden</td>
+</tr>
+</table>
+<font color="#FFFFFF">.</font>
+
+<br>Speziell der Bereich des Hardwarestacks (BYTE [69] bis BYTE [76], bzw.
+WORD [35] bis WORD [38]) kann sehr gut benutzt werden, um zus&auml;tzliche
+Variablen zu speichern. Wenn allerdings vom SYS-Befehl Gebrauch gemacht
+wird, dann sollte aufgepa&szlig;t werden.
+
+<p>Zu beachten ist schlie&szlig;lich noch, da&szlig; die Extra-Variablen
+vom Betriebssystem nach einem Reset unter Umst&auml;nden nicht initialisiert
+(d.h. auf Null gesetzt) werden. Das mu&szlig; im BASIC-Programm geschehen.
+Au&szlig;erdem ist aus obenstehender Tabelle ersichtlich, da&szlig; ein
+Schreiben in die falsche Variable das C-Control-System zum Absturz bringen
+kann. Das Lesen ist aber in jedem Fall erlaubt.
+<br>&nbsp;
+
+<h3>Installation</h3>
+
+Um den neuen CCBASIC-Compiler zu installieren, ist nichts weiter n&ouml;tig,
+als die alte CCBAS.EXE-Datei, die im gleichen
+Verzeichnis stehen m&uuml;&szlig;te, in dem auch die DOS-IDE (CCE.EXE)
+installiert wurde, durch die neue Datei zu ersetzen. Das ZIP-Archiv, in
+dem der neue Compiler und diese HTML-Seite enthalten waren, beinhaltet
+auch einen BASIC-Quellcode (MEHR.BAS). Hiermit kann &uuml;berpr&uuml;ft
+werden, ob die Installation fehlerfrei durchgef&uuml;hrt wurde.
+<br>&nbsp;
+
+<h3>Technisches</h3>
+
+Zum Schlu&szlig; gebe ich hier f&uuml;r alle "Hardcore-User" noch schnell
+das Format der Tabelle an, die die maximal m&ouml;gliche Anzahl von Variablen
+und Ports festlegt, die mit Hilfe des DEFINE-Befehls definiert werden k&ouml;nnen.
+Sie befindet sich in der Programmdatei CCBAS.EXE an Offset $1fba7 und enth&auml;lt
+Words (16-Bit-Zahlen). Diese Werte lassen sich mit Hilfe eines Hexeditors
+ver&auml;ndern. Alle "Mausschubser" k&ouml;nnen sich 
+ihre CCBAS32.DLL nat&uuml;rlich auch umpatchen. In der DLL stehen die Parameter in der
+gleichen Reihenfolge an Offset $11f90 und sind Longwords (32 Bit-Zahlen).
+Eine gepatchte DLL mit einigen Sonderfunktionen befindet sich aber auch auf <a href="http://www.idel-online.de/">Idel's Homepage</a>.
+<br>&nbsp;
+<table BORDER=1 CELLPADDING=2 CELLSPACING=2 COLS=1 WIDTH="100%" BGCOLOR="#FFCC99" >
+<tr>
+<td>
+<pre>&nbsp;c0 00&nbsp; 18 00&nbsp; 0c 00&nbsp; 10 00&nbsp; 02 00&nbsp; 01 00&nbsp; 08 00&nbsp; 02 00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 00 00&nbsp; 00 00
+&nbsp;^&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; D/A-Ports
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A/D-Ports
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Wordports
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Byteports
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Digitalports
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Wordvariablen
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Bytevariablen
+&nbsp;|
+&nbsp;Bitvariablen</pre>
+</td>
+</tr>
+</table>
+<font color="#FFFFFF">.</font>
+
+<br>In der beiliegenden CCBAS.EXE wurden drei aufeinanderfolgende Bytes
+an Offset $1FBA9 von $18 $00 $0c nach $00 $01 $80 umgepatcht.
+<br>&nbsp;
+
+<h3>Tips und Tricks</h3>
+
+Man k&ouml;nnte nat&uuml;rlich noch mehr tricksen: Z.B. k&ouml;nnte die
+Anzahl der Byteports "vergr&ouml;&szlig;ert" werden und auf diese Weise
+jede RAM-Speicherstelle ab Adresse 1 ausgelesen (und NUR ausgelesen) werden.
+&Uuml;ber D/A-Ports k&ouml;nnten alle RAM-Adressen ab $a beschrieben (und
+NUR beschrieben) werden. Das w&uuml;rde allerdings zu weit f&uuml;hren
+und die &Uuml;bersichtlichkeit nicht gerade f&ouml;rdern - zumal die Indexe
+der "Extra-Byteports" und der "Extra-D/A-Ports" f&uuml;r gleiche RAM-Speicherstellen
+unterschiedlich sein w&uuml;rden!
+<br>&nbsp;
+
+<h3>Ausblick</h3>
+
+Im Rahmen des CC1-OS-Projects entwickeln einige C-Control-Begeisterte ein erweitertes Betriebssystem f&uuml;r die C-Control-1. Diese verbesserte Version des Mikrokontrollers wird wesentlich mehr Speicher (&uuml;ber 200 Byte) f&uuml;r Variablendefinitionen zur Verf&uuml;gung stellen, so da&szlig; der gepatchte CCBASIC-Compiler nicht mehr verwendet werden mu&szlig; und nicht mehr verwendet werden darf, da die erweiterte C-Control ein etwas anderes Speicherlayout besitzt.
+
+<p>Wer neugierig geworden ist, kann auf der <a href="http://ccintern.dharlos.de/erweiterung.htm">CC1-OS-Project-Infosite</a> mehr Wissenswertes &uuml;ber die neue C-Control erfahren. Auch eine aktive Unterst&uuml;tzung, z.B. als Betatester oder Programmierer, ist gern gesehen.
+<br>&nbsp;
+
+<p>Viel Spa&szlig; mit den neuen Extra-Variablen!
+<br>&nbsp;
+<br>&nbsp;&nbsp;
+
+<div ALIGN=right><table BORDER=0 CELLSPACING=0 CELLPADDING=2 >
+<tr>
+<td>
+<pre>&nbsp;&nbsp;&nbsp;&nbsp; __&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _&nbsp;&nbsp;&nbsp; ,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _
+&nbsp;&nbsp;&nbsp; /&nbsp; )&nbsp;&nbsp;&nbsp;&nbsp; _/_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' )&nbsp; /&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //
+&nbsp;&nbsp; /&nbsp; / o _&nbsp; /&nbsp; ____&nbsp; __.&nbsp; __&nbsp;&nbsp;&nbsp; /--/ __.&nbsp; __&nbsp; // _____
+()/__/_&lt;_&lt;/_&lt;__/ / /_(_/|_/ (&nbsp;&nbsp; /&nbsp; (_(_/|_/ (_&lt;/_(_) \_)__</pre>
+
+<div align=right>(Dietmar Harlos, Student der Elektrotechnik, Universit&auml;t
+Paderborn)<br>
+<a href="http://ccintern.dharlos.de">http://ccintern.dharlos.de</a>
+</div>
+</td>
+</tr>
+</table></div>
+<br>&nbsp;
+
+<p><font face="Arial,Helvetica"><font size=-2>Diese HTML-Seite wurde
+von Dietmar Harlos am 1. September 2000 erstellt. Fehlerkorrektur und Erweiterung am 13. September 2002.
+Alle Angaben sind ohne Gew&auml;hr. Warennamen werden ohne Gew&auml;hrleistung der freien Verwendbarkeit
+benutzt. Der Autor kann f&uuml;r Fehler und deren Folgen weder eine juristische
+Verantwortung noch irgendeine andere Haftung &uuml;bernehmen. Der Anwender
+nutzt alle Informationen auf eigenes Risiko. Teile dieser HTML-Seite d&uuml;rfen
+an Dritte weitergegeben werden, wenn die Quelle genannt wird.<br></font></font>
+</body>
+</html>

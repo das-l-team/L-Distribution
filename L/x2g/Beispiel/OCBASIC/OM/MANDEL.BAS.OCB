@@ -1,0 +1,186 @@
+
+' ---------------------------------------------------------------------------
+' Berechnung und Darstellung der Mandelbrot-Menge ("Apfelmaennchen")
+' von Dietmar Harlos am 1. Juli 2006 bis 3. Dezember 2012
+' ---------------------------------------------------------------------------
+
+' Dieses Beispielprogramm zeigt, wie sich auf den OM-Controllern die
+' sogenannte Mandelbrot-Menge berechnen und darstellen laesst.
+
+' Die Mandelbrot-Menge ist ein fraktales (selbstaehnliches) Gebilde und wird
+' durch die sehr einfache Berechnungsvorschrift "z=z^2+c" erzeugt. Besonders
+' beim Hineinzoomen zeigen sich sehr interessante Welten.
+
+' Siehe "http://de.wikipedia.org/wiki/Mandelbrot-Menge".
+
+' In diesem Programm wird die Mandelbrot-Menge mittels 8-Bit-Fixkommazahlen
+' in Assembler berechnet. Die Grafik wird auf der Seriellen Schnittstelle
+' ausgegeben und muss mit einem DOS-Terminalprogramm dargestellt werden.
+
+' ---------------------------------------------------------------------------
+
+'INCLUDE "om.def"                ' Definitionen fuer Open-Micro & Open-Mini
+'INCLUDE "omid.def"              ' Definitionen fuer Open-Midi
+INCLUDE "omac.def"              ' Definitionen fuer Open-Macro
+'INCLUDE "omax.def"              ' Definitionen fuer Open-Maxi
+
+' ---------------------------------------------------------------------------
+
+DIM IMc  BYTE                   ' Deklarierung der BASIC-Variablen
+DIM REc  BYTE
+DIM iter BYTE
+
+' ---------------------------------------------------------------------------
+
+FOR IMc=72 TO -72 STEP -3       ' Real- und Imaginaerteil der Konstante c
+  PRINT                         ' Re(c) = -1.96875 bis  0.46875
+  FOR REc=-126 to 30 STEP 2     ' Im(c) =  1.125   bis -1.125
+
+    mandel                      ' einen Punkt der Mandelbrotmenge berechnen
+
+    IF iter=14 THEN             ' Ausgabe im DOS-Zeichensatz
+      PUT 219
+    ELSEIF iter>=11 AND iter<=13 THEN
+      PUT 165+iter
+    ELSE
+      PUT " "
+    ENDIF
+
+  NEXT REc
+NEXT IMc
+
+End2Host=ON                     ' zurueck in den Hostmodus
+END
+
+' ---------------------------------------------------------------------------
+
+DEFINE REz    BYTE              ' Deklarierung der Assembler-Variablen
+DEFINE IMz    BYTE
+DEFINE REc_dz FREERAM2
+DEFINE IMc_dz FREERAM3
+DEFINE REzQ   FREERAM4
+DEFINE IMzQ   FREERAM5
+
+' ---------------------------------------------------------------------------
+
+' Berechnung eines Punktes der Mandelbrotmenge
+' von Dietmar Harlos am 1. Juli 2006
+' die Anzahl der benoetigten Iterationen wird in iter zurueckgeliefert
+
+PROC mandel INLASM
+
+! lda REc        '-128..32      ' RE(c) muss in der Aufloesung reduziert
+! asra                          ' werden, damit es in den folgenden Berech-
+! adc #0                        ' nungen nicht zu einem Ueberlauf kommt.
+! sta REc_dz     '-64..16       ' Dabei wird gerundet.
+! sta REz
+
+! lda IMc        '-72..72       ' IM(c) ebenso reduzieren. Die Zahlen sind
+! asra                          ' jetzt mit dem Faktor 32 skaliert, was
+! adc #0                        ' dem Linksshiften um 5 Stellen entspricht.
+! sta IMc_dz     '-36..36       ' -64..16 -> -64/32..16/32 -> -2.0..0.5
+! sta IMz
+
+! clr iter                      ' Anzahl der Iterationen festhalten
+#mandel_1
+! lda REz        '-64..63       ' RE(z)^2 berechnen und festhalten, da es
+! tax                           ' unten noch einmal benoetigt wird.
+! bsr imul
+! asrx
+! rora
+! adc #0
+! sta REzQ       '0..128
+
+! lda IMz        '-64..63       ' IM(z)^2 berechnen und festhalten, da es
+! tax                           ' unten noch einmal benoetigt wird.
+! bsr imul
+! asrx
+! rora
+! adc #0
+! sta IMzQ       '0..128
+
+! add REzQ                      ' Abfrage RE(z)^2+IM(z)^2 >= 128 (= 4.0)
+! blt mandel_2   '(N XOR V)=1   ' Schleife beenden, wenn Betrag von z >= 2.0
+
+! inc iter                      ' Iterationszaehler um eins inkrementieren
+! lda #14                       ' und auf maximale Anzahl der Iterationen
+! cbeq iter,mandel_2            ' ueberpruefen
+
+! lda REz        '-64..63       ' IM(z) = 2*RE(z)*IM(z) + IM(c)
+! ldx IMz        '-64..63
+! bsr imul       '-4032..4096 -> x:a= $ff:04..$01:$00
+! adc IMc_dz     '-36..36 -/+ 1
+! bcc mandel_3
+! incx                          ' Die Multiplikation mit 2 liefert ein
+#mandel_3                       ' 16-Bit-Ergebnis, deshalb muss auch die
+! brclr #7,IMc_dz,mandel_4      ' Addition in 16-Bit durchgefuehrt werden.
+! decx
+#mandel_4
+! sta IMz
+
+! pushx                         ' Schleife verlassen, falls das 16-Bit-
+! poph                          ' Ergebnis zu gross oder zu klein ist.
+! tax                           ' Wenn IM(z) z.B. -65, dann waere IM(z)^2
+! cmphx #63                     ' gleich 132. Die Schleife wuerde also nach-
+! bgt mandel_2                  ' folgend beim "blt mandel_2" verlassen.
+! cmphx #-64
+! blt mandel_2
+
+! lda REzQ       '0...126       ' RE(z) = RE(z)^2-IM(z)^2 + RE(c)
+! sub IMzQ       '0...126 -> -126..126
+! add REc_dz     '-64..15
+! tax                           ' Schleife verlassen, falls bei der Addition
+! tpa                           ' ein Ueberlauf im 2-er-Komplement auftrat
+! tsta
+! bmi mandel_2   'V - Overflow Flag - A7 & M7 & ~R7 | ~A7 & ~M7 & R7
+! stx REz
+
+! cmpx #63                      ' Schleife verlassen, falls das Ergebnis
+! bgt mandel_2                  ' zu gross oder zu klein ist. Begruendung
+! cmpx #-64                     ' siehe oben.
+! bge mandel_1
+
+#mandel_2
+! rts                           ' Ruecksprung nach BASIC
+
+
+' Vorzeichenbehaftete Multiplikation im mit 32 skalierten 8-Bit-Fixkommaformat
+' von Dietmar Harlos am 1. Juli 2006
+
+#imul
+! clr OSTEMP
+! tsta           ' Zum Verstaendnis, Multiplikation 1.75 mal 1.5:
+! bpl imul_1     ' Die Zahlen sind skaliert: 1.75*32=56, 1.5*32=48
+! inc OSTEMP     ' Multiplikation liefert: 1.75*1.5*32*32=2688
+! nega           ' Zur Anpassung an die Skalierung wird durch 32
+#imul_1          ' geteilt, also 5-mal nach rechts geshiftet.
+! tstx           ' Das Ergebnis 2688/32=84 ist somit 84/32=2.625.
+! bpl imul_2
+! inc OSTEMP
+! negx           ' Maximaler Rueckgabewert (Ergebnis):
+#imul_2          ' -64*-64= 4096/2^4= 256 -> x:a = $01:$00
+! mul            ' -64* 63=-4032/2^4=-252 -> x:a = $ff:$04
+#imul_4
+! brclr #0,OSTEMP,imul_3
+! comx
+! nega
+! bne imul_3
+! incx
+#imul_3
+! asrx
+! rora           ' Eigentlich sind 5 Schiebe- und Rotierbefehle
+! asrx           ' notwendig, aber im Hauptprogramm muss an
+! rora           ' einer Stelle das Ergebnis der Multiplikation
+! asrx           ' mit zwei multipliziert werden. Deshalb wird
+! rora           ' das fuenfte Schieben inklusive Runden bei
+! asrx           ' Bedarf im Hauptprogramm durchgefuehrt.
+! rora
+! rts
+
+END PROC
+
+
+
+
+
+

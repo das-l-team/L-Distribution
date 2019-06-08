@@ -1,0 +1,1 @@
+Das AVR-Brenner Tool oder die AVR dude Tools haben einen Fehler während der Programmierung des Zielsystems gemeldet.

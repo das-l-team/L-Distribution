@@ -1,0 +1,76 @@
+Beschreibung  zu SchaltSer  vom 26.02.2008
+www.FrankSteinberg.de
+
+
+1. Zweck des Programms
+
+SchaltSer schaltet die Ausgänge einer seriellen Schnittstelle. Wird dort ein entsprechendes Interface (z.B. die Relaisplatine von www.FrankSteinberg.de/erel.htm) angeschlossen, können periphere Geräte gesteuert werden.
+
+SerSchalt arbeitet nicht über eine Benutzeroberfläche (Fenster), sondern bleibt unsichtbar. Stattdessen wird alle 0,5 Sekunden eine Parameterdatei gelesen, in die Anweisungen geschrieben werden können. Damit kann die Steuerung von allen anderen Programmen erfolgen, die Textdateien schreiben können.
+
+
+2. Die Parameterdatei
+
+Nach dem Start versucht SchaltSer die Datei  SchaltSer.ini  zu lesen, die im selben Ordner wie SchaltSer.exe liegt. Beim Programmstart kann auch ein alternativer Dateipfad\Dateiname angegeben werden; Beipiel:
+ SchaltSer "E:\Irgendein Ordner\Meine Parameter.txt"
+
+SchaltSer wertet alle Zeichen bis zu ersten Zeilenumbruch aus. Folgende Zeichenketten werden als Anweisungen erkannt (Groß-/Kleinschreibung egal):
+ COMn	- öffnet die betreffende serielle Schnittstelle, n = 1 bis 9;
+                es MUSS ein Leerzeichen folgen!
+ COMnn	- öffnet die betreffende serielle Schnittstelle, nn = 10 bis 99
+ END	- beendet SchaltSer
+ DTR+	- setzt DTR auf +12V	DTR liegt an Pin 4 am 9-Pol SubD Stecker 
+ DTR-	- setzt DTR auf -12V
+ RTS+	- setzt RTS auf +12V	RTS liegt an Pin 7 am 9-Pol SubD Stecker 
+ RTS-	- setzt RTS auf -12V
+ TxD+	- setzt TxD auf +12V	TxD liegt an Pin 3 am 9-Pol SubD Stecker 
+ TxD-	- setzt TxD auf -12V
+                                                    (Masse liegt an Pin 5 am 9-Pol SubD Stecker)
+
+Beispiel 1 (alle Leitungen von COM1 auf +12V):
+ com1 txd+ dtr+ rts+
+
+Beispiel 2 (COM2: TxD auf +12V, DTR auf -12V, RTS unverändert):
+ txd+Com2 dtr-
+
+Beipiel 3 (beendet SchaltSer, weil Zeichenfolge 'end' vorhanden):
+ Behrendsen Apfelkorn
+
+
+3. Vorbereitete Befehlsscript-Dateien
+
+Die beileigenden Script-Dateien (Endung .cmd) automatisieren die Erstellung der Parameterdatei und den Programmstart. Sie können mit Notepad o.ä. an eigene Bedürfnisse angepasst werden.
+
+
+4. SchaltSer beenden
+
+Folgende Möglichkeiten gibt es:
+ - END in die Parameterdatei schreiben.
+ - Alle Zeichen aus der Paramaterdatei löschen (Dateigröße auf Null setzen).
+ - Parameterdatei löschen.
+ - Einen nicht vorhandenen COM-Port (z.B. com0) in die Parameterdatei schreiben.
+   Hier gibt es zusätzlich eine Messagebox.
+
+
+5. Kontrolltöne  
+
+Wenn schon nicht zu sehen ist, dann soll wenigstens was zu hören sein:
+ 1x Beep bei erfolgreichem Programmstart
+ 2x Beep bei Programmende
+
+
+6. Hinweise
+
+SchaltSer arbeitet mit WinAPI-Funktionen. Deshalb sollten auch USB-seriell Adapter funktionieren.
+SchaltSer kann die Schnittstelle im laufenden Betrieb wechseln (die ursprüngliche wird geschlossen, die neue geöffnet).
+Schon das Öffnen/Schließen der Schnittstelle führt i.d.R. zu Pegeländerungen an DTR und RTS. 
+Beim Booten wird DTR und RTS mehrfach geschaltet. Sollte das ein Problem sein, kann TxD verwendet werden.
+Bei Fehlermeldungen "Fehler beim Öffnen der seriellen Schnittstelle: COMx" bitte prüfen, ob noch eine Instanz von SchaltSer läuft (Taskmanager - Prozesse). Auch ein anderes Programm, das die serielle Schnittstelle benutzt, kann der Verursacher sein 
+
+
+7. Zusatzprogramme
+
+SleepMS erzeugt Wartezeiten, die innerhalb von .bat (.cmd) Dateien eingesetzt werden können. Als Parameter erwartet SleepMS eine Ganzzahl, mit der die Wartezeit in Millisekunden angegeben wird. Kürzere Zeiten als 1000 Millisekunden machen im Zusammenhang mit SchaltSer wenig Sinn, weil SchaltSer die Steuerdatei nur alle 0,5 Sekunden ausliest.
+ 
+
+Frank Steinberg

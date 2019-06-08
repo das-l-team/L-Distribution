@@ -1,0 +1,1 @@
+[ double click above errormessage to position cursor on errorline ]

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><project><system>ccontrol-1.1</system><assembler><source></source><breakpoint></breakpoint></assembler><basic><source>
+Dim Text$ As String
+
+Text$="ABCDEF"
+Print Text$, "hat die Länge: "; Len(Text$)
+
+Text$="Text Ausgabe"
+Call Display_Ausgabe(Text$)
+
+Print "800:20=";Div(800,20)
+Print
+'Hier ist ein anderes Projekt eingebunden
+'Die Deklarationen (port.switch und port.led in Assembler)
+'sind natürlich ebenso sichtbar, da es nun ein Bestandteil dieses
+'Projektes geworden ist!
+
+'$INCLUDE "ccontrol_asm.xml"
+End : Do : Loop 'End' vorangestellt für 'Lbit' Hostmodus (von: L-Team)
+
+
+$INCLUDE "ccontrol_strings.xml"
+$INCLUDE "ccontrol_function.xml"
+
+</source><breakpoint></breakpoint></basic><simulator><object><class>switch</class><port>port</port><bit>port.switch</bit><active></active><name>SWITCH</name><x>0</x><y>0</y></object><object><class>led-yellow</class><port>port</port><bit>port.led</bit><active></active><name>LED3</name><x>1</x><y>0</y></object></simulator></project>

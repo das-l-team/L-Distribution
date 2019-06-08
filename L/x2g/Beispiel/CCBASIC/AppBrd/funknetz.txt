@@ -1,0 +1,247 @@
+============
+FUNKNETZ.TXT
+============
+
+Dokumentation zum Funknetzwerk mit C-Control/BASIC-Modulen
+M.Foerster, 04.11.97
+
+IT WORKS!
+
+Die nachfolgend beschriebene Anwendung dient zur Demonstration
+der Moeglichkeiten des C-Control/BASIC-Systems von Conrad Electronic
+in Verbindung mit dem Application Board.
+Die Seiten- und Bestellnummernangaben (S. und BN.) der im Abschnitt
+Hardware aufgelisteten Komponenten beziehen sich auf den
+Conrad Electronic Hauptkatalog ELECTRONIC WELT 98.
+
+Anwendung
+=========
+In einem Gebaeude sei in drei Raeumen jeweils ein Messpunkt (Station),
+an dem drei verschiedene Messwerte genommen werden koennen. Dabei
+sei von Interesse, dass von jedem Raum aus jeder Messpunkt
+abgefragt werden kann. Ein Verbindungskabel von Raum zu Raum sei
+unerwuenscht.
+
+Hardware
+========
+Fuer jeden Messpunkt wird benoetigt
+
+  1 C-Control/BASIC Steuercomputer (S. 1040, BN. 95 05 72)
+  1 Application Board inklusive 12er-Tastatur und LCD
+    (S. 1040, BN. 95 06 29)
+  1 Telemetrieempfaenger (S. 566, BN. 10 86 34)
+  1 Telemetriesender (S. 566, BN. 10 86 42)
+  1 Stueck 4-adriges Kabel zum Anschluss des Senders
+    (S.566 oben, gibt's aber leider nicht einzeln, daher siehe
+    Skizze unten)
+  1 Batterieclip (S. 989, BN. 62 46 91)
+  1 Steckernetzgeraet 9V, 250 mA (S. 607, BN. 51 07 85)
+  3 Sensoren, z.B Telemetriesensoren S.566
+
+  Gehause und Montagezubehoer nach Wunsch
+  
+Programmierung
+==============
+Programmieren Sie die drei Steuercomputer unter Verwendung des
+Beispielprogramms TERMINAL.BAS. Aendern Sie bei jeder Unit den
+Wert der SELF-Konstante (siehe Programmbeschreibung). Notieren 
+Sie, welche Unit mit welcher SELF-Konstante programmiert
+wurde.
+
+Montage und Inbetriebnahme der programmierten Systeme
+=====================================================
+(1) Pruefen Sie das Steckernetzgeraet auf Funktion, da der folgende
+Schritt zum Erloeschen der Garantie und des Rueckgaberechtes
+fuehrt!
+Trennen Sie den Stecker vom Anschlusskabel des Steckernetzgeraetes,
+abisolieren Sie die Kabelenden. Ermitteln Sie die Polaritaet
+(+ und -) der Kabelenden. Klemmen Sie das Kabel polungsrichtig an
+das Application Board.
+
+(2) Oeffnen Sie das Batteriefach des Empfaengers, schliessen Sie
+statt eines 9V-Blocks den Batterieclip an. Klemmen Sie die Kabelenden
+des Batterieclips wie das Steckernetzgeraet an das Application Board.
+ACHTUNG: rot geht an -, schwarz an +
+
+(3) Konfigurieren Sie das Application Board:
+Steuercomputer aufsetzen, Jumper J6 auf "Key", Uref auf 2.5V, Display,
+Tastatur und Sensoren anschliessen
+
+(4) Anschluss des Telemetriesenders an das Application Board:
+
+2 Stueck 4-polig abgebrochene Buchsenleiste (S. 752, BN. 73 49 93)
+1 Stueck 4-adrige Litze (S. 566, BN. 10 92 90)
+
+                                                |
+   ___                                        __|   Telemetrie-
+  |___|=------------   ...   ---------------=|___|  sender
+  |___|=-------------  ...    --------------=|___|
+  |___|=----------     ... -----------------=|___|
+1 |___|=-------------  ...    --------------=|___| GND
+                                                |  (Gehauseecke)
+                                                 \________________
+1 geht an Telem_TX GND
+
+
+(5) Telemetrieempfaenger auf Telem_RX stecken, weisse Kabelader
+geht an GND
+
+(6) Steckernetzteil in Steckdose stecken, RESET-, START-Button druecken
+
+(7) WICHTIG: Verbinden Sie erst nach dem Programmstart die Stifte RX-TX
+vom Application Board mit dem Schnittstellenstecker der ControlUnit, da
+sonst evtl. per Funk empfangene Daten als Download-Befehl missverstanden
+wuerden und das Programm ueberschreiben.
+
+Bedienung
+=========
+Nach dem Start erscheint "SELCET" am Display. Druecken Sie 1...3, um die
+AD-Werte AD[1] bis AD[3] von Station1 (SELF=1) anzuzeigen, 4...6 fuer
+Station2 (SELF=2) und 7...9 fuer Station3 (SELF=3). Auf * wird wieder 
+"SELECT" angezeigt.
+Die Anzeige der Messwerte wird im ca. 5-Sekunden-Takt aktualisiert.
+
+Wie funktioniert das - die Programmbeschreibung
+===============================================
+Das Programm besteht aus vier Hauptabschnitten:
+
+  Keyboard-Abfrage
+  LCD-Ansteuerung
+  Netzwerkroutinen
+  Hauptprogrammschleife und anwendungsspezifische Routinen
+
+Keyboard-Abfrage und LCD-Ansteuerung entsprechen weitestgehend den
+Beispielprogrammen zum Application Board (siehe dort). Die Routine
+#GETKEY liefert einen Tastencode in der Variable key_nr.
+Die LCD-Ausgabe von Werten (#WRITEVALUE) wurde dahingehend veraendert,
+dass keine Leerzeichen fuer fuehrenden Nullen ausgegeben werden.
+
+Die Netzwerkroutinen und -variablen dienen zum Senden und Empfangen
+von Nachrichtenpaketen zwischen den einzelnen Stationen. Ein Paket ist
+8 Bytes lang (mehr geht nicht, da der interne Empfangspuffer 
+der seriellen Schnittstelle nur 8 Bytes lang ist) und wiefolgt aufgebaut:
+
+Paketformat (Bytes):
+ _____________________________________________________
+|  1  |     2      |     3    |  4...7   |      8     |
+|-----------------------------------------------------|
+| TAG | Empfaenger | Absender | M1...M4  | Pruefsumme |
+|_____________________________________________________|
+
+TAG:        immer der Wert &HAA zur Kennzeichnung des Paketbeginns
+Empfaenger: Kennung des Paketempfaengers
+Absender:   Kennung des Paketabsenders
+M1...M4:    vier Bytes fuer die eigentliche Nachricht
+Pruefsumme: Ergebnis der XOR-Verknuepfung der Bytes 1...7
+
+Jede Station im Netz hat eine eindeutige Byte-Kennung
+(SELF-Konstante im Programm). Damit werden Sender und Empfaenger
+identifiziert. Bis zu 256 Stationen können in einem Netz miteinander
+kommunizieren. (In diesem Beispiel sind es drei.)
+
+#SENDMESSAGE
+Einschalten des Telemetriesenders (enable); Berechnung der Prüfsumme;
+byteweise Ausgabe des zu sendenden Paketes. Da der Telemetrieempfaenger
+die Signale sofort wieder empfaengt, befinden sich nun mit hoher 
+Wahrscheinlichkeit die gerade gesendeten 8 Bytes im Empfangspuffer.
+Es folgen 8-Dummy-Leseoperationen von der seriellen Schnittstelle.
+
+#GETMESSAGE
+Ueber die Variable ok wird angezeigt, ob ein Paket empfangen wurde.
+ok wird zunaechst mit 0 initialisiert. Anschliessend erfolgt das
+schrittweise Lesen und Testen der Bytes von der seriellen
+Schnittstelle. Sind zu wenig Bytes vorhanden oder trat ein Fehler auf,
+werden die bereits gelesenen Bytes verworfen (silently discarded). 
+
+ACHTUNG: Das hier beschriebene Protokoll ist ein unsicheres Protokoll und
+garantiert nicht die Auslieferung der Pakete von A nach B (vgl.
+IP-Protokoll im Internet). Ihre Anwendung muss darauf vorbereitet sein,
+dass Pakete verloren gehen koennen.
+
+#MAIN
+Nach dem Start springt das Programm sofort zu #MAIN. Dort erfolgt
+die Initialisierung von LCD und serieller Schnittstelle, die
+Ausgabe des "SELECT"-Prompts (#PROMPT) und der Uebergang zur
+Hauptprogrammschleife #LOOP.
+
+#LOOP
+Die Hauptschleife fragt nach neuen Tastendruecken, loest die zyklische
+Aktualisierung der Anzeige aus und verzweigt zur Reaktion auf
+eingegangene Nachrichten.
+
+#HANDLEKEY
+Der Moment des Tastendrucks wird zur Initialisierung des Zufallsgenerators
+verwendet. Der Tastencode key_nr wird als Funktionscode fx gespeichert. Es
+erfolgt der Uebergang zu #DO_FX.
+
+#DO_FX
+Berechnung der naechsten Zykluszeit mit einer Zufallskomponente, um
+unerwuenschte Synchronitaeten zu vermeiden (z.B. dass alle Stationen
+gleichzeitig senden); Ausfuehren der zuletzt gewaehlten Funktion oder
+Ausgabe des "SELCET"-Prompts. 
+
+#FX_ASTERIX
+Loeschen der zuletzt gewaehlten Funktion; Ausgabe des "SELCET"-Prompts. 
+
+#FX_0 und FX_CROSS 
+hier ohne Funktion
+ 
+#FX_1 bis #FX_9
+Jede Taste fordert einen Sensorwert von einer bestimmten Station an.
+Ist die abgefragte Station die lokale Station selbst (SELF), erfolgt
+sofort die Datenausgabe am Display (#DISPLAYDATA). Anderenfalls wird 
+ein Anfragepaket im Funknetzwerk abgeschickt und am Display der
+Stationsname und "..." ausgegeben. Das Anfragepaket enthaelt im ersten
+Nachrichtenbyte (M1) die Konstante MSG_REQUEST=0 zur Kennzeichnung der 
+Anfrage, und in M2 die Nummer des gewuenschten Sensors. M3 und M4
+werden nicht benutzt (=0).
+
+#HANDLEMESSGAE
+Wird im Verlauf der Hauptschleife #LOOP durch den Aufruf von #GETMESSAGE 
+der Empfang eines Datenpaketes festgestellt, entscheidet #HANDLEMESSAGE
+anhand des ersten empfangenen Nachrichtenbytes (M1), ob es sich um eine
+Anfrage einer anderen Station handelt (M1=MSG_REQUEST, siehe #FX_1 bis
+#FX_9) oder die Antwort auf eine eigene Anfrage (M1=MSG_ANSWER).
+
+#DISPLAYDATA
+Anzeige eines angeforderten Sensorwertes am LCD; in diesem Beispiel
+werden die AD-Werte direkt ausgegeben, ohne Umrechnung in physikalische
+Groessen.
+
+#SENDANSWER
+Senden eines Antwortpaketes auf die Anfrage einer anderen Station; das
+Antwortpaket enthaelt in M1 die Konstante MSG_ANSWER=255 zur
+Kennzeichnung der Antwort, in M2 die Nummer des Sensors und in M4 den 
+Sensor-AD-Wert. M3 wird nicht benutzt (=0).
+
+Empfehlungen
+============
+Bauen Sie das System aus! Verbessern und erweitern Sie das
+Netzwerkprotokoll nach Ihren Vorstellungen. Versuchen Sie sich an einem 
+drahtgebundenen Netz; Vorschlag: ein Ring aller angeschlossenen Module.
+                           
+                             ________
+                            |        |
+                          --|RX    TX|-- 
+                        /   |________|   \
+                       /                  \ 
+                   ___|___              ___|___
+                  |  TX   |            |  RX   |
+                  |       |            |       |
+                  |__RX___|            |__TX___|
+                      |                    |
+                       \     ________     /
+                        \   |        |   /
+                          --|TX    RX|-- 
+                            |________|        (gemeinsame GND-Leitung)
+                            
+                            
+Jede Station wuerde empfangene Pakete, die nicht fuer sie bestimmt sind,
+einfach weiterleiten. Trifft ein Paket beim Absender wieder ein, hat sich
+kein Empfaenger gefunden und es muss entschieden werden, ... usw. 
+
+Viel Spass!
+
+
+ 
+       

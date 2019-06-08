@@ -1,0 +1,128 @@
+
+' Erstes Beispielprogramm fuer OCBAS.EXE, lauffaehig auf der Open-Micro
+' (c) Dietmar Harlos 23. Juli 2005 bis 28. Maerz 2006
+
+' Open-Control/BASIC soll 100% syntaxkompatibel zu CCBASIC sein, ein paar
+' zusaetzliche Features wie mehrzeiliges IF..THEN und WHILE..WEND unter-
+' stuetzen und ausserdem die Fehler von CCBASIC beseitigen.
+
+
+'option ccbas              'mit dieser Option wird der Compiler angewiesen,
+                          'von sich aus keine neuen Tokenbefehle der Open-
+                          'Micro zu verwenden, d.h. das Programm sollte auf
+                          'der Original-C-Control lauffaehig sein, sofern der
+                          'Anwender keine neuen Befehle (DBNZ, ADD, SUB,
+                          'REMOVETOS), Zeiger oder neuen internen Variablen
+                          'benutzt.
+
+'include "om.def"          'Include-Datei in den Sourcecode einfuegen
+
+define a,b,i byte         'statt "DEFINE" ist auch "DIM" verwendbar und
+                          'es wird ein optionales "AS" unterstuetzt
+
+for i=0 to 6              'statt STEP -1 ist auch DOWNTO verwendbar
+
+  if i=0 then
+    print "Null";
+  else if i=1 then        'statt "ELSE IF" kann auch "ELSEIF" und
+    print "Eins";         'statt "END IF" auch "ENDIF" geschrieben werden
+  else if i=2 then
+    print "Zwei";         'ausserdem ist das "THEN" bei "IF" optional
+  else if i=3 then
+    print "Drei";
+  else if i=4 then
+    print "Vier";
+  else if i=5 then
+    print "Fuenf";
+  else
+    print "Nichts von alledem."
+  end if
+
+  if i<6 then
+    put ","               'Stringkonstanten koennen ein oder zwei
+    put " "               'Zeichen lang sein
+  end if
+
+next i
+
+while i<10                'die WHILE..WEND-Schleife ist kopfgesteuert
+  put i+48                'und die Bedingung bei WHILE muss erfuellt
+  i=i+1                   '(wahr) sein, damit die Schleife durchlaufen
+wend                      'wird, sonst wird hinter WEND weitergemacht
+
+print
+
+a=65
+repeat                    'die REPEAT..UNTIL-Schleife ist fussgesteuert
+  put a                   'und die Bedingung bei UNTIL muss unwahr sein,
+  a=a+1                   'damit die Schleife erneut durchlaufen wird;
+until a>90                'sie ist die Abbruchbedingung
+
+print
+
+dbnzctr=15                'DBNZ-Schleifen werden sehr schnell ausgefuehrt.
+#loop                     'Der Zaehler in der Schleife ist immer DBNZCTR
+  print dbnzctr;" ";      'und dieser belegt auf der OM den gleichen RAM-
+dbnz loop                 'Speicher wie RAND und ERR. Bei DBNZ wird der
+                          'Zaehler um eins dekrementiert und anschliessend
+print                     'gesprungen, falls der Zaehler ungleich Null ist.
+                          '("Decrement and Branch if Not Zero")
+
+subroutine 123            'Aufruf einer Subroutine mit Parameteruebergabe
+                          '(entspricht GOSUB, nicht GOTO wie in CCBASIC)
+
+print funktion(81,64)     'User-Funktion aufrufen und Parameter uebergeben
+
+print looktab(tabelle1,5) 'das sechste Byte aus der Tabelle
+
+'print sys(&h101 1,2,3)    'Assemblerprogramm als Funktion aufrufen
+
+'print input#              'aus der Datei lesen
+
+a=0
+while looktab(tabelle2,a) 'den String in der Tabelle lesen und ausgeben
+  put looktab(tabelle2,a)
+  add a,1                 'ADD und SUB zur schnellen Addition und Subtraktion
+wend
+
+print "Bitte Zahlen eingeben und RETURN druecken: ";
+print get+input           'von der seriellen Schnittstelle lesen
+
+end
+
+
+' Eine Subroutine mit nur einem Parameter
+
+PROCEDURE subroutine(a)
+  print "Der Subroutine wurde der Wert ";a;" uebergeben."
+RETURN
+
+
+' Eine Funktion mit zwei Parametern und Rueckgabewert
+
+FUNCTION funktion(a,b)
+  i=a
+RETURN sqr(a)+sqr(b)
+
+
+' Eine Tabelle im Wordformat
+
+table tabelle1            'Natuerlich wird auch die alte Syntax unter-
+  1,2,3,4,5               'stuetzt. Tabellen enthalten standardmaessig
+end table                 'nach wie vor Words, keine Bytes.
+
+
+' Eine Tabelle im Byteformat
+
+table tabelle2 byte
+  "Es werden jetzt auch T",97,"bellen im Byteformat unterstuetzt!",13,10,0
+end table
+
+
+' Der SYSCODE-Befehl unterstuetzt nun auch beliebige Pfadangaben
+
+' Falls kein Pfad angegeben wird, dann sucht OCBAS zuerst im Verzeichnis
+' mit dem Sourcecode nach der Datei. Wenn sie dort nicht zu finden ist
+' wird im aktuellen Verzeichnis gesucht.
+
+'syscode "c:\c-control\hallo.s19"

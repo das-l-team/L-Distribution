@@ -1,0 +1,5 @@
+[ Starte ]
+
+OMDLWIN ( Bytekode zum Zielsystem übertragen )
+Copyright Dietmar Harlos ab 15.02.2006
+

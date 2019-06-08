@@ -1,0 +1,1 @@
+[ INLASM V1.1 - (c) Dietmar Harlos 14. Juli 2005, generiert aus der S19-Datei eine CCBASIC-Tabelle mit Inline-Assemblercode. ]

@@ -1,0 +1,2 @@
+[ Starting S19_TO_TAB_32 V1.0 - (c) Dietmar Harlos 23. Sep 2015, generating data table from s19 file.]
+

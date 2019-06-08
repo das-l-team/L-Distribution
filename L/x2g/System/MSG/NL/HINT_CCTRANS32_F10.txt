@@ -1,0 +1,1 @@
+[ Tip:  If this programs' operation is causing increasing ventilator noise or affecting response time of other programs due to excessive CPU use, try using another transmission program via the F10 key as an alternative ]

@@ -1,0 +1,29 @@
+' [ Fehlermeldung ]
+'
+' Es konnte kein im Zielsystem befindliches Programm ausgelesen
+' und/oder in C-Control/BASIC Quelltext umgewandelt werden.
+'
+' Häufige Ursachen:
+'
+'- die richtige Schnittstelle wurde nicht ausgewählt, oder ist in Benutzung
+'- das Zielsystem ist nicht im Hostmodus, oder noch nicht eingeschaltet
+'- das Zielsystem sendet einen unbekannten ID-String. Der ID-String muss lauten
+'
+'                     CCTRL-BASIC Version 1.1 (20.12.96)
+'
+'     Der ID-String muss mit einem Carriage Return (ASCII 13) beendet werden!
+'
+'
+'- das Zielsystem unterstützt nicht das Auslesen gespeicherter Programme
+'
+'  Möglicherweise kann das Auslesen ermöglicht werden, indem das in dieser
+'  Fehlermeldung enthaltene Hilfsprogramm, kompiliert und zum Zielsystem
+'  übertragen und dort gestartet wird. ( Taste F9, dann Taste F10 oder F11 ) 
+'
+'Idee:
+'  [ Diese Fehlermeldung könnte den Quelltext eines Dienstprogramms enthalten, ]
+'  [ das auf dem jeweiligen Zielsystemen ausführbar ist, und Zurücklesen des]
+'  [ Bytekodes, eventuell auch kombiniert mit einer Paßwortabfrage, freischaltet.]
+'  [ (Bitte diese Fehlermeldung mit F9 kompilieren um das Prinzip zu verdeutlichen) ]
+'  Beipiel:
+ PRINT " Ein Hilfsprogramm zum Auslesen aller Zielsysteme existiert derzeit nicht. "

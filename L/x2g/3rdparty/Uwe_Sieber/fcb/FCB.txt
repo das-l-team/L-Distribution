@@ -1,0 +1,43 @@
+
+FCB V0.8.1.1 - File Compare Binary  -  freeware by Uwe Sieber - www.uwe-sieber.de
+
+
+Usage:
+
+FCB FileSpec1 FileSpec2 [-i]
+
+-i  ignore different file sizes, compare up to smaller size
+
+
+Samples:
+
+FCB D:\Pictures\Holiday2012\* U:\Holiday2012
+
+FCB big.bin small.bin -i
+
+
+FCB is a fast replacement for Windows FC.EXE. It supports only the
+binary mode of the original.
+The original acts often very dull: Comparing large files it allocates
+nearly all the free memory. And it reads the files thru the Windows
+file cache even if its useless because of the file size.
+
+FCB reads directly from the disk. It uses three separate threads for
+reading the two files and for comparing. So FCB is nearly always faster
+than FC.EXE. The only exeption is when you compare a file with itself.
+FCB then really reads the data twice from disk while FC gets the data
+of the second file from the Windows file cache.
+
+The usage is similar to the original but the /B parameter doesn't exist
+because FCB only supports the binary mode, processing sub-dirs isn't
+implemented yet.
+
+
+
+Uwe Sieber
+Sept 2014
+
+
+
+
+

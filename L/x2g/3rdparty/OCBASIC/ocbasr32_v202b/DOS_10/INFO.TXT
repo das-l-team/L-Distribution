@@ -1,0 +1,4 @@
+
+In diesem Verzeichnis befindet sich die alte OCBASR-Version 1.0 fuer DOS.
+Sie unterstuetzt nur die Open-Micro und Open-Mini, aber benoetigt weniger
+DOS-Speicher.

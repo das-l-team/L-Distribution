@@ -1,0 +1,51 @@
+
+' ===========================================================================
+' Beispiel zu Prozeduren und Funktionen in OCBASIC v0.91
+' lauffaehig auf der Open-Micro, Open-Mini, Open-Midi und CC V1.1
+' ===========================================================================
+
+
+'OPTION CCBAS            'dadurch lauffaehig auf der C-Control Version 1.1
+
+DIM a,b,c BYTE
+
+demo1 1,2,3             'Das Hauptprogramm: Hier werden die Prozeduren und
+                        'Funktionen demo1 und demo2 aufgerufen
+PRINT demo2(4,5,6)
+
+END
+
+
+PROCEDURE demo1(a,b,c)  'Der Prozedur- oder Funktions-Header erzeugt den
+  PRINT a               'Code zum Holen der Variablen a, b und c vom Stack.
+  PRINT b               'Die drei Variablen muessen im Hauptprogramm bereits
+  PRINT c               'definiert worden sein. Eine Pruefung des Variablen-
+  RETURN                'typs oder der Anzahl findet nicht statt. Beendet
+END PROCEDURE           'wird eine Prozedur oder Funktion immer mit RETURN.
+
+FUNCTION demo2(a,b,c)
+  PRINT a
+  PRINT b
+  PRINT c
+  RETURN a+b+c          'Ruecksprung und Rueckgabe eines Wertes
+END FUNCTION
+
+
+PROC demo3 a,b,c        'Versionen fuer Schreibfaule
+  PRINT a   
+  PRINT b               'Die Befehle ENDFUNC, ENDPROC, END FUNCTION und
+  PRINT c               'END PROCEDURE sind optional und ohne Funktion.
+RETURN
+
+FUNC demo4 a,b,c        '#demo4        'Alle vier Prozeduren und Funktionen
+  PRINT a               '  POP c       'in diesem Beispielsourcecode bestehen
+  PRINT b               '  REMOVETOS   'aus den hier gezeigten Befehlen POP,
+  PRINT c               '  POP b       'REMOVETOS, PRINT und RETURN.
+RETURN a+b+c            '  REMOVETOS
+                        '  POP a       'Das nebenstehende Beispiel #demo4
+                        '  PRINT a     'ist also voellig equivalent zu der
+                        '  PRINT b     'vereinfachten Schreibweise mit dem
+                        '  PRINT c     'Prozedur- oder Funktions-Header.
+                        'RETURN a+b+c
+
+

@@ -1,0 +1,30 @@
+
+' INCLUDE-Datei fuer die C-Control Version 1.1 und OCBAS.EXE
+' (c) Dietmar Harlos 7. August 2005
+
+
+' Das Betriebssystem benutzt die drei Systemvariablen FILESTART, FILEOFF und
+' FILELEN, um die EEPROM-Datei zu verwalten. Je nachdem, welche OPEN#-Befehls-
+' variante in einem CCBASIC-Programm benutzt wird, werden diese Variablen auf
+' unterschiedliche Weise initialisiert: FILESTART wird grundsaetzlich auf die
+' erste EEPROM-Adresse hinter dem BASIC-Programm gesetzt (Adresse 4 plus
+' BASIC-Programmlaenge). Ein "OPEN# FOR WRITE"-Befehl setzt FILEOFF und
+' FILELEN gleich 0. Ein "OPEN# FOR READ"-Befehl speichert die vom CLOSE#-
+' Befehl auf EEPROM-Adresse 2 hinterlegte Dateilaenge in FILELEN und setzt
+' FILEOFF auf 0. Ein "OPEN# FOR APPEND"-Befehl speichert ebenfalls die Datei-
+' laenge in FILELEN und setzt FILEOFF gleich FILELEN.
+
+' Ein Lesen oder Schreiben mittels INPUT# oder PRINT# findet an der Datei-
+' position FILEOFF statt. Anschliessend wird FILEOFF um zwei inkrementiert.
+' Der PRINT#-Befehl setzt zusaetzlich FILELEN gleich FILEOFF, was beim nicht-
+' sequentiellen Schreiben, bei dem FILEOFF auf eine beliebige Dateiposition
+' gesetzt wird, Probleme macht. Man sollte sich deshalb in diesem Fall ueber-
+' legen, den maximalen Wert von FILELEN in einer eigenen Variable zwischen-
+' zuspeichern, bis er beim CLOSE#-Befehl benoetigt wird.
+
+DEFINE FILESTART_hi BYTE [44]  'Dateistart-Adresse
+DEFINE FILESTART_lo BYTE [45]
+DEFINE FILEOFF_hi BYTE [42]    'Dateioffset, aktuelle Position
+DEFINE FILEOFF_lo BYTE [43]
+DEFINE FILELEN_hi BYTE [40]    'Dateilaenge in Byte
+DEFINE FILELEN_lo BYTE [41]

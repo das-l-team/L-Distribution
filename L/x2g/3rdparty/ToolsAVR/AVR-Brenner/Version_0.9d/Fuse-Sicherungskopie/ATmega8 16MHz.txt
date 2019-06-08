@@ -1,0 +1,13 @@
+**************************************************************
+*           AVR-Brenner - FUSE-Bit Sicherungskopie           *
+**************************************************************
+
+>>> Erstellt für ATMEGA8 am 29.01.2010 um 18:00 Uhr <<<
+
+Lock-Fuse = 11111111
+Extended-Fuse =
+High-Fuse = 11010001
+Low-Fuse = 11011111
+
+externer 16MHz Quarz, EEprom überschreiben verhindern
+

@@ -1,0 +1,39 @@
+
+' Beispielprogramm zu Zeigern in OCBAS, lauffaehig auf der Open-Micro
+' (c) Dietmar Harlos 30. Juli 2005
+
+
+define ^pb byte     'Zeiger auf ein Byte im USER-RAM definieren
+'define ^pw word     'Zeiger auf ein Word (unterstuetzt die OM nicht)
+
+define i byte
+define d byte       'eine normale Variable definieren
+
+
+d=123               'Wert in der Variable d speichern
+
+print "Die Variable d liegt im USER-RAM an Adresse ";^d;" und hat den Wert ";d;"."
+
+pb=^d               'Zeiger mit Adresse von d laden
+                    'der Adress-Operator ist "^" (in C ist er "&")
+
+print "Der Zeiger enthaelt als 'Wert' eine Adresse: ";pb
+print "Der Wert von d, gelesen mittels Zeiger: ";@pb
+
+@pb=234             'Byte an der Stelle aendern, auf die pb zeigt
+                    'der Derefenzierungsoperator ist "@" (in C ist er "*")
+
+print "Nun enthaelt d den Wert: ";d
+
+
+print
+print "Den gesamten RAM-Speicher auslesen:"
+
+for i=0 to 127
+  pb=i
+  print @pb;" ";
+next i
+
+print
+
+end

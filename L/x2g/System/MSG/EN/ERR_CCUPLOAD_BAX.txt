@@ -1,0 +1,26 @@
+ [ Error Message ]
+
+ None program could be read back from the target system and/or connversion into C-Control/BASIC  source code (decompiling) was not successful.
+
+   Frequent causes:
+
+- The correct interface is not selected, is not switched on, or is in use
+- The target system is not in host mode, or is not switched on
+- The target system sends an unknown ID string.  The ID string must be identical to:  
+
+                     CCTRL-BASIC Version 1.1 (20.12.96)
+
+  ( The ID String must then be followed by a Carriage Return (ASCII 13) )
+
+
+- Reading back bytecode is not supported by the target system.
+
+  Eventually the selection can be enabled, while this error message compiles, is transmitted to the target system, and performs the task there. 
+
+
+  [ idea: This error message could contain the source code of a utility program, which enables ]
+  [ read-back of bytecode from such not yet read-back enabled devices. One could then simply]
+  [ compile this actual error message, upload it as a user program to the target system and]
+  [ where it would enable read-back functionality]
+
+ PRINT " This would be an example of an utilitiy program that was coded into an error message"

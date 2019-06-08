@@ -1,0 +1,45 @@
+
+Sleep 0.2 - waits given period(s) of time by means of the Windows Sleep API call
+
+
+Usage:
+
+sleep time[unit] [time[unit]] ...
+
+time is the time in milliseconds or the time in seconds, minutes or hours if
+the unit s, m or h is used.
+
+
+Sample for waiting 2 Seconds:
+
+sleep 2000
+or
+sleep 2s
+
+
+
+Sample for waiting 1.5 minutes:
+
+sleep 90000
+or
+sleep 90s
+or
+sleep 1m 30s
+
+
+
+Sample for waiting 24 hours:
+
+sleep 86400000
+or
+sleep 86400s
+or
+sleep 1440m
+or
+sleep 24h
+
+
+
+
+Freeware by Uwe Sieber, 06/2013
+

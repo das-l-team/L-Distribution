@@ -1,0 +1,4 @@
+
+[ Bitte auf obige Fehlermeldung doppelt klicken, um zur Fehlerzeile zu gelangen. ]
+  
+ HINT:  Unter 'Einstellungen' -> 'Umgebungseinstellungen' -> 'Benutzerbefehle' muss bei 'asm,a05', F9 die "Regel für Compiler-Ausgabe" lauten:    "%n",%l

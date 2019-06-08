@@ -1,0 +1,2 @@
+[ Starting ]
+C-Control/BASIC++ - Version 2.03.0331

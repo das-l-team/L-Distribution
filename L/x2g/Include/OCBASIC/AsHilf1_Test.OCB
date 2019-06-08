@@ -1,0 +1,103 @@
+ '---------------------------------------------------------------------------------------------------
+ ' DemoProgramm zur Vergewisserung, daß die InlineAssemblerhilfsprgramme "AsHilf1.pro" funktionieren
+ ' Befehle:
+ ' FwPutHex und FwPrtHex    'Ausgabe des AkkuWertes als HexZahl - mit und ohne CarriageReturn
+ ' FwPutDez und FwPrtDez    'Ausgabe des AkkuWertes als DezimalZahl - mit und ohne CarriageReturn
+ ' FwPutBin und FwPrtBin    'Ausgabe des AkkuWertes als BinaerZahl - mit und ohne CarriageReturn
+ ' FwPrtPcA                 'Ausgabe des Programmcounters as Hex- und des Akkus als Binär&Dezimalzahl
+ ' FwPrtStA                 'Ausgabe der obersten StackWerte (AnzahlÜbergabe mittels Akku)
+ ' FwPrtHXC                 'Ausgabe der Register: H, X und CCR
+ '---------------------------------------------------------------------------------------------------
+
+ ' INCLUDE  "L:\x2g\include\ocbasic\defs\om.def"            ' Definitionen fuer die Open-Mini
+ ' INCLUDE  "L:\x2g\include\ocbasic\defs\omid.def"          ' und  Open_Midi
+   INCLUDE  "L:\x2g\include\ocbasic\defs\OMAC.def"          ' bzw. Open_Macro
+
+   DEFINE ab BYTE[1]
+
+ #main
+ '-----------------------------------------------------------------------------------------------------
+ '   Ausgabe der auf dem Stack gestapelten  Werte
+ '-----------------------------------------------------------------------------------------------------
+  ? "StackAusgabe"
+  ab=15                  ' Anzeige der obersten 15 (willkürlich gewählt) Werte
+  GOSUB StackAusgab0     ' Stapelt fortlaufend Ziffern und zeigt dann mittels
+                         ' "FwPrtStA" die obersten 15 an
+ '-----------------------------------------------------------------------------------------------------
+ '   Ausgabe von 0-255 als Dezimal-, Hex- und Binärzahl
+ '-----------------------------------------------------------------------------------------------------
+  ?"--------------"
+  ? "DEZ HEX BIN PC"
+  For ab=0 to 255         ' Demo, zeigt, dass Ausgabe als Dezimal-, Hex- und Binärzahl von
+  GOSUB DecHexBinAusgab ' 0-255 funktioniert
+  ?
+  Next
+ '-----------------------------------------------------------------------------------------------------
+ '   Ausgabe von 10 Zeilen ProgrammCounter
+ '-----------------------------------------------------------------------------------------------------
+  ?"--------------"
+  ? "10xProgrammCounter"
+  GOSUB PCAusgab
+ '-----------------------------------------------------------------------------------------------------
+ '   Ausgabe von H:X und CCR
+ '-----------------------------------------------------------------------------------------------------
+  ?"-------------"
+  ?" H X CCR"
+  For ab=0 to 255
+  ?
+  ?"A=X=H=>CCR ";ab
+  GOSUB HX_CCR_Ausgab
+  next
+
+
+
+ PRINT "Faertsch"
+ #Faertsch
+ GOTo Faertsch
+'-------------------------------------------------------------------------------------------------------
+'        INLASM-Programme zur DEMO
+'--------------------------------------------------------------------------------------------------------
+ PROC StackAusgab0 INLASM
+  !   LDX #20                       ' Schiebe 20 Werte auf den Stack
+  !   LDA #99
+  #Loop1_StackAusgab
+   !  ADD #1                       ' erzeuge Werte ab 100...
+   !  PSHA                         ' schiebe 100-119 auf den Stack
+   !  DBNZX Loop1_StackAusgab      ' bis X=0
+   !  LDA ab                       ' Schleifenzähler in den Akku
+   !  JSR FwPrtStA                 ' StackWerte (Anzahl = ab) ausgeben
+   ! AIS #20                       ' Stackpointer restaurieren
+  ! RTS
+
+  PROC DecHexBinAusgab INLASM
+  ! LDA ab                   ' Übergabe des Wertes
+  !  JSR FWPrtDez            ' Ausgabe als DezimalZahl
+  !  JSR FWPrtHEX            ' Ausgabe als HexZahl
+  !  JSR FWPrtBin            ' Ausgabe als BinaerZahl
+  ! RTS
+
+  PROC PCAusgab INLASM
+   !  JSR FWPrtPcA            ' Ausgabe des Programmcounters
+   !  JSR FWPrtPcA            ' Ausgabe des Programmcounters
+   !  JSR FWPrtPcA            ' Ausgabe des Programmcounters
+   !  JSR FWPrtPcA            ' Ausgabe des Programmcounters
+   !  JSR FWPrtPcA            ' Ausgabe des Programmcounters
+   !  JSR FWPrtPcA            ' Ausgabe des Programmcounters
+   !  JSR FWPrtPcA            ' Ausgabe des Programmcounters
+   !  JSR FWPrtPcA            ' Ausgabe des Programmcounters
+   !  JSR FWPrtPcA            ' Ausgabe des Programmcounters
+   !  JSR FWPrtPcA            ' Ausgabe des Programmcounters
+   !  RTS
+
+
+  PROC HX_CCR_Ausgab INLASM
+  ! LDX ab                   ' X=Byte[ab]
+  ! PSHX
+  ! LDA $1,SP                ' A=Byte[ab]
+  ! PULH                     ' H=Byte[ab]
+  ! TAP                      ' Transfer Accu to CCR (CCR=Byte[ab])
+  ! JSR FwPrtHXC             ' Ausgabe von H:X und CCR
+  ! RTS
+
+INCLUDE "L:\x2g\include\ocbasic\om_fw.pro"
+INCLUDE "L:\x2g\include\ocbasic\asHilf1.pro"

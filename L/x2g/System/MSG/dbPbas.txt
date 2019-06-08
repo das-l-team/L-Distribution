@@ -1,0 +1,21 @@
+ CCBASPAR = (Step 1)
+
+  Use of preprocessor "C-Control/BASIC-Parser" by Dietmar Harlos can avoid
+  a bug known in CCBASIC.EXE which results in malformed bytecode if certain
+  combinations of CCBASIC statements found inside a source code.
+  A list of the first 24 byte positons is generated and more than just 1
+  statement is executed behind THEN (See example in next line).
+  IF true THEN a=1 : b=12 : c=123 : PRINT a,b,c ELSE PRINT "error"
+  Now, IF..THEN..ELSE blocks can span over multiple lines as in standard
+  BASIC. Unfortunately, this included version doesn't accept tabulator stops
+  (ASCII code 9) inside a sourcecode. These must therefore be manually
+  be substituted with spaces (ASCII code 32)
+
+ CCBAS = (Step 2)
+
+  A patched C-Control/BASIC compiler courtesy http://ccintern.dharlos.de
+  is then used to compile the parser output. Running under more recent
+  Windows versions however, a whole DOS-PC needs to be emulated. This is
+  slowing the compilation process dramatically. When installing under
+  Windows XP, try using the 16-bit compatible toolchain instead. This
+  will run using NTVDM instead to achieve faster compilation times.

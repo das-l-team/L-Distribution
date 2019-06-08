@@ -1,0 +1,1 @@
+[ invoking S2BIN.EXE to convert .s19 data into assembly source code]

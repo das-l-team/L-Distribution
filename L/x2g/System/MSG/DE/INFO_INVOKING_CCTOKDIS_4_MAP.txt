@@ -1,0 +1,4 @@
+[ DOS kompatibles Programm CCTOKDIS.EXE mit Open-Control/BASIC kombinieren um eine Map-Datei zu erhalten. ( Umfasst nur den Programmkode - Kein Verzeichnis von RAM Variablen) ]
+
+C-Control/BASIC Parser Version 1.1
+Copyright (c) 2003 Dietmar Harlos ADPC

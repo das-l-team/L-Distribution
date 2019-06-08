@@ -1,0 +1,6 @@
+[ Hinweis: Das Programm PGMR5.EXE legt die Datei ' PGMR5.LOG ' im Arbeitsverzeichnis an.
+  Die Logaufzeichnung funktioniert nicht, wenn diese Datei schreibgeschuetzt ist.
+
+  Zusaetzlich wird die Datei ' PGMR5.CFG ' angelegt, in der die Namen von geoeffneten
+  Dateien und Einstellungen bzgl. COM-Port und Prozessortyp enthalten sind.
+]

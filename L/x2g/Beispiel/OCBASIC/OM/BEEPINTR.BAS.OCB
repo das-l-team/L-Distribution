@@ -1,0 +1,75 @@
+
+' ===========================================================================
+' BEEP mittels Interrupt - waehrend normaler Programmabarbeitung
+' lauffaehig auf der Open-Micro, Open-Mini und Open-Midi
+' ===========================================================================
+
+' Dieses Beispiel zeigt, wie ein Assemblerprogramm in den Timer1-Interrupt
+' eingebunden wird, um den PORT[2] (eigentlich TCH1) schnell zu toggeln, so
+' dass ein daran angeschlossener Piezo-Schallwandler einen Ton ausgibt.
+' Diese Tonausgabe findet im Hintergrund, waehrend der normalen Programm-
+' abarbeitung statt. Allerdings deaktivieren Befehle wie PRINT, GET, usw.
+' die Interrupts fuer einen kurzen Moment, so dass die Tonausgabe durch
+' diese Befehle verzerrt wird.
+
+
+INCLUDE "om.def"
+
+DEFINE led PORT[4]        'diese LED wird im Hauptprogramm in BASIC getoggelt
+
+' ---------------------------------------------------------------------------
+
+' Die folgende PROCEDURE steht am Programmbeginn und es ist das Schluessel-
+' wort INLASM angegeben. Es handelt sich daher um eine IIAR. Also um eine
+' Assembler-Interruptroutine, die bei einem aktivierten Interrupt gestartet
+' wird.
+
+PROC iiar_tim1 INLASM
+! ldhx TCH1H              'Naechsten Aufrufzeitpunkt festlegen
+! brclr #3,$0,iiar_tim1_1
+! aix #-50                'als kleine Demo ist die Tonhoehe von dem Zustand
+#iiar_tim1_1              'der LED abhaengig
+! aix #100
+! cmphx #1000
+! blo iiar_tim1_2         'etwas komplizierter wegen Modulo-Register
+! ldhx #0
+#iiar_tim1_2
+! sthx TCH1H
+! clc                     'Diese Assemblerroutine uebergibt nun wieder an
+! rts                     'das Betriebssystem. Dazu wird Carry geloescht.
+END PROC
+
+
+PROC init_tim1 INLASM
+! bset bTSTOP,TSC         'Before changing a channel function by writing to
+! bset bTRST,TSC          ' the MSxB or MSxA bit, set the TSTOP and TRST bits
+! mov #&b01010100,TSC1    ' in the TIM status and control register (TSC).
+! clr TCH1H
+! clr TCH1L
+! bclr bTSTOP,TSC         'TSC1: CH1F CH1IE 0 MS1A ELS1B ELS1A TOV1 CH1MAX
+! rts
+END PROC
+
+' ---------------------------------------------------------------------------
+
+#main
+
+'wir haengen unsere IIAR-Assemblerroutine in den Timer1-Interrupt
+
+UIRTim1=ON
+
+'Timer1 initialisieren und Interrupt aktivieren
+
+init_tim1
+
+'Nun folgt das Hauptprogramm
+
+led=ON
+WHILE TRUE
+  TOG led
+  PAUSE 25
+WEND
+
+' ---------------------------------------------------------------------------
+
+

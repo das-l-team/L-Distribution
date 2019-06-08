@@ -1,0 +1,28 @@
+[ Anwendungsunterstützung, vorgangsbezogen. ]
+
+  Hinweis zur Statusmeldung "Die Komponente (Name der Komponente) ist nicht enthalten.
+
+  (Dies ist eigentlich keine Fehlermeldung)
+  
+  F: Warum erscheint dieser Hinweis?
+
+  A: Manche Hilfsprogramme/Komponenten sind im Installationspaket der |_ Distribution,
+     nicht enthalten, koennen aber nachtraeglich durch Entpacken einer ZIP-Datei
+     in das jeweils angegebene Unterverzeichnis installiert werden.
+
+  F: Woher bekomme ich die jeweilige ZIP-Datei?
+  A: Meist wird diese kostenlos auf der Website der jeweiligen Herausgeber zum Download
+     angeboten. Manche Komponenten sind evt. nur fuer Betatester erhaeltlich.
+
+  F: Kann ich zusaetzliche Komponenten dem Installationspaket der |_ Distribution hinzufuegen?
+
+  A: Ja. Dazu kann, wie oben beschrieben, die jeweilige Komponente in das entsprechende
+     Unterverzeichnis kopiert werden. Im Anschluss kann dann mit dem Installationsskript
+     "L:\x2g\System\SETUP\L Konzeptstudie.iss" das Installationspaket aktualisiert werden.
+     Zur Kompilierung wird der kostenlose INNO-Setup Kompiler von Jordan Russell benötigt.
+
+     Selbstverständlich kannst du  die |_ Distribution  forken um sie deinen Bedürfnissen anpassen.
+     Bitte beachte dabei die Vertriebs- und Lizenzbestimmungen evt. von dir eigenständig hinzugefügter
+     3rd-party Komponenten. Bitte kennzeichne deine Änderungen, wenn du vorhast das so entstandene Werk
+     ausserhalb deines privaten Einflussbereiches zu verteilen, damit für Anwender/innen klar ist, dass
+     es sich um eine von dir überarbeitete/erweiterte Version von  die |_ Distribution handelt.

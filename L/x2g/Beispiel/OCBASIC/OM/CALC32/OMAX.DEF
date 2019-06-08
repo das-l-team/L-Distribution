@@ -1,0 +1,1339 @@
+
+option OPENMAXI
+
+' ---------------------------------------------------------------------------
+' --- Definitionen fuer die Open-Maxi in OCBASIC ----------------------------
+' --- von Dietmar Harlos am 24. Mai 2012 ------------------------------------
+' --- letztes Update am 19. November 2012 -----------------------------------
+' ---------------------------------------------------------------------------
+
+'          Die Pinbelegung der Open-Control M-Unit von CCTools:
+'       (sie ist pinkompatibel zur C-Control I Version 1.1 M-Unit)
+
+'                                 TEST    AD[8]   AD[6]    GND
+' PORT[16]       ...         PORT[9]  BEEP    AD[7]   AD[5]
+' ,----------------------------------------------------------------,
+' | *   *   *   *   *   *   *   *   *   *   *   *   *   *   +   *  | UREF
+' |                                                        CTS     |
+' | +   +   +   +   +   +   +   +   +   +   +   +   +   +   +   *  | RXD
+' |PORT[40]      ...         PORT[33] CTS2     GND     MCLK        |
+' |                                GND     RTS2    GND      +   *  | TXD
+' |                                                        RTS     |
+' |                                                                |
+' |                                                                |----- TXD
+' | * GND          __________________                              |
+' |               /                  \                             |----- N.C.
+' | * 5 V         |                  |                             |
+' |               |                  |       4 MHz                 |----- RXD
+' | * PORT[1]     |  MC9S08AW60CFUE  |       Quarz                 |
+' |               |                  |                             |----- 5 V
+' | * PORT[2]     |       mit        |                             |
+' |               |    Open-Maxi-    |                             |----- GND
+' | * PORT[3] O   |  Betriebssystem  |                             |
+' |          JP5  |                  |  +  : zusaetzlicher Pin     |
+' | * PORT[4] O   |                  |  JPA: 5 V fuer VDDAD     *  | AD[4]
+' |               \__________________/  JP4: 5 V fuer UREF         |
+' | * PORT[5]                           JP5: AUTOSTART          *  | AD[3]
+' |                                                                |
+' | * PORT[6]                                                   *  | AD[2]
+' |                                                                |
+' | * PORT[7]  I2C-EEPROM      RUN    DCFOK   VDDAD    5 V      *  | AD[1]
+' |             32 kByte          ACTIVE  KEYB     5 V    BKGD     |
+' | * PORT[8]                   +   +   +   +   +JPA+   +   +    O |
+' |      SDA SCL START                                          JP4|
+' |       *   *   *             *   *   *   *   *   +   +   *    O |
+' \----------------------------------------------------------------/
+'                                 FREQ1   DA[1]    GND    RESET
+'                             FREQ2    DA[2]   IRQ     GND
+
+' Hinweis: Folgende Pins der Open-Control M-Unit werden von der Open-Maxi
+'  nicht verwendet und sind fuer zukuenftige Betriebssysteme oder System-
+'  erweiterungen reserviert: KEYB, MCLK, CTS2 und RTS2. Der Anwender kann
+'  diese Pins zur Zeit frei verwenden.
+
+' Uebersicht ueber die Pins der Open-Maxi:
+
+define pta0 port [1]       ' die Ports des ersten Byteports (PORTA)
+define pta1 port [2]
+define pta2 port [3]
+define pta3 port [4]
+define pta4 port [5]       ' 8 I/O-Ports
+define pta5 port [6]
+define pta6 port [7]
+define pta7 port [8]
+
+define porta byteport [1]  ' byteweiser Zugriff auf den 1. Byteport (PORTA)
+                           ' interne Pull-Up-Widerstaende siehe PTAPE
+
+define ptb0 port [9]       ' die Ports des zweiten Byteports (PORTB)
+define ptb1 port [10]
+define ptb2 port [11]
+define ptb3 port [12]
+define ptb4 port [13]      ' 8 I/O-Ports, alternativ: AD[9] bis AD[16]
+define ptb5 port [14]
+define ptb6 port [15]
+define ptb7 port [16]
+
+define portb byteport [2]  ' byteweiser Zugriff auf PORTB
+                           ' interne Pull-Up-Widerstaende siehe PTBPE
+
+define portc byteport [3]  ' 0, CTS1, RXD1, RTS1, TXD1, MCLK, SDA, SCL
+define portd byteport [4]  ' AD[8] ... AD[1]
+
+define pte0 port [33]      ' die Ports des fuenften Byteports (PORTE)
+define pte1 port [34]
+define pte2 port [35]
+define pte3 port [36]
+define pte4 port [37]      ' 8 I/O-Ports, alternativ: SCI1, SPI, ...
+define pte5 port [38]
+define pte6 port [39]
+define pte7 port [40]
+
+define porte byteport [5]  ' byteweiser Zugriff auf PORTE
+                           ' interne Pull-Up-Widerstaende siehe PTEPE
+
+define portf byteport [6]  ' CTS2, RTS2, DA[2], DA[1], FREQ2, FREQ1, TEST, BEEP
+define portg byteport [7]  ' 0, EXTAL, XTAL, KEYB, DCFOK, ACTIVE, RUN, START
+
+define ad0  ad [1]         ' Analog-Digital-Wandler (auf 8 Bit gerundet; mit
+define ad1  ad [2]         '  ADC1CFG=&b01001000 auf gerundete 10 Bit)
+define ad2  ad [3]
+define ad3  ad [4]         ' AD[1] bis AD[8] liegen an PORTD und sind
+define ad4  ad [5]         '  bereits auf AD-Wandlung konfiguriert
+define ad5  ad [6]
+define ad6  ad [7]         ' alternativ: 8 I/O-Ports
+define ad7  ad [8]
+define ad8  ad [9]
+define ad9  ad [10]
+define ad10 ad [11]        ' AD[9] bis AD[16] liegen an PORTB und sind noch
+define ad11 ad [12]        '  nicht auf AD-Wandlung konfiguriert
+define ad12 ad [13]        '  (das geht mit APCTL1=&b11111111)
+define ad13 ad [14]
+define ad14 ad [15]
+define ad15 ad [16]
+define ad34 ad [35]        ' Temperatur-Sensor (s. Kapitel 14.2.3 im Manual)
+define ad35 ad [36]        ' Internal Bandgap (typ. 1.20 Volt +/- 15 mV)
+define ad37 ad [38]        ' UREF=VREFH (per Jumper auf: VDD, Betriebsspannung)
+define ad38 ad [39]        ' VREFL (immer: VSS, GND, Masse)
+
+define da0  da [1]         ' Pulsweitenmodulation (PWM) (Aufloesung 8 Bit,
+define da1  da [2]         '  PWM-Frequenz 2441 Hz; mit wenig Aufwand sind die
+                           '  Aufloesung und die PWM-Frequenz aenderbar)
+
+' Extended Ports per I2C-Portexpander PCF8574:
+
+define extport1 byteport[9]  ' PORT[65]  bis PORT[72]  : 1. PCF8574
+define extport2 byteport[10] ' PORT[73]  bis PORT[80]  : 2. PCF8574
+define extport3 byteport[11] ' PORT[81]  bis PORT[88]  : 3. PCF8574
+define extport4 byteport[12] ' PORT[89]  bis PORT[96]  : 4. PCF8574
+define extport5 byteport[13] ' PORT[97]  bis PORT[104] : 5. PCF8574
+define extport6 byteport[14] ' PORT[105] bis PORT[112] : 6. PCF8574
+define extport7 byteport[15] ' PORT[113] bis PORT[120] : 7. PCF8574
+define extport8 byteport[16] ' PORT[121] bis PORT[128] : 8. PCF8574
+
+' ---------------------------------------------------------------------------
+
+' Von Adresse $70 bis $86f liegen 2048 Byte RAM. An Adresse $aa beginnt das
+' 512 Byte grosse User-RAM und nimmt ueblicherweise die User-Variablen
+' auf. Der meiste Speicher oberhalb des User-RAMs ist frei und so koennen
+' mittels PEEK und POKE ueber 1800 RAM-Bytes vom Anwender verwendet werden!
+
+define byte0   byte [1]    ' erstes Byte im Variablenspeicher (User-RAM)
+define byte255 byte [256]  ' letztes Byte fuer BYTE-Variablen
+define word255 word [256]  ' WORD-Variablen koennen 512 Byte nutzen
+
+define version byte [24]   ' Versionsnummer des OM-Betriebssystems
+
+' ---------------------------------------------------------------------------
+
+' Mit Hilfe der folgenden internen Variablen laesst sich das Betriebssystem
+' konfigurieren...
+
+' Es existiert jetzt ein an die OM-Controller angepasster OCBASIC-Compiler,
+' mit dem die neuen Systemvariablen als interne Variablen (also genauso wie
+' HOUR, TIMER, usw.) ansprechbar sind. Da sich die Lage dieser Variablen in
+' zukuenftigen Betriebssystemversionen aendern kann, sollten diese Variablen
+' nicht ueber ihre Adresse angesprochen werden!
+
+' (CCBASIC unterstuetzt nicht den Typ 'IVAR'. Die neuen internen Variablen
+'  lassen sich dort daher nur ueber Tricks ansprechen.)
+
+define PrintHex ivar [81]  ' PRINT hexadezimal statt dezimal
+define PrintSpc ivar [82]  ' SPACE vor einem dezimalen PRINT ausgeben
+define RealPop  ivar [83]  ' echtes Stackhandling & kein Stacksichern bei IRQ
+define ClockDis ivar [84]  ' Weiterzaehlen der Uhr deaktivieren
+define URIllTok ivar [85]  ' User-Tokenroutine bei illegalem Token starten
+define FileByte ivar [86]  ' PRINT# und INPUT# im Byte- statt Wordformat
+define RunOnErr ivar [87]  ' bei Fehler Programm neustarten (Fehler in ERR)
+define End2Host ivar [88]  ' bei END in den Hostmodus (unabh. vom START-Pin)
+define Dcf77Dis ivar [89]  ' DCF77-Auswertung an FREQ1 deaktivieren
+define HwHsEnab ivar [90]  ' Hardware-Handshake (RTS und CTS) aktivieren
+define LcdLight ivar [91]  ' LCD: Hintergrundbeleuchtung      \ alternativ
+define LcdEn2   ivar [92]  ' LCD: 2. Enable-Leitung verwenden /
+
+' Die Flags fuer den Status vom Betriebssystem sollte der Anwender nur
+' auslesen und unveraendert lassen...
+
+define Carry    ivar [73]  ' Carry nach Berechnungen
+define IrqReq   ivar [74]  ' IRQ detektiert, BASIC-IRQ-Routine soll starten
+define IrqSet   ivar [75]  ' BASIC-IRQ-Routine per "INTERRUPT label" definiert
+define IrqAct   ivar [76]  ' BASIC-IRQ-Routine wird augenblicklich ausgefuehrt
+define FileChg  ivar [77]  ' Datei veraendert, CLOSE# muss fileend aktualisieren
+define IiarFnd  ivar [78]  ' Inline-Interrupt-Assemblerroutine wird verwendet
+define SciErr   ivar [79]  ' mindestens ein Empfangsfehler an der ser. Schnitt.
+define FileErr  ivar [80]  ' File-I/O-Error - das I2C-EEPROM sendet kein ACK
+define DcfPar   ivar [33]  ' DCF77: errechnete Paritaet
+define DcfEdge  ivar [34]  ' DCF77: letzter Portzustand (zur Flankendetektion)
+define DcfSZtmp ivar [35]  ' DCF77: temporaeres Sommerzeit-Bit
+define DcfSZ    ivar [36]  ' DCF77: "Sommerzeit ist aktiv"
+define DcfOk    ivar [37]  ' DCF77: "DCF-Signal zur Zeit okay"
+define DcfClkSt ivar [38]  ' DCF77: "Interne Uhr der OM wurde gestellt"
+define LcdErr   ivar [39]  ' LCD: der I2C-Portexpander sendet kein ACK
+define LcdRs    ivar [40]  ' LCD: Daten (1) oder Instruktion (0) uebermitteln
+define PNum2Lcd ivar [56]  ' LCD: Umleitung fuer "PRINT NUMBER" aktiv
+
+' Das folgende Flag kann vom Anwender ausgewertet und zurueckgesetzt werden...
+
+define ExtPErr  ivar [47]  ' EXTPORTs: ein I2C-Portexpander sendet kein ACK
+
+' Mit diesen Bits lassen sich User-Assemblerroutinen ("IIAR") in jeden
+' Interrupt des AW60-Controllers und in den Tokeninterpreter einbinden...
+
+define UIRIrq   ivar [65]  ' User-Assemblerroutine fuer externen Interrupt
+define UIRSwi   ivar [66]  ' User-Assemblerroutine fuer Software-Interrupt
+define UIRTim0  ivar [67]  ' User-Assemblerroutine fuer Timer 0 aktivieren
+define UIRTim1  ivar [68]  ' User-Assemblerroutine fuer Timer 1 aktivieren
+define UIRTofl  ivar [69]  ' User-Assemblerroutine fuer Timer-Overflow
+define UIRKyb   ivar [70]  ' User-Assemblerroutine fuer Keyboard aktivieren
+define UIRAdc   ivar [71]  ' User-Assemblerroutine fuer Analog-Digital-Conv.
+define URTok    ivar [72]  ' User-Assemblerroutine fuer Tokeninterpreter
+
+' Sobald einer der neuen Interrupts des AW60 auftritt, wird vom Betriebssystem
+' wie bisher die Anwender-Interruptroutine aufgerufen. Der Anwender muss sich
+' bei Adc, Spi, Sci1r, Sci1t, Sci1e, Lvd, Sci2r (wenn UIR mit gesetztem Carry
+' ans OS zurueckgibt), Sci2t, Sci2e, Iic1 und Rti allerdings selbst um das
+' Ruecksetzen der Interruptanforderung kuemmern.
+
+define UIRSpi   ivar [57]  ' User-Assemblerroutine fuer Serial Periph. Interf.
+define UIRTim2  ivar [59]  ' User-Assemblerroutine fuer Timer 2 aktivieren
+define UIRTim3  ivar [60]  ' User-Assemblerroutine fuer Timer 3 aktivieren
+define UIRSci1r ivar [61]  ' User-Assemblerroutine fuer SCI1-Receive \
+define UIRSci1t ivar [62]  ' User-Assemblerroutine fuer SCI1-Transmit > ist
+define UIRSci1e ivar [63]  ' User-Assemblerroutine fuer SCI1-Error   /  frei
+
+define UIRLvd   ivar [49]  ' User-Assemblerroutine fuer Low Voltage Detect
+define UIRIcg   ivar [50]  ' User-Assemblerroutine fuer Internal Clock Generator
+define UIRTim4  ivar [51]  ' User-Assemblerroutine fuer TPM1 Channel 4
+define UIRTim5  ivar [52]  ' User-Assemblerroutine fuer TPM1 Channel 5
+define UIRTpm2C0 ivar [53] ' User-Assemblerroutine fuer TPM2 Channel 0
+define UIRTpm2C1 ivar [54] ' User-Assemblerroutine fuer TPM2 Channel 1
+define UIRTpm2Ofl ivar [55] ' User-Assemblerroutine fuer TPM2 Overflow
+
+define UIRSci2e ivar [41]  ' User-Assemblerroutine fuer SCI2-Error    \  vom OS
+define UIRSci2r ivar [42]  ' User-Assemblerroutine fuer SCI2-Receive   > benutzt
+define UIRSci2t ivar [43]  ' User-Assemblerroutine fuer SCI2-Transmit /
+define UIRIic1  ivar [44]  ' User-Assemblerroutine fuer Inter-Integrated Circuit
+define UIRRti   ivar [45]  ' User-Assemblerroutine fuer Real-Time Interrupt
+
+' Temporaeres Word fuer Systemerweiterungen in BASIC und Assembler
+
+define OSTEMP2  ivar [26]  ' wird auch vom Betriebssystem verwendet!
+
+' Zugriff auf den TIMER der Real Time Clock (RTC) in BASIC und Assembler
+
+define RTCTIMER ivar [129+&h70]  '1 Byte, wie auf Open-Micro/Mini/Midi/Macro
+
+' ---------------------------------------------------------------------------
+
+' Am Ende des RAMs liegen einige Betriebssystemvariablen, die mittels PEEK
+' und POKE angesprochen werden können. Hiermit laesst sich das Betriebssystem
+' konfigurieren, aber es ist auch moeglich, die entsprechende Betriebssystem-
+' funktion zu deaktivieren und dann den Speicher zu nutzen.
+
+define HwStack   &h07f4    ' Hardware-Stack: Von Adresse &h07f4 abwaerts
+define i2cdelay  &h07f5    ' I2C-Bustakt (circa 20E6/(8*i2cdelay+50))
+define i2ceepadr &h07f6    ' Datendatei: I2C-Schreibadresse vom I2C-EEPROM
+define i2clcdadr &h07f7    ' LCD: I2C-Schreibadresse vom PCF8574-Portexpander
+define extp_om   &h07f8    ' EXTPORTs: 8 Byte "Output-Merker"
+define sci2buf   &h0800    ' Ser. Schnittstelle: 32 Byte Empfangsbuffer
+define sci2ptr   &h0820    ' Ser. Schnittstelle: Zeiger fuer sci2buf
+define sci2anz   &h0821    ' Ser. Schnittstelle: Anzahl der zu lesenden Bytes
+define gstk      &h0822    ' 32 Words GOSUB-Stack
+define dcfilen   &h0862    ' DCF77: Messen der Impulsdauer in 20-ms-Einheiten
+define dcficnt   &h0863    ' DCF77: Nummer des Sekundenimpulses
+define dcfyear   &h0864    ' \
+define dcfmonth  &h0865    '  \
+define dcfday    &h0866    '   \ DCF77: Buffer zum Empfang der
+define dcfdow    &h0867    '   / aktuellen DCF77-Uhrzeit
+define dcfhour   &h0868    '  /
+define dcfmin    &h0869    ' /
+define freq1tmp  &h086a    ' Impulse am FREQ1-Pin zaehlen
+define freq2tmp  &h086c    ' Impulse am FREQ2-Pin zaehlen
+define ufileend  &h086e    ' Datendatei: Fileende-Zeiger
+
+' ---------------------------------------------------------------------------
+
+' Aus Gruenden der Kompatiblitaet zu Programmen, die fuer die 8-Bit-OM-
+' Controller geschrieben wurden, folgen Definitionen fuer den Zugriff auf
+' Word-Systemvariablen, die auf der Open-Maxi eigentlich unnoetig sind...
+
+define dFILEPOSh ivar [129+&h72] ' Die Dateiposition im I2C-EEPROM
+define dFILEPOSl ivar [129+&h73]
+
+define dPCADRh   ivar [129+&h76] ' Der Programmzaehler (Programmcounter) im
+define dPCADRl   ivar [129+&h77] ' tokensierten BASIC- oder CCPLUS-Programm
+
+define dERRADRh  ivar [129+&h74] ' Die Adresse aus dem Programmzaehler nach
+define dERRADRl  ivar [129+&h75] ' Auftreten eines Fehlers
+
+' ---------------------------------------------------------------------------
+
+' Ab Version 0.91 besitzt OCBASIC einen integrierten 6808-Assembler, wodurch
+' Assembler- und BASIC-Quellcode im gleichen Programm benutzt werden kann.
+
+' Programme, die folgende Definitionen benoetigen, sind i.d.R. nur auf einem
+' OM-Controllersystem lauffaehig und muessen fuer ein anderes System neu
+' uebersetzt (neu kompiliert) werden.
+
+define URAMBASE &haa       ' An dieser Adresse beginnt das User-RAM. Die
+                           ' Definition ermoeglicht den Zugriff auf vom
+                           ' Anwender definierte Variablen in Assembler.
+                           ' Es ist zum Beispiel moeglich, den Inhalt der
+                           ' Bytevariable "uservariable" mit dem Assembler-
+                           ' befehl "!lda uservariable" in den Akku zu laden.
+
+define UPROGBASE &h185e    ' An dieser Adresse beginnt der virtuelle Adress-
+                           ' raum des Tokencodes. Diese Definition wird nur
+                           ' fuer Assemblerbefehle mit absoluter Adressierung
+                           ' benoetigt (JSR, JMP, LDA label,x ...), aber
+                           ' nicht fuer die optimaleren relativen Sprung-
+                           ' befehle (BRA, BEQ, BRCLR ...). Ausserdem ermoeg-
+                           ' licht diese Definition das Aufrufen von Labels
+                           ' per SYS- statt GOSUB-Befehl, was beim Aufruf von
+                           ' Assemblerroutinen etwas Zeit spart.
+
+define OSTEMP   ivar [129+&h71] ' temporaeres Byte fuer Assembler, darf nicht
+define OSTEMP1  OSTEMP     ' in Assembler-Interruptroutinen verwendet werden!
+
+' ---------------------------------------------------------------------------
+
+' Konstanten zur Verwendung in Assembler-Interruptroutinen zur Unterscheidung
+' der diversen Interruptquellen. Ueblicherweise per "CBEQA #iIRQ,isIrq".
+
+define iIRQ     &b00000001      ' External Interrupt (IRQ)
+define iSWI     &b00000010      ' Software Interrupt (SWI)
+define iTIM0    &b00000100      ' Timer/PWM-Module 1 - Channel 0 (TPM1CH0)
+define iTIM1    &b00001000      ' Timer/PWM-Module 1 - Channel 1 (TPM1CH1)
+define iTOFL    &b00010000      ' Timer/PWM-Module 1 - Overflow (TPM1OVF)
+define iKYB     &b00100000      ' Keyboard Interrupt Module (KBI)
+define iADC     &b01000000      ' Analog-to-Digital Converter (ADC)
+define iTOK     &b10000000      ' User-Assemblerroutine im Interpreter (TOK)
+
+define iSPI     &b11111110      ' Serial Peripheral Interface (SPI)
+define iTIM2    &b11111011      ' Timer/PWM-Module 1 - Channel 2 (TPM1CH2)
+define iTIM3    &b11110111      ' Timer/PWM-Module 1 - Channel 3 (TPM1CH3)
+define iSCI1r   &b11101111      ' Serial Communications Interface 1 - Receive
+define iSCI1t   &b11011111      ' Serial Communications Interface 1 - Transmit
+define iSCI1e   &b10111111      ' Serial Communications Interface 1 - Error
+
+define iLVD     &b10000001      ' Low Voltage Detect (LVD)
+define iICG     &b10000010      ' Internal Clock Generator (ICG)
+define iTIM4    &b10000100      ' Timer/PWM-Module 1 - Channel 4 (TPM1CH4)
+define iTIM5    &b10001000      ' Timer/PWM-Module 1 - Channel 5 (TPM1CH5)
+define iTPM2C0  &b10010000      ' Timer/PWM-Module 2 - Channel 0 (TPM2CH0)
+define iTPM2C1  &b10100000      ' Timer/PWM-Module 2 - Channel 1 (TPM2CH1)
+define iTPM2OFL &b11000000      ' Timer/PWM-Module 2 - Overflow (TPM2OVF)
+
+' Hinweis: Das Betriebssystem verwendet das SCI2. (SCI1 ist also frei.)
+
+define iSCI2e   &b01000001      ' Serial Communications Interface 2 - Error
+define iSCI2r   &b01000010      ' Serial Communications Interface 2 - Receive
+define iSCI2t   &b01000100      ' Serial Communications Interface 2 - Transmit
+define iIIC1    &b01001000      ' Inter-Integrated Circuit (I2C)
+define iRTI     &b01010000      ' Real-Time Interrupt (RTI)
+
+' ---------------------------------------------------------------------------
+
+' ---- Register Addresses and Bit Assignments of AW60 ----
+' -- laut "MC9S08AW60 Data Sheet", Rev. 1.0, 01/30/2006 --
+
+' Im Bereich von Adresse $00 bis $6f liegen beim AW60-Controller die Register
+' der Hardwaremodule. Durch das Beschreiben dieser Register laesst sich der
+' Controller konfigurieren. Allerdings ist hier Vorsicht angeraten! Es
+' sollte immer zuerst im Manual zum Controller (MC9S08AW60.pdf) nach-
+' gelesen werden, welche Bedeutung die diversen Register und Bits haben!
+
+' Durch die folgenden Definitionen kann sowohl in OCBASIC als auch im
+' integrierten 6808-Assembler per Bezeichner auf die Register zugegriffen
+' werden. Ein "!lda PTBD" wird nach "!lda $02" uebersetzt.
+
+' Ich habe bei den Ports einige Alternativdefinitionen hinzugefuegt, damit
+' Programme fuer die bisherigen OM-Controller ohne Aenderung weiterverwendet
+' werden koennen. Bei den anderen Modulen ist das nicht sinnvoll, weil sich
+' auf dem AW60 gegenueber dem QB8 zuviel veraendert hat.
+
+' Direct-Page Registers
+
+define PTAD       ivar [129+&h00] ' Port A Data Register
+define bPTAD7     7
+define bPTAD6     6               ' Port A Data Register Bits
+define bPTAD5     5
+define bPTAD4     4               ' Avoid glitches on port pins by writing
+define bPTAD3     3               ' to the port data register before changing
+define bPTAD2     2               ' data direction register bits from 0 to 1!
+define bPTAD1     1
+define bPTAD0     0
+define PTA        ivar [129+&h00] ' Alternativdefinitionen fuer alte Programme
+define bPTA7      7               ' PTA7 = PORT[8]
+define bPTA6      6               ' PTA6 = PORT[7]
+define bPTA5      5               ' PTA5 = PORT[6]
+define bPTA4      4               ' PTA4 = PORT[5]
+define bPTA3      3               ' PTA3 = PORT[4]
+define bPTA2      2               ' PTA2 = PORT[3]
+define bPTA1      1               ' PTA1 = PORT[2]
+define bPTA0      0               ' PTA0 = PORT[1]
+define PTADD      ivar [129+&h01] ' Data Direction for Port A Register
+define bPTADD7    7
+define bPTADD6    6
+define bPTADD5    5               ' Data Direction for Port A Bits
+define bPTADD4    4
+define bPTADD3    3
+define bPTADD2    2
+define bPTADD1    1
+define bPTADD0    0
+define DDRA       ivar [129+&h01] ' Alternativdefinitionen
+define bDDRA7     7
+define bDDRA6     6
+define bDDRA5     5
+define bDDRA4     4
+define bDDRA3     3
+define bDDRA2     2
+define bDDRA1     1
+define bDDRA0     0
+
+define PTBD       ivar [129+&h02] ' Port B Data Register
+define bPTBD7     7
+define bPTBD6     6
+define bPTBD5     5               ' Port B Data Register Bits
+define bPTBD4     4
+define bPTBD3     3
+define bPTBD2     2
+define bPTBD1     1
+define bPTBD0     0
+define PTB        ivar [129+&h02] ' Alternativdefinitionen
+define bPTB7      7               ' PTB7/AD1P7 = PORT[16]/AD[16]
+define bPTB6      6               ' PTB6/AD1P6 = PORT[15]/AD[15]
+define bPTB5      5               ' PTB5/AD1P5 = PORT[14]/AD[14]
+define bPTB4      4               ' PTB4/AD1P4 = PORT[13]/AD[13]
+define bPTB3      3               ' PTB3/AD1P3 = PORT[12]/AD[12]
+define bPTB2      2               ' PTB2/AD1P2 = PORT[11]/AD[11]
+define bPTB1      1               ' PTB1/AD1P1 = PORT[10]/AD[10]
+define bPTB0      0               ' PTB0/AD1P0 = PORT[9]/AD[9]
+define PTBDD      ivar [129+&h03] ' Data Direction for Port B Register
+define bPTBDD7    7
+define bPTBDD6    6
+define bPTBDD5    5               ' Data Direction for Port B Bits
+define bPTBDD4    4
+define bPTBDD3    3
+define bPTBDD2    2
+define bPTBDD1    1
+define bPTBDD0    0
+define DDRB       ivar [129+&h03] ' Alternativdefinitionen
+define bDDRB7     7
+define bDDRB6     6
+define bDDRB5     5
+define bDDRB4     4
+define bDDRB3     3
+define bDDRB2     2
+define bDDRB1     1
+define bDDRB0     0
+
+define PTCD       ivar [129+&h04] ' Port C Data Register
+define bPTCD6     6
+define bPTCD5     5
+define bPTCD4     4               ' Port C Data Register Bits
+define bPTCD3     3
+define bPTCD2     2
+define bPTCD1     1
+define bPTCD0     0
+define PTC        ivar [129+&h04] ' Alternativdefinitionen
+define bPTC6      6               ' PTC6      = CTS1/PORT[23]
+define bPTC5      5               ' PTC5/RxD2 = RXD1/PORT[22]
+define bPTC4      4               ' PTC4      = RTS1/PORT[21]
+define bPTC3      3               ' PTC3/TxD2 = TXD1/PORT[20]
+define bPTC2      2               ' PTC2/MCLK = MCLK/PORT[19]
+define bPTC1      1               ' PTC1/SDA1 = SDA/PORT[18]
+define bPTC0      0               ' PTC0/SCL1 = SCL/PORT[17]
+define PTCDD      ivar [129+&h05] ' Data Direction for Port C Register
+define bPTCDD6    6
+define bPTCDD5    5
+define bPTCDD4    4               ' Data Direction for Port C Bits
+define bPTCDD3    3
+define bPTCDD2    2
+define bPTCDD1    1
+define bPTCDD0    0
+define DDRC       ivar [129+&h05] ' Alternativdefinitionen
+define bDDRC6     6
+define bDDRC5     5
+define bDDRC4     4
+define bDDRC3     3
+define bDDRC2     2
+define bDDRC1     1
+define bDDRC0     0
+
+define PTDD       ivar [129+&h06] ' Port D Data Register
+define bPTDD7     7
+define bPTDD6     6
+define bPTDD5     5               ' Port D Data Register Bits
+define bPTDD4     4
+define bPTDD3     3
+define bPTDD2     2
+define bPTDD1     1
+define bPTDD0     0
+define PTD        ivar [129+&h06] ' Alternativdefinitionen
+define bPTD7      7               ' PTD7/KBI1P7/AD1P15  = AD[8]/PORT[32]
+define bPTD6      6               ' PTD6/TPM1CLK/AD1P14 = AD[7]/PORT[31]
+define bPTD5      5               ' PTD5/AD1P13         = AD[6]/PORT[30]
+define bPTD4      4               ' PTD4/TPM2CLK/AD1P12 = AD[5]/PORT[29]
+define bPTD3      3               ' PTD3/KBI1P6/AD1P11  = AD[4]/PORT[28]
+define bPTD2      2               ' PTD2/KBI1P5/AD1P10  = AD[3]/PORT[27]
+define bPTD1      1               ' PTD1/AD1P9          = AD[2]/PORT[26]
+define bPTD0      0               ' PTD0/AD1P8          = AD[1]/PORT[25]
+define PTDDD      ivar [129+&h07] ' Data Direction for Port D Register
+define bPTDDD7    7
+define bPTDDD6    6
+define bPTDDD5    5               ' Data Direction for Port D Bits
+define bPTDDD4    4
+define bPTDDD3    3
+define bPTDDD2    2
+define bPTDDD1    1
+define bPTDDD0    0
+define DDRD       ivar [129+&h07] ' Alternativdefinitionen
+define bDDRD7     7
+define bDDRD6     6
+define bDDRD5     5
+define bDDRD4     4
+define bDDRD3     3
+define bDDRD2     2
+define bDDRD1     1
+define bDDRD0     0
+
+define PTED       ivar [129+&h08] ' Port E Data Register
+define bPTED7     7
+define bPTED6     6
+define bPTED5     5               ' Port E Data Register Bits
+define bPTED4     4
+define bPTED3     3
+define bPTED2     2
+define bPTED1     1
+define bPTED0     0
+define PTE        ivar [129+&h08] ' Alternativdefinitionen
+define bPTE7      7               ' PTE7/SPSCK1  = PORT[40]/SPSCK
+define bPTE6      6               ' PTE6/MOSI1   = PORT[39]/MOSI
+define bPTE5      5               ' PTE5/MISO1   = PORT[38]/MISO
+define bPTE4      4               ' PTE4/SS1     = PORT[37]/SS
+define bPTE3      3               ' PTE3/TPM1CH1 = PORT[36]/SERVO2
+define bPTE2      2               ' PTE2/TPM1CH0 = PORT[35]/SERVO1
+define bPTE1      1               ' PTE1/RxD1    = PORT[34]/RXD2
+define bPTE0      0               ' PTE0/TxD1    = PORT[33]/TXD2
+define PTEDD      ivar [129+&h09] ' Data Direction for Port E Register
+define bPTEDD7    7
+define bPTEDD6    6
+define bPTEDD5    5               ' Data Direction for Port E Bits
+define bPTEDD4    4
+define bPTEDD3    3
+define bPTEDD2    2
+define bPTEDD1    1
+define bPTEDD0    0
+define DDRE       ivar [129+&h09] ' Alternativdefinitionen
+define bDDRE7     7
+define bDDRE6     6
+define bDDRE5     5
+define bDDRE4     4
+define bDDRE3     3
+define bDDRE2     2
+define bDDRE1     1
+define bDDRE0     0
+
+define PTFD       ivar [129+&h0A] ' Port F Data Register
+define bPTFD7     7
+define bPTFD6     6
+define bPTFD5     5               ' Port F Data Register Bits
+define bPTFD4     4
+define bPTFD3     3
+define bPTFD2     2
+define bPTFD1     1
+define bPTFD0     0
+define PTF        ivar [129+&h0A] ' Alternativdefinitionen
+define bPTF7      7               ' PTF7         = CTS2/PORT[48]
+define bPTF6      6               ' PTF6         = RTS2/PORT[47]
+define bPTF5      5               ' PTF5/TPM2CH1 = DA[2]/PORT[46]
+define bPTF4      4               ' PTF4/TPM2CH0 = DA[1]/PORT[45]
+define bPTF3      3               ' PTF3/TPM1CH5 = FREQ2/PORT[44]
+define bPTF2      2               ' PTF2/TPM1CH4 = FREQ1/PORT[43]
+define bPTF1      1               ' PTF1/TPM1CH3 = TEST/BEEP2/PORT[42]
+define bPTF0      0               ' PTF0/TPM1CH2 = BEEP1/PORT[41]
+define PTFDD      ivar [129+&h0B] ' Data Direction for Port F Register
+define bPTFDD7    7
+define bPTFDD6    6
+define bPTFDD5    5               ' Data Direction for Port F Bits
+define bPTFDD4    4
+define bPTFDD3    3
+define bPTFDD2    2
+define bPTFDD1    1
+define bPTFDD0    0
+define DDRF       ivar [129+&h0B] ' Alternativdefinitionen
+define bDDRF7     7
+define bDDRF6     6
+define bDDRF5     5
+define bDDRF4     4
+define bDDRF3     3
+define bDDRF2     2
+define bDDRF1     1
+define bDDRF0     0
+
+define PTGD       ivar [129+&h0C] ' Port G Data Register
+define bPTGD6     6
+define bPTGD5     5
+define bPTGD4     4               ' Port G Data Register Bits
+define bPTGD3     3
+define bPTGD2     2
+define bPTGD1     1
+define bPTGD0     0
+define PTG        ivar [129+&h0C] ' Alternativdefinitionen
+define bPTG6      6               ' PTG6/EXTAL  = EXTAL/PORT[55]
+define bPTG5      5               ' PTG5/XTAL   = XTAL/PORT[54]
+define bPTG4      4               ' PTG4/KBI1P4 = KEYB/PORT[53]
+define bPTG3      3               ' PTG3/KBI1P3 = DCFOK/PORT[52]
+define bPTG2      2               ' PTG2/KBI1P2 = ACTIVE/PORT[51]
+define bPTG1      1               ' PTG1/KBI1P1 = RUN/PORT[50]
+define bPTG0      0               ' PTG0/KBI1P0 = START/PORT[49]
+define PTGDD      ivar [129+&h0D] ' Data Direction for Port G Register
+define bPTGDD6    6
+define bPTGDD5    5
+define bPTGDD4    4               ' Data Direction for Port G Bits
+define bPTGDD3    3
+define bPTGDD2    2
+define bPTGDD1    1
+define bPTGDD0    0
+define DDRG       ivar [129+&h0D] ' Alternativdefinitionen
+define bDDRG6     6
+define bDDRG5     5
+define bDDRG4     4
+define bDDRG3     3
+define bDDRG2     2
+define bDDRG1     1
+define bDDRG0     0
+
+define ADC1SC1    ivar [129+&h10] ' ADC Status and Control Register 1
+define bCOCO      7               ' Conversion Complete Flag
+define bAIEN      6               ' Interrupt Enable
+define bADCO      5               ' Continuous Conversion Enable
+define bADCH4     4
+define bADCH3     3               ' Input Channel Select
+define bADCH2     2
+define bADCH1     1               ' See Figure 14-4 in Manual
+define bADCH0     0
+define ADC1SC2    ivar [129+&h11] ' ADC Status and Control Register 2
+define bADACT     7               ' Conversion Active
+define bADTRG     6               ' Conversion Trigger Select
+define bACFE      5               ' Compare Function Enable
+define bACFGT     4               ' Compare Function Greater Than Enable
+define ADC1RH     ivar [129+&h12] ' ADC Data Result High Register
+define ADC1RL     ivar [129+&h13] ' ADC Data Result Low Register
+define ADC1CVH    ivar [129+&h14] ' ADC Compare Value High Register
+define ADC1CVL    ivar [129+&h15] ' ADC Compare Value Low Register
+define ADC1CFG    ivar [129+&h16] ' ADC Configuration Register
+define bADLPC     7               ' Low Power Configuration
+define bADIV1     6               ' Clock Divide Select
+define bADIV0     5               '   See Table 14-6 in Manual
+define bADLSMP    4               ' Long Sample Time Configuration
+define bMODE1     3               ' Conversion Mode Selection
+define bMODE0     2               '   See Table 14-7 in Manual
+define bADICLK1   1               ' Input Clock Select
+define bADICLK0   0               '   See Table 14-8 in Manual
+define APCTL1     ivar [129+&h17] ' ADC Pin Control Register 1
+define bADPC7     7
+define bADPC6     6
+define bADPC5     5               ' Used to disable the I/O port control
+define bADPC4     4               '   of MCU pins associated with channel
+define bADPC3     3               '   AD0 to AD7.
+define bADPC2     2
+define bADPC1     1
+define bADPC0     0
+define APCTL2     ivar [129+&h18] ' ADC Pin Control Register 2
+define bADPC15    7
+define bADPC14    6
+define bADPC13    5               ' Used to disable the I/O port control
+define bADPC12    4               '   of MCU pins associated with channel
+define bADPC11    3               '   AD8 to AD15.
+define bADPC10    2
+define bADPC9     1
+define bADPC8     0
+define APCTL3     ivar [129+&h19] ' ADC Pin Control Register 3
+define bADPC23    7
+define bADPC22    6
+define bADPC21    5               ' Used to disable the I/O port control
+define bADPC20    4               '   of MCU pins associated with channel
+define bADPC19    3               '   AD16 to AD23.
+define bADPC18    2
+define bADPC17    1
+define bADPC16    0
+
+define IRQSC      ivar [129+&h1C] ' Interrupt Request Status and Control Register
+define bIRQEDG    5               ' Interrupt Request (IRQ) Edge Select
+define bIRQPE     4               ' IRQ Pin Enable
+define bIRQF      3               ' IRQ Flag
+define bIRQACK    2               ' IRQ Acknowledge
+define bIRQIE     1               ' IRQ Interrupt Enable
+define bIRQMOD    0               ' IRQ Detection Mode
+
+define KBI1SC     ivar [129+&h1E] ' KBI Status and Control Register
+define bKBEDG7    7               ' Keyboard Edge Select for KBI Port Bits
+define bKBEDG6    6               '   selects trigger events
+define bKBEDG5    5               '   0: Falling edges/low levels
+define bKBEDG4    4               '   1: Rising edges/high levels
+define bKBF       3               ' Keyboard Interrupt Flag
+define bKBACK     2               ' Keyboard Interrupt Acknowledge
+define bKBIE      1               ' Keyboard Interrupt Enable
+define bKBIMOD    0               ' Keyboard Detection Mode
+define KBI1PE     ivar [129+&h1F] ' KBI Pin Enable Register
+define bKBIPE7    7
+define bKBIPE6    6               ' These bits select whether the associated
+define bKBIPE5    5               '   KBI port pin is enabled as a keyboard
+define bKBIPE4    4               '   interrupt input or functions as a
+define bKBIPE3    3               '   general-purpose I/O pin.
+define bKBIPE2    2
+define bKBIPE1    1               '   0: port is general-purpose I/O pin
+define bKBIPE0    0               '   1: port is keyboard interrupt input
+
+define TPM1SC     ivar [129+&h20] ' Timer 1 Status and Control Register
+define bTOF       7               ' Timer Overflow Flag
+define bTOIE      6               ' Timer Overflow Interrupt Enable
+define bCPWMS     5               ' Center-Aligned PWM Select
+define bCLKSB     4               ' Clock Source Select
+define bCLKSA     3               '   See Table 10-2 in Manual
+define bPS2       2               ' Prescale Divisor Select
+define bPS1       1               '   TPM Clock Source Divided-By: 2^N
+define bPS0       0               '   N = 4*PS2 + 2*PS1 + PS0
+define TPM1CNTH   ivar [129+&h21] ' Timer 1 Counter Register High
+define TPM1CNTL   ivar [129+&h22] ' Timer 1 Counter Register Low
+define TPM1MODH   ivar [129+&h23] ' Timer 1 Counter Modulo Register High
+define TPM1MODL   ivar [129+&h24] ' Timer 1 Counter Modulo Register Low
+define TPM1C0SC   ivar [129+&h25] ' Timer 1 Channel 0 Status and Control Register
+define bCH0F      7               ' Channel 0 Flag
+define bCH0IE     6               ' Channel 0 Interrupt Enable
+define bMS0B      5               ' Mode Select B \
+define bMS0A      4               ' Mode Select A  \ See Table 10-5
+define bELS0B     3               ' Edge/Level     /   in Manual
+define bELS0A     2               '   Select Bits /
+define TPM1C0VH   ivar [129+&h26] ' Timer 1 Channel 0 Value Register High
+define TPM1C0VL   ivar [129+&h27] ' Timer 1 Channel 0 Value Register Low
+define TPM1C1SC   ivar [129+&h28] ' Timer 1 Channel 1 Status and Control Register
+define bCH1F      7               ' Channel 1 Flag
+define bCH1IE     6               ' Channel 1 Interrupt Enable
+define bMS1B      5               ' Mode Select B \
+define bMS1A      4               ' Mode Select A  \ See Table 10-5
+define bELS1B     3               ' Edge/Level     /   in Manual
+define bELS1A     2               '   Select Bits /
+define TPM1C1VH   ivar [129+&h29] ' Timer 1 Channel 1 Value Register High
+define TPM1C1VL   ivar [129+&h2A] ' Timer 1 Channel 1 Value Register Low
+define TPM1C2SC   ivar [129+&h2B] ' Timer 1 Channel 2 Status and Control Register
+define bCH2F      7               ' Channel 2 Flag
+define bCH2IE     6               ' Channel 2 Interrupt Enable
+define bMS2B      5               ' Mode Select B \
+define bMS2A      4               ' Mode Select A  \ See Table 10-5
+define bELS2B     3               ' Edge/Level     /   in Manual
+define bELS2A     2               '   Select Bits /
+define TPM1C2VH   ivar [129+&h2C] ' Timer 1 Channel 2 Value Register High
+define TPM1C2VL   ivar [129+&h2D] ' Timer 1 Channel 2 Value Register Low
+define TPM1C3SC   ivar [129+&h2E] ' Timer 1 Channel 3 Status and Control Register
+define bCH3F      7               ' Channel 3 Flag
+define bCH3IE     6               ' Channel 3 Interrupt Enable
+define bMS3B      5               ' Mode Select B \
+define bMS3A      4               ' Mode Select A  \ See Table 10-5
+define bELS3B     3               ' Edge/Level     /   in Manual
+define bELS3A     2               '   Select Bits /
+define TPM1C3VH   ivar [129+&h2F] ' Timer 1 Channel 3 Value Register High
+define TPM1C3VL   ivar [129+&h30] ' Timer 1 Channel 3 Value Register Low
+define TPM1C4SC   ivar [129+&h31] ' Timer 1 Channel 4 Status and Control Register
+define bCH4F      7               ' Channel 4 Flag
+define bCH4IE     6               ' Channel 4 Interrupt Enable
+define bMS4B      5               ' Mode Select B \
+define bMS4A      4               ' Mode Select A  \ See Table 10-5
+define bELS4B     3               ' Edge/Level     /   in Manual
+define bELS4A     2               '   Select Bits /
+define TPM1C4VH   ivar [129+&h32] ' Timer 1 Channel 4 Value Register High
+define TPM1C4VL   ivar [129+&h33] ' Timer 1 Channel 4 Value Register Low
+define TPM1C5SC   ivar [129+&h34] ' Timer 1 Channel 5 Status and Control Register
+define bCH5F      7               ' Channel 5 Flag
+define bCH5IE     6               ' Channel 5 Interrupt Enable
+define bMS5B      5               ' Mode Select B \
+define bMS5A      4               ' Mode Select A  \ See Table 10-5
+define bELS5B     3               ' Edge/Level     /   in Manual
+define bELS5A     2               '   Select Bits /
+define TPM1C5VH   ivar [129+&h35] ' Timer 1 Channel 5 Value Register High
+define TPM1C5VL   ivar [129+&h36] ' Timer 1 Channel 5 Value Register Low
+
+define SCI1BDH    ivar [129+&h38] ' SCI1 Baud Rate Register High
+define SCI1BDL    ivar [129+&h39] ' SCI1 Baud Rate Register Low
+define SCI1C1     ivar [129+&h3A] ' SCI1 Control Register 1
+define bLOOPS     7               ' Loop Mode Select
+define bSCISWAI   6               ' SCI Stops in Wait Mode
+define bRSRC      5               ' Receiver Source Select
+define bM         4               ' 9-Bit or 8-Bit Mode Select
+define bWAKE      3               ' Receiver Wakeup Method Select
+define bILT       2               ' Idle Line Type Select
+define bPE        1               ' Parity Enable
+define bPT        0               ' Parity Type
+define SCI1C2     ivar [129+&h3B] ' SCI1 Control Register 2
+define bTIE       7               ' Transmit Interrupt Enable
+define bTCIE      6               ' Transmission Complete Interrupt Enable
+define bRIE       5               ' Receiver Interrupt Enable
+define bILIE      4               ' Idle Line Interrupt Enable
+define bTE        3               ' Transmitter Enable
+define bRE        2               ' Receiver Enable
+define bRWU       1               ' Receiver Wakeup Control
+define bSBK       0               ' Send Break
+define SCI1S1     ivar [129+&h3C] ' SCI1 Status Register 1
+define bTDRE      7               ' Transmit Data Register Empty Flag
+define bTC        6               ' Transmission Complete Flag
+define bRDRF      5               ' Receive Data Register Full Flag
+define bIDLE      4               ' Idle Line Flag
+define bOR        3               ' Receiver Overrun Flag
+define bNF        2               ' Noise Flag
+define bFE        1               ' Framing Error Flag
+define bPF        0               ' Parity Error Flag
+define SCI1S2     ivar [129+&h3D] ' SCI1 Status Register 2
+define bBRK13     2               ' Break Character Length
+define bRAF       0               ' Receiver Active Flag
+define SCI1C3     ivar [129+&h3E] ' SCI1 Control Register 3
+define bR8        7               ' Ninth Data Bit for Receiver
+define bT8        6               ' Ninth Data Bit for Transmitter
+define bTXDIR     5               ' TxD Pin Direction in Single-Wire Mode
+define bTXINV     4               ' Transmit Data Inversion
+define bORIE      3               ' Overrun Interrupt Enable
+define bNEIE      2               ' Noise Error Interrupt Enable
+define bFEIE      1               ' Framing Error Interrupt Enable
+define bPEIE      0               ' Parity Error Interrupt Enable
+define SCI1D      ivar [129+&h3F] ' SCI1 Data Register
+
+define SCI2BDH    ivar [129+&h40] ' SCI2 Baud Rate Register High
+define SCI2BDL    ivar [129+&h41] ' SCI2 Baud Rate Register Low
+define SCI2C1     ivar [129+&h42] ' SCI2 Control Register 1
+'      bLOOPS     7               ' Loop Mode Select
+'      bSCISWAI   6               ' SCI Stops in Wait Mode
+'      bRSRC      5               ' Receiver Source Select
+'      bM         4               ' 9-Bit or 8-Bit Mode Select
+'      bWAKE      3               ' Receiver Wakeup Method Select
+'      bILT       2               ' Idle Line Type Select
+'      bPE        1               ' Parity Enable
+'      bPT        0               ' Parity Type
+define SCI2C2     ivar [129+&h43] ' SCI2 Control Register 2
+'      bTIE       7               ' Transmit Interrupt Enable
+'      bTCIE      6               ' Transmission Complete Interrupt Enable
+'      bRIE       5               ' Receiver Interrupt Enable
+'      bILIE      4               ' Idle Line Interrupt Enable
+'      bTE        3               ' Transmitter Enable
+'      bRE        2               ' Receiver Enable
+'      bRWU       1               ' Receiver Wakeup Control
+'      bSBK       0               ' Send Break
+define SCI2S1     ivar [129+&h44] ' SCI2 Status Register 1
+'      bTDRE      7               ' Transmit Data Register Empty Flag
+'      bTC        6               ' Transmission Complete Flag
+'      bRDRF      5               ' Receive Data Register Full Flag
+'      bIDLE      4               ' Idle Line Flag
+'      bOR        3               ' Receiver Overrun Flag
+'      bNF        2               ' Noise Flag
+'      bFE        1               ' Framing Error Flag
+'      bPF        0               ' Parity Error Flag
+define SCI2S2     ivar [129+&h45] ' SCI2 Status Register 2
+'      bBRK13     2               ' Break Character Length
+'      bRAF       0               ' Receiver Active Flag
+define SCI2C3     ivar [129+&h46] ' SCI2 Control Register 3
+'      bR8        7               ' Ninth Data Bit for Receiver
+'      bT8        6               ' Ninth Data Bit for Transmitter
+'      bTXDIR     5               ' TxD Pin Direction in Single-Wire Mode
+'      bTXINV     4               ' Transmit Data Inversion
+'      bORIE      3               ' Overrun Interrupt Enable
+'      bNEIE      2               ' Noise Error Interrupt Enable
+'      bFEIE      1               ' Framing Error Interrupt Enable
+'      bPEIE      0               ' Parity Error Interrupt Enable
+define SCI2D      ivar [129+&h47] ' SCI2 Data Register
+
+define ICGC1      ivar [129+&h48] ' ICG Control Register 1
+define bHGO       7               ' High Gain Oscillator Select
+define bRANGE     6               ' Frequency Range Select
+define bREFS      5               ' External Reference Select
+define bCLKS1     4               ' Clock Mode Select
+define bCLKS0     3               '   See Table 8-2 in Manual
+define bOSCSTEN   2               ' Enable Oscillator in Off Mode
+define bLOCD      1               ' Loss of Clock Detection Disable
+define ICGC2      ivar [129+&h49] ' ICG Control Register 2
+define bLOLRE     7               ' Loss of Lock Reset Enable
+define bMFD2      6               ' Multiplication Factor (programmable
+define bMFD1      5               '   multiplication factor in FLL loop)
+define bMFD0      4               '   See Table 8-3 in Manual
+define bLOCRE     3               ' Loss of Clock Reset Enable
+define bRFD2      2               ' Reduced Frequency Divider
+define bRFD1      1               '   Division factor = 2^N
+define bRFD0      0               '   N = 4*RFD2 + 2*RFD1 + RFD0
+define ICGS1      ivar [129+&h4A] ' ICG Status Register 1
+define bCLKST1    7               ' Clock Mode Status
+define bCLKST0    6               '   See Table 8-4 in Manual
+define bREFST     5               ' Reference Clock Status
+define bLOLS      4               ' FLL Loss of Lock Status
+define bLOCK      3               ' FLL Lock Status
+define bLOCS      2               ' Loss Of Clock Status
+define bERCS      1               ' External Reference Clock Status
+define bICGIF     0               ' ICG Interrupt Flag
+define ICGS2      ivar [129+&h4B] ' ICG Status Register 2
+define bDCOS      0               ' DCO Clock Stable
+define ICGFLTU    ivar [129+&h4C] ' ICG Upper Filter Register
+define ICGFLTL    ivar [129+&h4D] ' ICG Lower Filter Register
+define ICGTRM     ivar [129+&h4E] ' ICG Trim Register
+
+define SPI1C1     ivar [129+&h50] ' SPI Control Register 1
+define bSPIE      7               ' SPI Interrupt Enable (for SPRF and MODF)
+define bSPE       6               ' SPI System Enable
+define bSPTIE     5               ' SPI Transmit Interrupt Enable
+define bMSTR      4               ' Master/Slave Mode Select
+define bCPOL      3               ' Clock Polarity
+define bCPHA      2               ' Clock Phase
+define bSSOE      1               ' Slave Select Output Enable
+define bLSBFE     0               ' LSB First (Shifter Direction)
+define SPI1C2     ivar [129+&h51] ' SPI Control Register 2
+define bMODFEN    4               ' Master Mode-Fault Function Enable
+define bBIDIROE   3               ' Bidirectional Mode Output Enable
+define bSPISWAI   1               ' SPI Stop in Wait Mode
+define bSPC0      0               ' SPI Pin Control 0
+define SPI1BR     ivar [129+&h52] ' SPI Baud Rate Register
+define bSPPR2     6               ' SPI Baud Rate Prescale Divisor (Input of
+define bSPPR1     5               '   SPI Baud Rate Divider = Bus Clock / N)
+define bSPPR0     4               '   N = 4*SPPR2 + 2*SPPR1 + SPPR0
+define bSPR2      2               ' SPI Baud Rate Divisor
+define bSPR1      1               '   Rate Divisor = 2^(2*N)
+define bSPR0      0               '   N = 4*SPR2 + 2*SPR1 + SPR0
+define SPI1S      ivar [129+&h53] ' SPI Status Register
+define bSPRF      7               ' SPI Read Buffer Full Flag
+define bSPTEF     5               ' SPI Transmit Buffer Empty Flag
+define bMODF      4               ' Master Mode Fault Flag
+define SPI1D      ivar [129+&h55] ' SPI Data Register
+
+define IIC1A      ivar [129+&h58] ' I2C Address Register
+define IIC1F      ivar [129+&h59] ' I2C Frequency Divider Register
+define bMULT1     7               ' I2C Multiplier Factor (mul)
+define bMULT0     6               '   See Table 13-2 in Manual
+define bICR5      5
+define bICR4      4               ' I2C Clock Rate
+define bICR3      3               '   I2C Baud Rate =
+define bICR2      2               '     Bus Clock / (mul * SCL divider)
+define bICR1      1               '   See Table 13-2 in Manual
+define bICR0      0
+define IIC1C      ivar [129+&h5A] ' I2C Control Register
+define bIICEN     7               ' I2C Enable
+define bIICIE     6               ' I2C Interrupt Enable
+define bMST       5               ' Master Mode Select
+define bTX        4               ' Transmit Mode Select
+define bTXAK      3               ' Transmit Acknowledge Enable
+define bRSTA      2               ' Repeat START
+define IIC1S      ivar [129+&h5B] ' I2C Status Register
+define bTCF       7               ' Transfer Complete Flag
+define bIAAS      6               ' Addressed as a Slave
+define bBUSY      5               ' Bus Busy
+define bARBL      4               ' Arbitration Lost
+define bSRW       2               ' Slave Read/Write
+define bIICIF     1               ' I2C Interrupt Flag
+define bRXAK      0               ' Receive Acknowledge
+define IIC1D      ivar [129+&h5C] ' I2C Data I/O Register
+
+define TPM2SC     ivar [129+&h60] ' Timer 2 Status and Control Register
+'      bTOF       7               ' Timer Overflow Flag
+'      bTOIE      6               ' Timer Overflow Interrupt Enable
+'      bCPWMS     5               ' Center-Aligned PWM Select
+'      bCLKSB     4               ' Clock Source Select
+'      bCLKSA     3               '   See Table 10-2 in Manual
+'      bPS2       2               ' Prescale Divisor Select
+'      bPS1       1               '   TPM Clock Source Divided-By: 2^N
+'      bPS0       0               '   N = 4*PS2 + 2*PS1 + PS0
+define TPM2CNTH   ivar [129+&h61] ' Timer 2 Counter Register High
+define TPM2CNTL   ivar [129+&h62] ' Timer 2 Counter Register Low
+define TPM2MODH   ivar [129+&h63] ' Timer 2 Counter Modulo Register High
+define TPM2MODL   ivar [129+&h64] ' Timer 2 Counter Modulo Register Low
+define TPM2C0SC   ivar [129+&h65] ' Timer 2 Channel 0 Status and Control Register
+'      bCH0F      7               ' Channel 0 Flag
+'      bCH0IE     6               ' Channel 0 Interrupt Enable
+'      bMS0B      5               ' Mode Select B \
+'      bMS0A      4               ' Mode Select A  \ See Table 10-5
+'      bELS0B     3               ' Edge/Level     /   in Manual
+'      bELS0A     2               '   Select Bits /
+define TPM2C0VH   ivar [129+&h66] ' Timer 2 Channel 0 Value Register High
+define TPM2C0VL   ivar [129+&h67] ' Timer 2 Channel 0 Value Register Low
+define TPM2C1SC   ivar [129+&h68] ' Timer 2 Channel 1 Status and Control Register
+'      bCH1F      7               ' Channel 1 Flag
+'      bCH1IE     6               ' Channel 1 Interrupt Enable
+'      bMS1B      5               ' Mode Select B \
+'      bMS1A      4               ' Mode Select A  \ See Table 10-5
+'      bELS1B     3               ' Edge/Level     /   in Manual
+'      bELS1A     2               '   Select Bits /
+define TPM2C1VH   ivar [129+&h69] ' Timer 2 Channel 1 Value Register High
+define TPM2C1VL   ivar [129+&h6A] ' Timer 2 Channel 1 Value Register Low
+
+' High-Page Registers
+
+define SRS        &h1800          ' System Reset Status Register
+define bPOR       7               ' Power-On Reset
+define bPIN       6               ' External Reset Pin
+define bCOP       5               ' Computer Operating Properly (COP) Watchdog
+define bILOP      4               ' Illegal Opcode
+define bICG       2               ' Internal Clock Generation Module Reset
+define bLVD       1               ' Low Voltage Detect
+
+define SBDFR      &h1801          ' System Background Debug Force Reset Register
+define bBDFR      0               ' Background Debug Force Reset (BDC only)
+
+define SOPT       &h1802          ' System Options Register
+define bCOPE      7               ' COP Watchdog Enable
+define bCOPT      6               ' COP Watchdog Timeout
+define bSTOPE     5               ' Stop Mode Enable
+
+define SMCLK      &h1803          ' System MCLK Control Register
+define bMPE       4               ' MCLK Pin Enable
+define bMCSEL2    2               ' MCLK Divide Select
+define bMCSEL1    1               '   MCLK frequency =
+define bMCSEL0    0               '     Bus Clock frequency / (2*MCSEL)
+
+define SDIDH      &h1806          ' System Device Identification Register High
+define SDIDL      &h1807          ' System Device Identification Register Low
+
+define SRTISC     &h1808          ' System RTI Status and Control Register
+define bRTIF      7               ' Real-Time Interrupt Flag
+define bRTIACK    6               ' Real-Time Interrupt Acknowledge
+define bRTICLKS   5               ' Real-Time Interrupt Clock Select
+define bRTIE      4               ' Real-Time Interrupt Enable
+define bRTIS2     2               ' Real-Time Interrupt Delay Selects
+define bRTIS1     1               '   (selects the wakeup delay for the RTI)
+define bRTIS0     0               '   See Table 5-10 in Manual
+
+define SPMSC1     &h1809          ' System Power Management Status and Control Register 1
+define bLVDF      7               ' Low-Voltage Detect Flag
+define bLVDACK    6               ' Low-Voltage Detect Acknowledge
+define bLVDIE     5               ' Low-Voltage Detect Interrupt Enable
+define bLVDRE     4               ' Low-Voltage Detect Reset Enable
+define bLVDSE     3               ' Low-Voltage Detect Stop Enable
+define bLVDE      2               ' Low-Voltage Detect Enable
+'                 1               ' "this reserved bit must always be written to 0"
+define bBGBE      0               ' Bandgap Buffer Enable
+define SPMSC2     &h180A          ' System Power Management Status and Control Register 2
+define bLVWF      7               ' Low-Voltage Warning Flag
+define bLVWACK    6               ' Low-Voltage Warning Acknowledge
+define bLVDV      5               ' Low-Voltage Detect Voltage Select
+define bLVWV      4               ' Low-Voltage Warning Voltage Select
+define bPPDF      3               ' Partial Power Down Flag
+define bPPDACK    2               ' Partial Power Down Acknowledge
+define bPPDC      0               ' Partial Power Down Control
+
+define DBGCAH     &h1810          ' Debug Comparator A Register High
+define DBGCAL     &h1811          ' Debug Comparator A Register Low
+define DBGCBH     &h1812          ' Debug Comparator B Register High
+define DBGCBL     &h1813          ' Debug Comparator B Register Low
+define DBGFH      &h1814          ' Debug FIFO Register High
+define DBGFL      &h1815          ' Debug FIFO Register Low
+define DBGC       &h1816          ' Debug Control Register
+define bDBGEN     7               ' Debug Module Enable
+define bARM       6               ' Arm Control
+define bTAG       5               ' Tag/Force Select
+define bBRKEN     4               ' Break Enable
+define bRWA       3               ' R/W Comparison Value for Comparator A
+define bRWAEN     2               ' Enable R/W for Comparator A
+define bRWB       1               ' R/W Comparison Value for Comparator B
+define bRWBEN     0               ' Enable R/W for Comparator B
+define DBGT       &h1817          ' Debug Trigger Register
+define bTRGSEL    7               ' Trigger Type
+define bBEGIN     6               ' Begin/End Trigger Select
+define bTRG3      3
+define bTRG2      2               ' Select Trigger Mode
+define bTRG1      1               '   See Table 15-5 in Manual
+define bTRG0      0
+define DBGS       &h1818          ' Debug Status Register
+define bAF        7               ' Trigger Match A Flag
+define bBF        6               ' Trigger Match B Flag
+define bARMF      5               ' Arm Flag
+define bCNT3      3               ' FIFO Valid Count
+define bCNT2      2               '   (Cleared at the start of a debug run
+define bCNT1      1               '      and indicate the number of words of
+define bCNT0      0               '      valid data in the FIFO after the run)
+
+define FCDIV      &h1820          ' FLASH Clock Divider Register
+define bDIVLD     7               ' Divisor Loaded Status Flag
+define bPRDIV8    6               ' Prescale (Divide) FLASH Clock by 8
+define bDIV5      5
+define bDIV4      4
+define bDIV3      3               ' Divisor for FLASH Clock Divider
+define bDIV2      2               ' See Table 4-6 in Manual
+define bDIV1      1
+define bDIV0      0
+define FOPT       &h1821          ' FLASH Options Register
+define bKEYEN     7               ' Backdoor Key Mechanism Enable
+define bFNORED    6               ' Vector Redirection Disable
+define bSEC01     1               ' Security State Code
+define bSEC00     0               '   See Table 4-9 in Manual
+define FCNFG      &h1823          ' FLASH Configuration Register
+define bKEYACC    5               ' Enable Writing of Access Key
+define FPROT      &h1824          ' FLASH Protection Register
+define bFPS7      7
+define bFPS6      6
+define bFPS5      5               ' FLASH Protect Select Bits
+define bFPS4      4               '   (ending address of unprotected
+define bFPS3      3               '     FLASH, if FPDIS = 0)
+define bFPS2      2
+define bFPS1      1
+define bFPDIS     0               ' FLASH Protection Disable
+define FSTAT      &h1825          ' FLASH Status Register
+define bFCBEF     7               ' FLASH Command Buffer Empty Flag
+define bFCCF      6               ' FLASH Command Complete Flag
+define bFPVIOL    5               ' Protection Violation Flag
+define bFACCERR   4               ' Access Error Flag
+define bFBLANK    2               ' FLASH Verified as All Blank (erased) Flag
+define FCMD       &h1826          ' FLASH Command Register
+
+define PTAPE      &h1840          ' Internal Pullup Enable for Port A
+define bPTAPE7    7
+define bPTAPE6    6
+define bPTAPE5    5               ' Internal Pullup Enable for Port A Bits
+define bPTAPE4    4
+define bPTAPE3    3
+define bPTAPE2    2
+define bPTAPE1    1
+define bPTAPE0    0
+define PTASE      &h1841          ' Output Slew Rate Control Enable for Port A
+define bPTASE7    7
+define bPTASE6    6
+define bPTASE5    5               ' Output Slew Rate Control Enable for Port A Bits
+define bPTASE4    4
+define bPTASE3    3
+define bPTASE2    2
+define bPTASE1    1
+define bPTASE0    0
+define PTADS      &h1842          ' Output Drive Strength Selection for Port A
+define bPTADS7    7
+define bPTADS6    6
+define bPTADS5    5               ' Output Drive Strength Selection for Port A Bits
+define bPTADS4    4
+define bPTADS3    3
+define bPTADS2    2
+define bPTADS1    1
+define bPTADS0    0
+define PTBPE      &h1844          ' Internal Pullup Enable for Port B
+define bPTBPE7    7
+define bPTBPE6    6
+define bPTBPE5    5               ' Internal Pullup Enable for Port B Bits
+define bPTBPE4    4
+define bPTBPE3    3
+define bPTBPE2    2
+define bPTBPE1    1
+define bPTBPE0    0
+define PTBSE      &h1845          ' Output Slew Rate Control Enable for Port B
+define bPTBSE7    7
+define bPTBSE6    6
+define bPTBSE5    5               ' Output Slew Rate Control Enable for Port B Bits
+define bPTBSE4    4
+define bPTBSE3    3
+define bPTBSE2    2
+define bPTBSE1    1
+define bPTBSE0    0
+define PTBDS      &h1846          ' Output Drive Strength Selection for Port B
+define bPTBDS7    7
+define bPTBDS6    6
+define bPTBDS5    5               ' Output Drive Strength Selection for Port B Bits
+define bPTBDS4    4
+define bPTBDS3    3
+define bPTBDS2    2
+define bPTBDS1    1
+define bPTBDS0    0
+define PTCPE      &h1848          ' Internal Pullup Enable for Port C
+define bPTCPE6    6
+define bPTCPE5    5
+define bPTCPE4    4               ' Internal Pullup Enable for Port C Bits
+define bPTCPE3    3
+define bPTCPE2    2
+define bPTCPE1    1
+define bPTCPE0    0
+define PTCSE      &h1849          ' Output Slew Rate Control Enable for Port C
+define bPTCSE6    6
+define bPTCSE5    5
+define bPTCSE4    4               ' Output Slew Rate Control Enable for Port C Bits
+define bPTCSE3    3
+define bPTCSE2    2
+define bPTCSE1    1
+define bPTCSE0    0
+define PTCDS      &h184A          ' Output Drive Strength Selection for Port C
+define bPTCDS6    6
+define bPTCDS5    5
+define bPTCDS4    4               ' Output Drive Strength Selection for Port C Bits
+define bPTCDS3    3
+define bPTCDS2    2
+define bPTCDS1    1
+define bPTCDS0    0
+define PTDPE      &h184C          ' Internal Pullup Enable for Port D
+define bPTDPE7    7
+define bPTDPE6    6
+define bPTDPE5    5               ' Internal Pullup Enable for Port D Bits
+define bPTDPE4    4
+define bPTDPE3    3
+define bPTDPE2    2
+define bPTDPE1    1
+define bPTDPE0    0
+define PTDSE      &h184D          ' Output Slew Rate Control Enable for Port D
+define bPTDSE7    7
+define bPTDSE6    6
+define bPTDSE5    5               ' Output Slew Rate Control Enable for Port D Bits
+define bPTDSE4    4
+define bPTDSE3    3
+define bPTDSE2    2
+define bPTDSE1    1
+define bPTDSE0    0
+define PTDDS      &h184E          ' Output Drive Strength Selection for Port D
+define bPTDDS7    7
+define bPTDDS6    6
+define bPTDDS5    5               ' Output Drive Strength Selection for Port D Bits
+define bPTDDS4    4
+define bPTDDS3    3
+define bPTDDS2    2
+define bPTDDS1    1
+define bPTDDS0    0
+define PTEPE      &h1850          ' Internal Pullup Enable for Port E
+define bPTEPE7    7
+define bPTEPE6    6
+define bPTEPE5    5               ' Internal Pullup Enable for Port E Bits
+define bPTEPE4    4
+define bPTEPE3    3
+define bPTEPE2    2
+define bPTEPE1    1
+define bPTEPE0    0
+define PTESE      &h1851          ' Output Slew Rate Control Enable for Port E
+define bPTESE7    7
+define bPTESE6    6
+define bPTESE5    5               ' Output Slew Rate Control Enable for Port E Bits
+define bPTESE4    4
+define bPTESE3    3
+define bPTESE2    2
+define bPTESE1    1
+define bPTESE0    0
+define PTEDS      &h1852          ' Output Drive Strength Selection for Port E
+define bPTEDS7    7
+define bPTEDS6    6
+define bPTEDS5    5               ' Output Drive Strength Selection for Port E Bits
+define bPTEDS4    4
+define bPTEDS3    3
+define bPTEDS2    2
+define bPTEDS1    1
+define bPTEDS0    0
+define PTFPE      &h1854          ' Internal Pullup Enable for Port F
+define bPTFPE7    7
+define bPTFPE6    6
+define bPTFPE5    5               ' Internal Pullup Enable for Port F Bits
+define bPTFPE4    4
+define bPTFPE3    3
+define bPTFPE2    2
+define bPTFPE1    1
+define bPTFPE0    0
+define PTFSE      &h1855          ' Output Slew Rate Control Enable for Port F
+define bPTFSE7    7
+define bPTFSE6    6
+define bPTFSE5    5               ' Output Slew Rate Control Enable for Port F Bits
+define bPTFSE4    4
+define bPTFSE3    3
+define bPTFSE2    2
+define bPTFSE1    1
+define bPTFSE0    0
+define PTFDS      &h1856          ' Output Drive Strength Selection for Port F
+define bPTFDS7    7
+define bPTFDS6    6
+define bPTFDS5    5               ' Output Drive Strength Selection for Port F Bits
+define bPTFDS4    4
+define bPTFDS3    3
+define bPTFDS2    2
+define bPTFDS1    1
+define bPTFDS0    0
+define PTGPE      &h1858          ' Internal Pullup Enable for Port G
+define bPTGPE6    6
+define bPTGPE5    5
+define bPTGPE4    4               ' Internal Pullup Enable for Port G Bits
+define bPTGPE3    3
+define bPTGPE2    2
+define bPTGPE1    1
+define bPTGPE0    0
+define PTGSE      &h1859          ' Output Slew Rate Control Enable for Port G
+define bPTGSE6    6
+define bPTGSE5    5
+define bPTGSE4    4               ' Output Slew Rate Control Enable for Port G Bits
+define bPTGSE3    3
+define bPTGSE2    2
+define bPTGSE1    1
+define bPTGSE0    0
+define PTGDS      &h185A          ' Output Drive Strength Selection for Port G
+define bPTGDS6    6
+define bPTGDS5    5
+define bPTGDS4    4               ' Output Drive Strength Selection for Port G Bits
+define bPTGDS3    3
+define bPTGDS2    2
+define bPTGDS1    1
+define bPTGDS0    0
+
+' Nonvolatile Registers
+
+define NVBACKKEY0 &hFFB0          ' 8-Byte Comparison Key to prevent
+define NVBACKKEY1 &hFFB1          ' unauthorized access to the contents of
+define NVBACKKEY2 &hFFB2          ' FLASH and RAM memory
+define NVBACKKEY3 &hFFB3
+define NVBACKKEY4 &hFFB4
+define NVBACKKEY5 &hFFB5
+define NVBACKKEY6 &hFFB6
+define NVBACKKEY7 &hFFB7
+define NVPROT     &hFFBD          ' FPROT is loaded from this location during reset
+'      bFPS7      7
+'      bFPS6      6
+'      bFPS5      5               ' FLASH Protect Select Bits
+'      bFPS4      4               '   (ending address of unprotected
+'      bFPS3      3               '     FLASH, if FPDIS = 0)
+'      bFPS2      2
+'      bFPS1      1
+'      bFPDIS     0               ' FLASH Protection Disable
+define NVICGTRM   &hFFBE          ' factory trim value for the ICG
+define NVOPT      &hFFBF          ' FOPT is loaded from this location during reset
+'      bKEYEN     7               ' Backdoor Key Mechanism Enable
+'      bFNORED    6               ' Vector Redirection Disable
+'      bSEC01     1               ' Security State Code
+'      bSEC00     0               '   See Table 4-9 in Manual
+
+' Reset and Interrupt Vectors
+
+define Vrti       &hFFCC          ' RTI
+define Viic1      &hFFCE          ' I2C1
+define Vadc1      &hFFD0          ' ADC1 Conversion
+define Vkeyboard1 &hFFD2          ' KBI1
+define Vsci2tx    &hFFD4          ' SCI2 Transmit
+define Vsci2rx    &hFFD6          ' SCI2 Receive
+define Vsci2err   &hFFD8          ' SCI2 Error
+define Vsci1tx    &hFFDA          ' SCI1 Transmit
+define Vsci1rx    &hFFDC          ' SCI1 Receive
+define Vsci1err   &hFFDE          ' SCI1 Error
+define Vspi1      &hFFE0          ' SPI1
+define Vtpm2ovf   &hFFE2          ' TPM2 Overflow
+define Vtpm2ch1   &hFFE4          ' TPM2 Channel 1
+define Vtpm2ch0   &hFFE6          ' TPM2 Channel 0
+define Vtpm1ovf   &hFFE8          ' TPM1 Overflow
+define Vtpm1ch5   &hFFEA          ' TPM1 Channel 5
+define Vtpm1ch4   &hFFEC          ' TPM1 Channel 4
+define Vtpm1ch3   &hFFEE          ' TPM1 Channel 3
+define Vtpm1ch2   &hFFF0          ' TPM1 Channel 2
+define Vtpm1ch1   &hFFF2          ' TPM1 Channel 1
+define Vtpm1ch0   &hFFF4          ' TPM1 Channel 0
+define Vicg       &hFFF6          ' ICG
+define Vlvd       &hFFF8          ' Low Voltage Detect
+define Virq       &hFFFA          ' IRQ
+define Vswi       &hFFFC          ' SWI
+define Vreset     &hFFFE          ' Reset
+
+' ---------------------------------------------------------------------------

@@ -1,0 +1,23 @@
+
+Hilfsprogramme fuer die Open-Micro und Open-Mini
+================================================
+
+Uebersicht ueber die Programme und Dateien in diesem Verzeichnis
+
+AS05.EXE ....... Assembler fuer 6805 (mit Makros auch fuer 6808)
+AS05.MAN ....... Manual zum Assembler
+6808MACR.INC ... Makros fuer die Befehle der 6808-CPU
+DI08.EXE ....... Disassembler fuer 6808
+DI08.MNE ....... Konfigurationsdatei fuer Disassembler
+INLASM.EXE ..... Tool zum Erstellen von Tabellen fuer Inline-Assembler
+
+CCTOKDIS.EXE ... C-Control-Token-Disassembler fuer Open-Micro und OCBASIC
+
+CCE.TOK ........ DOS-IDE: Modifizierte Datei fuer Syntaxhighlighting
+
+DOKU/ .......... Verzeichnis mit etwas Dokumentation
+
+
+Weitere Informationen zur Open-Micro und Open-Mini gibt es auf
+
+http://om.dharlos.de

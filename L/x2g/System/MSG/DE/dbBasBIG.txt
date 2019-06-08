@@ -1,0 +1,23 @@
+ Mit dem von Dietmar Harlos entwickelten Tool, "CCBASBIG.EXE", konnten erstmals
+ CCBASIC Programme mit bis zu 32000 Bytes Umfang (Bytekode) kompiliert werden -
+ dabei lag die damalige Grenze des CCBASIC Kompilers bei nur 8192 Bytes!
+ Wie raffiniert dies unter den geltenden technischen Vorgaben geloest wurde,
+ kann in den Dateien L:\x2g\Info.L und L:\x2g\Hilfe.L nachgelesen werden.
+ Oder direkt auf der Website http://ccintern.dharlos.de (dort im Menuepunkt
+ 'Download-Area' nach "BASIC-Kompiler fuer 32-kb-EEPROMS" Ausschau halten).
+
+ Ansonsten bestehen noch die gleichen Einschraenkungen des Original CCBASIC-
+ Kompilers aus 1997: Nur max. 24 Variablen per 'define' sind moeglich und
+ nachfolgend von "IF 'bedingung' THEN Anweisung1 : Anweisung2 : Anweisung3"
+ wird nur 'Anweisung1' ausgefuehrt, wenn 'bedingung' wahr ist.
+
+ CCBASBIG.EXE kann deshalb auch gut als Referenzkompiler verwendet werden, um
+ zu gewaehrleisten dass ein CCBASIC-Quelltext mit den fruehen Versionen des
+ Original CCBASIC-Kompilers von Conrad-Electronic kompiliert werden kann.
+
+ Die heute verfuegbare offizielle "C-Control/BASIC 2.0 IDE" ermoeglicht eben-
+ falls groessere Programme (bis 50950 im Bytekode), und die Beschraenkung auf
+ 24 Variablen ist entfallen. Zur Verwendung der minimalistichen CCBASIC Syntax
+ gibt es mittlerweile Alternativen: BASIC++, CCCCC, mBASIC, Open-Control/BASIC.
+ 
+ 

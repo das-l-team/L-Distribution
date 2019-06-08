@@ -1,0 +1,862 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+// Suomi.lng - version 16-Aug-2005
+//
+// Finnish translation for ConTEXT editor <URL:http://www.context.cx/>.
+// Checked for program version 0.98.0.
+//
+// Maintained by: Tommi Nieminen <mailto:tommi.nieminen@campus.jyu.fi>
+//
+// ---- Finnish, from now on... ---
+//
+//  5. 6.2001   Käännös kirjoitettu uudelleen (edelleen keskeneräisenä)
+//              0.96.0-versiolle.
+// 11. 6.2001   Täydennyksiä ja korjauksia.
+// 24. 6.2001   Parannuksia Niko Honkosen <mailto:niko.honkonen@oulu.fi>
+//              ehdotusten pohjalta.
+// 26. 4.2002   Päivitykset ConTEXTin 0.97.1-versioon. Joitakin avaimia
+//              onnistuin arvaamaan, vaikka Custom.lng ei niitä kertonut.
+//  3. 1.2004   Muutoksia Perttu Pulkkisen <mailto:perttu.pulkkinen@co.jyu.fi>
+//              käännöksen pohjalta. Korjattu myös vanha bugi (ToUppercase/
+//              ToLowerCase väärinpäin). Pari lisäystä dynaamisiin viesteihin.
+// 25. 2.2004   Päivitys ConTEXTin 0.97.4-versioon.
+// 19. 8.2004   Käännöksen tarkistus 0.97.5-version kannalta.
+// 15.11.2004   Korjauksia ja parannuksia: monin kohdin suomennos edennyt
+//              onnekkain arvauksin.
+// 24. 1.2005   Tarkistus ConTEXTin 0.97.6-version kannalta. Täydennyksiä,
+//              joihin auttoivat "upx -d" ja "strings" :-)  Asetusdialogi
+//              suomennettu nyt kokonaan. Code Explorer kadonnut itse
+//              ohjelmasta (!). Kääntämättä enää:
+//              o   joidenkin dynaamisten dialogien napit (OK/Cancel)
+// 23. 2.2005   Bugikorjaus.
+//  2. 7.2005   Korjaukset ja täydennykset 0.98.0RC1-versiota varten.
+//  9. 7.2005   Lisää korjauksia ja täydennyksiä.
+// 26. 7.2005   Korjaukset ja täydennykset 0.98.0-versiota varten.
+//  1. 8.2005   Incremental search korjattu "askelittaiseksi hauksi"
+//              Jukka Korpelan ehdotuksen mukaan.
+//  3. 8.2005   Päivitys ConTEXTin 0.98.1-versioon.
+//  5. 8.2005   Korjauksia ja täydennyksiä.
+// 16. 8.2005   Päivitys ConTEXTin 0.98.2-versioon.
+//
+////////////////////////////////////////////////////////////////////////////////
+
+[LanguageDescriptor]
+Name=Suomi
+
+[fmMain]
+
+//
+acFile="&Tiedosto"
+    acNew="&Uusi..."
+    acOpen="A&vaa..."
+    acSave="&Tallenna"
+    acSaveAs="Tallenna &nimellä..."
+    acSaveAllFiles="Tallenna k&aikki"
+    acCopyTo="Ko&pioi tiedostoon"
+    acRename="Ni&meä uudelleen..."
+    acFileRevert="Palaa"
+        acFileRevertToSaved="&Tallennettuun..."
+        acFileRevertToBackup="&Varmuuskopioon..."
+    acFileChangeToFileDir="Siirr&y tiedoston hakemistoon"
+    // ---
+    acPrint="Tul&osta..."
+    acPageSetup="Sivun asetukset..."
+    acPrintPreview="Tulostuksen &esikatselu"
+    // ---
+    acInsertFileAtCurrentPosition="Lue tiedosto tä&hän..."
+    acAppendFile="Lue tie&dosto loppuun..."
+    acWriteBlockToFile="&Kirjoita alue tiedostoon"
+    acExport="V&ie"
+        acExportToHTML="&HTML-muotoon"
+        acExportToRTF="&RTF-muotoon"
+    // ---
+    acClose="&Sulje"
+    acCloseAll="Sul&je kaikki"
+    // ---
+    acRecentFiles="V&iimeisimmät tiedostot"
+    acFileRecentProjects="Viimeisimmät p&rojektit"
+    // ---
+    acExit="&Lopeta"
+
+//
+acEdit="&Muokkaa"
+    acEditUndo="&Kumoa"
+    acEditRedo="Tee &uudelleen"
+    // ---
+    acEditCut="&Leikkaa"
+    acEditCopy="K&opioi"
+    acEditPaste="L&iitä"
+    acEditDelete="&Poista"
+    acEditSelectAll="Valitse k&aikki"
+    acEditCopyFilename="Kopioi &tiedostonimi"
+    // ---
+    acEditFind="&Etsi..."
+    acEditReplace="K&orvaa..."
+    acEditFindNext="Etsi &seuraava"
+    acEditFindPrevious="Etsi e&dellinen"
+    acEditIncrementalSearch="Askelittainen &haku"
+    // ---
+    acEditToggleSelectionMode="Ta&vallinen/sarakevalinta"
+    acEditSortText="La&jittele teksti"
+    acEditMatchBraces="Etsi sulku&pari"
+    acEditSelMatchBraces="Valitse teksti s&ulkeiden välistä"
+
+//
+acView="&Näytä"
+    acShowToolbar="T&yökalupalkki"
+    acShowFileTabs="Tiedostolehti&ö"
+    acSearchResults="&Haun tulokset"
+    acConsoleOutput="T&uloskonsoli"
+    acViewFilePanel="Tie&dostopaneeli"
+    acViewFileList="Tiedosto&luettelo"
+    // ---
+    acSetBookmark="&Aseta kirjanmerkki"
+    acJumpToBookmark="Hy&ppää kirjanmerkkiin"
+    acGoToLine="&Siirry riville"
+    // ---
+    acWordwrap="&Rivitys
+    acViewRuler="&Viivain"
+    acShowSpecialCharacters="Näytä &erikoismerkit"
+    acViewOEMCharset="&OEM-merkistö"
+    // ---
+    acLockFileForChanges="L&ukitse tiedosto muutoksilta"
+
+//
+acFormat="M&uotoile"
+    acFormatIndentBlock="&Sisennä alue"
+    acFormatUnindentBlock="Pi&enennä sisennystä"
+    // ---
+    acFormatToLowerCase="&Isot kirjaimet pieniksi"
+    acFormatToUpperCase="&Pienet kirjaimet isoiksi"
+    acFormatInvertCase="&Käännä isot ja pienet"
+    // ---
+    acFormatReformatParagraph="M&uotoile kappale"
+    acFormatFillBlock="T&äytä alue"
+    acFormatInsertCodeFromTemplate="&Lisää koodia aihiosta"
+    acFormatInsertTimeStamp="Lisää &aikaleima"
+    acFormatCommentUncommentCode="K&ommentoi/poista kommentista"
+    acFormatRemoveTrailingSpaces="Poista &välilyönnit rivien lopusta"
+
+//
+acProject="&Projektit"
+    acProjectNew="&Uusi..."
+    acProjectOpen="&Avaa..."
+    acProjectClose="&Sulje"
+    // ---
+    acProjectOpenAllFiles="Avaa &kaikki tiedostot"
+    acProjectCloseAllFiles="Sulje ka&ikki tiedostot"
+    // ---
+    acProjectFiles="&Projektitiedostot"
+    acProjectRecent="&Viimeisimmät projektit"
+    // ---
+    acProjectManageFileList="&Järjestä tiedostoluettelo..."
+
+//
+acTools="T&yökalut"
+    acRecordMacro="&Nauhoita makro"
+    acPlayMacro="&Suorita makro"
+    acManageMacros="Makrojen &hallinta"
+    // ---
+    acUserCommand1="Käyttäjän komento &1"
+    acUserCommand2="Käyttäjän komento &2"
+    acUserCommand3="Käyttäjän komento &3"
+    acUserCommand4="Käyttäjän komento &4"
+    acShellExecute="Suorita &komentotulkissa"
+    // ---
+    acFileCompare="V&ertaile..."
+    acTextStatistics="T&ilastot..."
+    // ---
+    acSetHighlighter="&Valitse korostus"
+        acCustomizeTypes="Määritä t&yypit..."
+    acConversion="&Muunna teksti"
+        acConvertToDOS="&DOS (CR+LF)"
+        acConvertToMAC="&Macintosh (vain CR)"
+        acConvertToUNIX="&UNIX (vain LF)"
+
+//
+acOptions="&Asetukset"
+    acPreferences="&Ohjelman asetukset..."
+    acCodeTemplate="&Koodiaihiot..."
+    acStayOnTop="Pysy &ylinnä"
+    // ---
+    acExportRegistrySettings="&Vie rekisteriasetukset..."
+
+//
+acWindow="&Ikkuna"
+    acCascade="&Päällekkäin"
+    acTileHorizontal="&Allekkain"
+    acTileVertical="&Vierekkäin"
+    acNextWindow="&Seuraava ikkuna"
+    acPreviousWindow="&Edellinen ikkuna"
+
+//
+acHelp="&Ohje"
+    acHelpContents="&Sisällys"
+    acHelpOnKeyword="&Avainsanan ohje"
+    // ---
+    acAbout="&Tietoa ohjelmasta..."
+
+popExplorerLarge="Suuret kuvakkeet"
+popExplorerSmall="Pienet kuvakkeet"
+popExplorerList="Luettelo"
+popExplorerDetail="Tiedot"
+acReloadActiveHighlighter="Lataa &uudelleen aktiivinen korostus"
+acViewCodeExplorer="Code E&xplorer"
+acTrayRestore="&Restore"
+acFormatConvertTabsToSpaces="Convert T&abs To Spaces..."
+acFormatConvertSpacesToTabs="Convert S&paces To Tabs..."
+acFormatRemoveComments="Remove Comm&ents"
+
+// Muokkaa|Etsi... -dialogi
+//
+[fmFind]
+FormCaption="Etsi tekstiä"
+    labFind="Etsi &mitä:"
+    labReplace="Korvaa m&illä:"
+    // ---
+    gbOrigin="Mistä"
+    rbOriginFromCursor="K&ohdistimesta"
+    rbOriginFromBeginning="Tiedoston &alusta"
+    // ---
+    gbScope="Hakualue"
+    rbScopeSelection="&Valinta"
+    rbScopeFile="N&ykyinen tiedosto"
+    rbScopeAllFiles="K&aikki tiedostot"
+    // ---
+    gbOptions="Asetukset"
+    cbCase="Erota &isot ja pienet"
+    cbWholeWords="Etsi k&okonaisia sanoja"
+    cbBackward="&Taaksepäin"
+    cbRegExp="Käytä &sääntölausekkeita"
+    // ---
+    btnFindNext="&Etsi"
+    btnReplace="&Korvaa"
+    btnReplaceAll="Korvaa k&aikki"
+    btnClose="Sulje"
+
+//
+//
+//
+// VALIKKO: kontekstivalikko (hiiren oikea nappi)
+//
+
+[fmOptions]
+FormCaption="Ohjelman asetukset"
+    btnOK="OK"
+    btnApply="&Käytä"
+    btnCancel="Peruuta"
+    //
+    // Yleinen-lehti
+    //
+    pgGeneral="Yleinen"
+        cbBackupFile="&Varmuuskopioi tallennettaessa"
+            rbBackupDirCurrent="Käytä &nykyistä hakemistoa"
+            rbBackupDirSelect="Va&rmuuskopiohakemisto:"
+            cbDosBackupFilename="Vaihda tiedoston tunnisteeksi .&BAK"
+        cbSaveFilePositions="Muista kohdistimen sijainti &tiedostossa"
+        cbRememberLastDir="&Muista viimeksi käytetty hakemisto"
+        cbRememberFindOptions="Muista etsi/korvaa-ikkunan sijainti"
+        cbDetectFileChanges="&Jäljitä muiden sovellusten tekemät muutokset"
+        cbAutoUpdateChangedFiles="Verestä muuttuneet tiedostot &automaattisesti"
+        cbShowFindReplaceInfoDlg="Näytä etsi/korvaa-tietodialogi"
+        cbShowExecInfoDlg="Näytä käyttäjän komentodialogi"
+        cbMinimizeIfNoFiles="&Pienennä ConTEXT, kun tiedostoja ei ole auki"
+        cbMinimizeToTray="Pienennä j&ärjestelmän tarjottimelle"
+        cbCreateFileIfNoFileName="&Luo uusi tiedosto, kun ConTEXT avataan ilman tiedostonimeä"
+        cbAllowMultipleInstances="Salli useampi ohjelman instanssi"
+        cbVisibleFileTabsIcons="Tiedostokuvakkeet tiedostolehtiössä"
+        cbMultiLineTabs="Rivitä tiedostolehtiö"
+        cbShiftClickClosesFileTab="Vaihto+nakautus tiedostopalkissa sulkee tiedoston"
+        labWhenStarted="Käynnistettäessä:"
+        labLanguage="Kieli:"
+    //
+    // Muokkaus-lehti
+    //
+    pgEditor="Muokkaus"
+        //
+        // Yläosa
+        //
+        labFont="Kir&jasin:"
+        labFontSize="&Koko:"
+        //
+        // Vasen sarake
+        //
+        cbAutoIndent="&Automaattinen sisennys"
+        cbDragDropEditing="&Vedä ja pudota -muokkaus"
+        cbCursorAfterEOL="Kohdistin saa ohittaa rivin &lopun"
+        cbEnhanceHomeKey="Älykäs &Home-näppäin"
+        cbFindTextAtCursor="Aloita hak&u kohdistimesta"
+        cbSmartTabs="&Älykäs sarkaus"
+        cbLineNumbers="&Rivinumerointi"
+        cbGroupUndo="Peru r&yhmissä"
+        cbUndoAfterSave="Perua &voi tallennuksen jälkeenkin"
+        cbHideMouseWhenTyping="P&iilota hiirikohdistin kirjoitettaessa"
+        cbTrimTrailingSpaces="Poista rivinloppuiset tyhjä&merkit"
+        cbShowWordwrapGlyph="Näytä rivitysmerkki"
+        cbWordwrapByDefault="Rivitä oletusarvoisesti"
+        //
+        // Oikea sarake
+        //
+        labLineSpacing="Rivie&n lisävälistys:"
+        labInsertCaret="Lisäyskoh&distin:"
+        labOverwriteCaret="&Korvauskohdistin:"
+        labRightMargin="&Oikea reunus:"
+        labTabsMode="Sarka&ustapa:"
+        labTabWidth="&Sarkainleveys:"
+        cbTabIndent="Sarkainsisennys"
+        labBlockIndent="Lohkonsis&ennys:"
+        labCJavaBlockIndent="&C:n/Javan lohkonsisennys:"
+        //
+        // Alaosa
+        //
+        gbGutter="Reunus"
+        cbGutterVisible="Näkyvä reunus"
+        labGutterWidth="Reunuksen leveys:"
+        gbNewDocSettings="Uuden tiedoston oletusasetukset"
+        labNewDocHighlighter="&Korostus:"
+        labNewDocFileFormat="Tiedostomuoto:"
+    //
+    // Värit-lehti
+    //
+    pgColors="Värit"
+        labHighlighter="Korostus:"
+        labHighlighterDescription="Kuvaus:"
+        labFg="T&eksti:"
+        labBg="Ta&usta:"
+        cbBold="&Lihavoitu"
+        cbItalic="&Kursivoitu"
+        cbUnderline="&Alleviivattu"
+        pnSampleColor="Tekstinäyte"
+        cbHighlightCurrentLine="Korosta nykyinen rivi"
+        cbOverrideTxtFgColor="&Ohita tekstiväri"
+        // seuraavat kolme löytyivät merkkijonoina ConTEXT.exen sisältä
+        // (kunhan exen purki: upx -d)
+        cbHLBlockAutoindent="Automaattinen lohkonsisennys"
+        labHLBlockBegin="Lohko alkaa:"
+        labHLBlockEnd="Lohko päättyy:"
+        //
+        labDownloadMoreHighlighters="lataa lisää syntaksivärityksiä"
+    //
+    // Näppäimet-lehti
+    //
+    pgExecKeys="Näppäimet"
+        //
+        // Yläosa - vasen puoli
+        //
+        btnExecExtAdd="&Lisää"
+        btnExecExtEdit="&Muokkaa"
+        btnExecExtDelete="&Poista"
+        //
+        // Yläosa - oikea puoli
+        //
+        labExecute="&Suorita:"
+        labExecStartDir="&Käynnistyshakemisto:"
+        labExecParameters="&Parametrit:"
+        labExecWindow="&Ikkuna:"
+        labExecHint="&Vihje:"
+        labExecSave="&Tallenna:"
+        cbExecUseShortNames="Käytä lyhyitä &DOS-nimiä"
+        cbExecCaptureOutput="K&aappaa konsolituloste"
+        labExecParserRule="Käännöstulosteen &jäsennyssääntö:"
+        cbExecScrollConsole="Vieritä k&onsoli loppuun"
+        cbExecPauseAfter="J&ätä ikk&una näkyviin suorituksen jälkeen"
+        cbExecIdlePriority="Suoritus &joutoaikana"
+        //
+        // Alaosan otsikko
+        //
+        labExecOptParameters="Valinnaiset para&metrit:"
+        //
+        // Alaosa - vasen puoli
+        //
+        labExecParam_n="- polkunimi"
+        labExecParam_f="- vain tiedostonimi"
+        labExecParam_ff="- tunnisteeton tiedostonimi"
+        labExecParam_p="- vain polku"
+        labExecParam_e="- tiedoston tunniste"
+        labExecParam_s="- käynnistyshakemisto"
+        //
+        // Alaosa - oikea puoli
+        //
+        labExecParam_pp="- tiedostokohtaiset parametrit"
+        labExecParam_l="- nykyisen rivin numero"
+        labExecParam_c="- nykyisen sarakkeen numero"
+        labExecParam_w="- sana kohdistimen kohdalta"
+        labExecParam_percent="- prosentinmerkki"
+        labExecParam_opt1="- luo kyselyikkuna"
+    //
+    // Kytkökset-lehti
+    //
+    pgAssociations="Kytkökset"
+        gbFileAssociations=" Kytketyt tunnisteet: "
+        labFileAssociationsHelp="Määritä tiedostotyypit (tunnisteet), jotka haluat Windowsin avaavan automaattisesti ConTEXTissa."
+        btnExtAdd="&Lisää"
+        btnExtRemove="&Poista"
+        pnAssocWait="Odota, tarkistetaan rekisteriä..."
+    //
+    // Sekalaista-lehti
+    //
+    pgMisc="Sekalaista"
+        // Seuraavat tulleet tarpeettomiksi 0.98.x-sarjassa
+        // ---
+                                // ---
+        cbAlterFileLoadMethod="Vaihtoehtoinen Avaa-toiminto"
+        labDefaultSQLDialect="SQL-oletusmurre:"
+        gbHelpFiles="Avustustiedostot"
+        btnHelpFileEdit="&Muokkaa"
+        // seuraava on onnekas arvaus!
+        btnHelpFileClear="&Poista"
+
+// Onko tämä oikeasti tarpeen?
+cbRightMarginVisible="&Oikea reunus näkyvissä"
+gbConsoleFont="Output console font"
+labConsoleFont="&Font:"
+labConsoleFontSize="&Size:"
+cbUseOfficeXPTheme="Use Office &XP theme"
+
+[fmPrint]
+FormCaption="Tulosta"
+btnProperties="&Ominaisuudet"
+btnOK="OK"
+btnCancel="Peru"
+btnPageSetup="P&age Setup"
+btnPreview="P&review"
+cbCollateCopies="C&ollate copies"
+cbLineNumbers="&Line Numbers"
+cbSelectedOnly="&Selected only"
+gbPrinter=" Printer "
+labCopiesNum="&Number of copies:"
+labPrinterName="Name:"
+
+[fmPrnPreview]
+FormCaption="Tulostuksen esikatselu"
+btnClose="S&ulje"
+popWholePage="&Koko sivu"
+popPageWidth="&Sivun leveys"
+
+[fmPageSetup]
+FormCaption="Sivun asetukset"
+        pgGeneral="Yleistä"
+        gbOptions="Asetukset"
+        cbLineNumbers="Rivi&numerointi"
+        cbLineNumbersInMargin="Rivinumerot &reunukseen"
+        cbSyntaxPrint="Korosta &syntaksi"
+        cbColors="&Väritulostus"
+        cbWrap="Rivit&ys"
+        gbTextOptions="Tekstin asetukset"
+        labFont="Kir&jasin:"
+        labFontSize="K&oko:"
+
+        pgMargins="Reunukset"
+        labUnits="&Mittayksikkö:"
+        labMLeft="&Vasen:"
+        labMRight="&Oikea:"
+        labMTop="&Ylä:"
+        labMBottom="&Ala:"
+        labMHeader="Yl&ätunniste:"
+        labMFooter="A&latunniste:"
+        labGutter="&Sidontareunus:"
+        labMHFInternal="S&isäreunus:"
+        labMHFTLeftIndent="&Vasemman sivun sisennys:"
+        labMHFTRightIndent="&Oikean sivun sisennys:"
+        cbMirrorMargins="&Peilikuvareunukset"
+
+        pgHeaderFooter="Ylä- ja alatunnisteet"
+        labHeader="Ylätunniste"
+        labHeadLeft="&Vasemmalle"
+        labHeadCenter="&Keskelle"
+        labHeadRight="&Oikealle"
+        labFooter="Alatunniste"
+        cbHeadLine="Viiva &alle"
+        cbHeadBox="Reunav&iiva"
+        cbHeadShadow="Va&rjostettu"
+        cbHeadMirror="&Peilikuva-asemointi"
+        labHeadLineColor="Viivan väri"
+        labHeadShadowColor="Varjon väri"
+        labFootLeft="Va&semmalle"
+        labFootCenter="K&eskelle"
+        labFootRight="O&ikealle"
+        cbFootLine="Viiva &ylle"
+        cbFootBox="Laatikoitu"
+        cbFootShadow="&Reunaviiva"
+        cbFootMirror="Peilik&uva-asemointi"
+        labFootLineColor="Viivan väri"
+        labFootShadowColor="Varjon väri"
+
+    btnOK="OK"
+    btnCancel="Peru"
+
+[fmMacroStartRecording]
+FormCaption="Käynnistetään makron nauhoitus"
+btnCancel="Peru"
+btnOK="OK"
+cbEnabled="&Käytettävissä"
+labHotkey="&Näppäin:"
+labName="&Nimi:"
+
+[fmMacroSelect]
+FormCaption="Makron valinta"
+btnPlay="Suorita"
+btnCancel="Peru"
+labMessage="&Valitse suoritettava makro:"
+
+[fmMacroManage]
+FormCaption="Makrojen hallinta"
+btnCancel="Peru"
+btnDelete="&Poista"
+btnEdit="&Muokkaa"
+btnOK="OK"
+
+[fmCustomizeType]
+FormCaption="Muokataan tiedostotyyppejä"
+labHighlighters="&Korostukset ja määritellyt tunnisteet:"
+btnEdit="&Muokkaa"
+btnOK="OK"
+btnCancel="Peru"
+
+[fmAbout]
+FormCaption="Tietoa ohjelmasta..."
+btnClose="Sulje"
+
+[fmExport]
+FormCaption="Viedään tiedosto"
+// ---
+labTitle="&Otsikko:"
+// ---
+gbOptions="Asetukset"
+cbSelectedOnly="Vain va&linta"
+cbCreateFragment="&Luo fragmentti"
+cbExportToClipboard="&Vie leikepöydälle"
+// ---
+gbTextSettings="Tekstin asetukset"
+labBackground="&Tausta:"
+// seuraavat kaksi onnekkaita arvauksia
+btnSetFont="&Aseta"
+// ---
+btnExport="Vie"
+btnCancel="Peru"
+labFontSize="&Font size:"
+labPlainText="&Plain text:"
+
+[fmCodeTemplate]
+FormCaption="Koodiaihio"
+labHighlighter="&Korostus:"
+labTemplate="Ai&hio:"
+labCode="&Koodi:"
+btnAdd="&Lisää"
+btnEdit="&Muokkaa"
+btnDelete="&Poista"
+btnOK="&OK"
+btnCancel="Peru"
+
+[fmCodeTemplateEdit]
+FormCaption="Koodiaihion pikanäppäin"
+labShortcut="&Pikanäppäin:"
+labDescription="&Kuvaus:"
+btnOK="OK"
+btnCancel="Peru"
+
+[fmPrjFiles]
+FormCaption="Ylläpidä projektin tiedostoluetteloa"
+labPrjFiles="&Projektitiedostot:"
+btnClose="Sulje"
+
+[fmFileList]
+FormCaption="Tiedostoluettelo"
+btnOK="OK"
+btnCancel="Peru"
+
+[fmFileCompare]
+FormCaption="Tiedostovertailu"
+// ---
+acSettings="&Asetukset"
+// ---
+acCompare="Vertaa"
+acCancel="Peru"
+// ---
+    [frameFileCompareFileChoice]
+    gbFile="Tiedosto"
+    rbCurrentFile="Nykyinen tiedosto"
+    rbEditingFile="Muokattava tiedosto"
+    rbFileFromDisk="Valitse tiedosto..."
+
+[fmFileCompareSettings]
+FormCaption="Tiedostovertailun asetukset"
+cbCaseSensitive="&Erota isot ja pienet kirjaimet"
+cbIgnoreLeadingWhiteSpace="Ohita rivin&alkuiset tyhjämerkit"
+cbIgnoreTrailingWhiteSpace="Ohita rivin&loppuiset tyhjämerkit"
+cbLineNumbers="Rivi&numerot"
+cbIgnoreCharacters="Jätä &huomiotta merkit:"
+// ---
+labMatchDepth="Vertailun &syvyys:"
+// ---
+gbColors="Värit"
+labDifferentLines="Eroavat rivit:"
+labEmptyLines="Tyhjät rivit:"
+cbSimpleColors="&Yksinkertaiset värit"
+labInsertedLines="Lisätyt rivit:"
+labDeletedLines="Poistetut rivit:"
+labFont="&Kirjasin:"
+labFontSize="K&oko:"
+// ---
+acOK="OK"
+acCancel="Peru"
+
+[fmFileCompareResults]
+FormCaption="Vertailun tulokset"
+acFirst="&Ensimmäinen"
+acLast="&Viimeinen"
+acNext="&Seuraava"
+acPrev="&Edellinen"
+acClose="Sul&je"
+acRecompare="Vertaa &uudelleen"
+
+[fmTextStats]
+FormCaption="Tilastot"
+btnCopy="Kopioi leikepöydälle"
+btnClose="Sulje"
+
+[fmIncrementalSearch]
+acFindNext="Etsi &seuraava"
+acFindPrevious="Etsi &edellinen"
+acEmphasize="K&orosta"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Dynaamisesti luodut viestit
+//
+/////////////////////////////////////////////////////////////////////////////
+
+[Messages]
+
+// Main window
+01000="[ei määritelty]"
+01001="Rakenteettomia tekstitiedostoja ei voi viedä."
+01010="Suljetaan tiedostot"
+01011="Suljetaanko avoimet tiedostot?"
+
+// Rename file
+01100="Nimeä tiedosto uudelleen"
+01101="Uusi tiedostonimi:"
+01102="Sen niminen tiedosto on jo olemassa!"
+01103="Virhe nimettäessä tiedostoa '%s' nimelle '%s'."
+
+// Toolbar hints
+01300="Uusi tiedosto"
+01301="Avaa tiedosto"
+01302="Tallenna tiedosto"
+01303="Tallenna kaikki tiedostot"
+01304="Sulje tiedosto"
+01305="Tulosta tiedosto"
+01306="Tulostuksen esikatselu"
+01307="Leikkaa valinta leikepöydälle"
+01308="Kopioi valinta leikepöydälle"
+01309="Liitä teksti leikepöydältä"
+01310="Kumoa"
+01311="Tee uudelleen"
+01312="Etsi tekstiä"
+01313="Etsi seuraava esiintymä"
+01314="Korvaa tekstiä"
+01315="Rivitys"
+01316="Pysy ylinnä"
+01317="Valitse aktiivinen korostus"
+01318="Ohje"
+
+// Customize file types window
+02000="Tunnisteitten muokkaus"
+02001="Anna tunnisteet pilkuin erotettuna:"
+
+// Editor window
+03000="Muokattu"
+03001="Lisäys"
+03002="Korvaus"
+03003="Nauhoitus"
+03004="val: Tavallinen"
+03005="val: Sarake"
+03006="Tiedoston koko:"
+03010="Virhe avattaessa tiedostoa '%s'."
+03011="Virhe tallennettaessa tiedostoa '%s'."
+03012="Virhe"
+03013="Tiedosto '%s' on muuttunut. Ladataanko muuttunut tiedosto?"
+03014="Tiedosto '%s' on poistettu. Pidetäänkö tiedosto muokkaimessa?"
+03015="Tiedosto '%s' on muuttunut. Tallennetaanko muutokset?"
+03016="Virhe luotaessa varmistustiedostoa: '%s'"
+03020="Siirry"
+03021="Siirry riville:"
+
+// Find/replace dialog
+04000="Etsi tekstiä"
+04001="Korvaa tekstiä"
+04002="&Etsi"
+04003="Etsi &seuraava"
+04010="Hakujonoa '%s' ei löytynyt."
+04011="Korvattu %d kpl jonon '%s' esiintymää jonolla '%s'."
+
+04012="Pysäytetäänkö makron suoritus?"
+
+// Macro parser messages
+05001="Kielioppivirhe."
+05002="Odotettiin 'MacroBegin'-avainsanaa."
+05003="Odotettiin '('."
+05004="Odotettiin ')'."
+05005="Odotettiin merkkijonoa."
+05100="Makron kielioppivirhe"
+05101="Virhe tallennettaessa makrotiedostoa '%s'."
+
+// Macro select dialog
+06500="Nauhoitetaan makro"
+06501="Muokataan makroa"
+06502="Makroja muokattu muttei tallennettu. Tallennetaanko makrot nyt?"
+06510="Nimi"
+06511="Näppäin"
+06512="Käytettävissä"
+
+// Start macro recording dialog
+07000="Sovellus käyttää tätä pikanäppäintä."
+07001="Pikanäppäintä käyttää toinen makro. Korvataanko?"
+
+// Options dialog
+08000="Käyttäjän komentonäppäimet"
+08001="Tiedostokytkösten muokkaus"
+08002="Anna tunnisteet pilkuin erotettuna:"
+08003="Poistetaanko '%s':ään kytketyt käyttäjän komennot?"
+08010="ConTEXTin kytkökset"
+08011="Anna tiedoston tunniste:"
+08012="Poistetaanko kytkös '%s'? Toimintoa ei voi kumota."
+08013="Kieli vaihtuu vasta käynnistettäessä ConTEXT uudelleen."
+08014="Valitse varmistushakemisto"
+08020="Älä tee mitään"
+08021="Luo tyhjä tiedosto"
+08022="Avaa viimeisin tiedosto/projekti"
+08100="Pystyviiva"
+08101="Vaakaviiva"
+08102="Puolikas lohko"
+08103="Lohko"
+08110="&Oma väri"
+08111="&Oletusväri"
+08125="Sarkaimet"
+08126="Välilyönnit"
+08210="Tiedostotyyppi"
+08211="Avustustiedosto"
+08300="Nykyinen tiedosto ennen suoritusta"
+08301="Kaikki tiedostot ennen suoritusta"
+08302="Ei mitään"
+
+// Print dialogs
+09000="Virheellinen luku"
+09010="Kirjoitinta ei ole valittu! Asenna se ensin ja käynnistä ConTEXT uudelleen."
+09020="Sivu:"
+09050="Ensimmäinen sivu"
+09051="Edellinen sivu"
+09052="Seuraava sivu"
+09053="Viimeinen sivu"
+09054="Zoomaa"
+09055="Tulosta asiakirja"
+
+// Page setup dialog toolbar button hints
+09100="Sivunumero"
+09101="Sivumäärä"
+09102="Kellonaika"
+09103="Päiväys"
+09104="Tiedostonimi"
+09105="Kirjasin"
+09106="Lihavoitu"
+09107="Kursivoitu"
+09108="Alleviivattu"
+
+// User exec
+10000="Virhe luotaessa putkea"
+10001="Virhe suoritettaessa aliohjelmaa"
+10010="Anna valinnaiset parametrit"
+10011="Parametri:"
+10012="Mitään käyttäjän komentoa ei ole kytketty tunnisteeseen '%s'."
+10013="Suoritus valmis."
+10014="Valmis."
+10015="Käyttäjä keskeytti suorituksen."
+10016="Terminate"
+10020="'%s':n suoritus on valmis."
+10030="&Kopioi sisältö leikepöydälle"
+10031="&Tyhjennä"
+10032="&Piilota"
+10033="Kopioi &valittu rivi leikepöydälle"
+10040="&Hyppää virheriville"
+10041="Aseta &kirjasin"
+10050="Tuloskonsoli"
+
+// Fill block
+11000="Täytä alue"
+11001="Anna teksti, jolla alue täytetään:"
+
+// Code template dialog
+12000="Näppäin"
+12001="Kuvaus"
+
+// File explorer
+13000="Lisää resurssienhallinnassa valitut tiedostot suosikkeihin"
+13001="Poista valitut tiedostot suosikeista"
+13002="Avaa valitut tiedostot"
+13003="Näytä/piilota polku"
+13010="&Suuret kuvakkeet"
+13011="&Pienet kuvakkeet"
+13012="&Luettelo"
+13013="&Tiedot"
+13014="Suosikit"
+13015="Näkymät"
+13016="Tasoa ylemmäs"
+13050="Tiedostopaneeli"
+13051="Tiedostonhallinta"
+13052="Suosikit"
+13053="Historia"
+13054="Projekti"
+
+// Project files management toolbar hints
+14000="Lisää tiedosto projektin työtilaan"
+14001="Lisää nykyinen tiedosto projektin työtilaan"
+14002="Lisää kaikki avoimet tiedostot projektin työtilaan"
+14003="Poista valittu tiedosto projektin työtilasta"
+14004="Muokkaa valittua tiedostoa"
+14005="Sulje valittu tiedosto"
+14006="Siirry yhtä ylemmäs"
+14007="Siirry yhtä alemmas"
+01012="Vahvista"
+01013="Tiedosto '%s' on jo olemassa.\nHaluatko korvata sen?"
+01014="Tiedostoa ei voi avata '%s'."
+03007="VainLuku"
+03017="Tiedosto '%s' on vain luettavissa. Tallennetaanko silti?"
+04020="Haun tulokset"
+08015="Ohjelmatiedostoja ei voi yhdistää."
+10050="Tuloskonsoli"
+13004="Siirrä ylöspäin"
+13005="Siirrä alaspäin"
+13006="Poista kaikki tiedostot luettelosta"
+13017="&Suodatus"
+13018="Valitse hakemisto"
+13020="&Lisää"
+13021="&Poista"
+13022="&Avaa"
+13023="&Näytä polku"
+13024="Siirrä &ylöspäin"
+13025="Siirrä &alaspäin"
+13026="Poista &kaikki"
+14008="Toggle relative file paths"
+14009="Aseta projektin makefile"
+14020="Lisää &nykyinen tiedosto"
+14021="L&isää kaikki tiedostot"
+14022="Sul&je"
+14023="Aseta &makefile"
+14024="Luo uusi projektin työtila"
+15000="Tiedostonimi"
+15001="Luotu"
+15002="Muokattu"
+15003="Rivejä"
+15004="Ei-tyhjiä rivejä"
+15005="Merkkejä"
+15006="Merkkejä ilman tyhjämerkkejä"
+15007="Merkkejä kommenteissa"
+15008="Kommentoitujen merkkien osuus"
+
+01020="Tab Conversion"
+01021="Tab width:"
+01110="Revert to backup file '%s'?"
+01111="Revert '%s' to saved?"
+03008="%d chars%s selected."
+03009="lines"

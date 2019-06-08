@@ -1,0 +1,4 @@
+[ EXPERIMENTELL: Den C-Control/BASIC Parser für Open-Control/BASIC verwenden. (Dient hier nur der Erstellung einer Map-Datei - es werden allerdings keine per Include definierten Variablen gelistet) ]
+
+C-Control/BASIC Parser Version 1.1
+Copyright (c) 2003 Dietmar Harlos ADPC

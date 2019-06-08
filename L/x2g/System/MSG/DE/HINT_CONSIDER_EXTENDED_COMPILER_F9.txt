@@ -1,0 +1,1 @@
+[ Tipp: Falls Kompilierung niemals erfolgreich, kann möglicherweise der erweiterte C-Control/BASIC Kompiler via Taste F9 Abhilfe schaffen. ]

@@ -1,0 +1,14 @@
+
+
+ org $91
+
+definiert:
+          lda $04
+          ora #%11011110
+          sta $04
+          
+          lda $01
+          and #%01111111
+          sta $01
+          
+          rts

@@ -1,0 +1,5 @@
+[ Compiling was not successful ]
+
+--> Please consult the messages in the output console.
+
+    The output console can be toggled on or off with Shift + Ctrl + O.
