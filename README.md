@@ -1,2 +1,2 @@
 # L-Distribution
-Tools and IDE for BASIC-programmable microcontrollers 
+SDK for some BASIC-programmable microcontrollers 
